@@ -1,8 +1,8 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
-LastEditors: dvlproad
-LastEditTime: 2023-04-14 14:25:09
+LastEditors: dvlproad dvlproad@163.com
+LastEditTime: 2023-04-16 03:01:52
 FilePath: /bulidScript/branch_create/branchInfo_create.py
 Description: 分支JSON文件的创建-python
 '''
@@ -12,6 +12,7 @@ import json
 import subprocess
 from datetime import datetime
 
+from env_util import getEnvValue_branch_json_file_git_home, getEnvValue_branch_json_file_dir_path
 from git_util import get_gitHomeDir, get_currentBranchFullName
 from branchJsonFile_input import chooseAnswer, chooseTester
 
@@ -20,8 +21,11 @@ username = getpass.getuser()
 # print("当前登录用户的用户名是：{}\n".format(username))
 
 
-project_dir=get_gitHomeDir()
-print("当前项目目录：", project_dir)
+project_dir=getEnvValue_branch_json_file_git_home()
+print("当前项目目录===========：", project_dir)
+
+
+branch_json_file_dir_path = getEnvValue_branch_json_file_dir_path()
 
 
 def create_branch_json_file():
@@ -36,7 +40,7 @@ def create_branch_json_file():
     # print("分支类型 = {}, 分支简名 = {}".format(branchType, branchShortName))
     jsonFileName = f"{branchType}_{branchShortName}.json"
 
-    file_path = f"{project_dir}/featureBrances/{jsonFileName}"
+    file_path = f"{branch_json_file_dir_path}/{jsonFileName}"
     # print("等下要在以下路径创建的json文件：\033[1;31m{}\033[0m\n".format(file_path))
     
     create(branchType, branchShortName, file_path)
@@ -106,5 +110,9 @@ def create(branchType, branchShortName, file_path):
     # 将文件加入 Git 暂存区
     subprocess.call(["git", "add", file_path])
     print(f"已成功创建分支JSON文件：\033[1;32m{file_path}\033[0m")
+
+    # 在 macOS 或 Linux 上打开 file_path 文件。
+    # subprocess.Popen(['open', file_path])
+    subprocess.Popen(['open', file_path])
 
 create_branch_json_file()

@@ -3,8 +3,8 @@
 ###
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
- # @LastEditors: dvlproad
- # @LastEditTime: 2023-04-14 14:23:04
+ # @LastEditors: dvlproad dvlproad@163.com
+ # @LastEditTime: 2023-04-16 02:30:03
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 分支JSON文件的创建-shell
 ###
@@ -88,12 +88,9 @@ fi
 # 当前【shell脚本】的工作目录
 # $PWD代表获取当前路径，当cd后，$PWD也会跟着更新到新的cd路径。这个和在终端操作是一样的道理的
 CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
-#echo "CurrentDIR_Script_Absolute=${CurrentDIR_Script_Absolute}"
-#gitHomeDir_Absolute=${CurrentDIR_Script_Absolute}/..
-# temp_Absolute2=${CurrentDIR_Script_Absolute%/*} # 使用此方法可以避免路径上有..
-# gitHomeDir_Absolute=${temp_Absolute2%/*}
-gitHomeDir_Absolute=$(git rev-parse --show-toplevel) # 这个命令将输出Git项目的根目录的绝对路径。如果你当前在项目的子目录中，这个命令也会返回项目的根目录。前提本路径只属于主项目的git
-echo "gitHomeDir_Absolute=${gitHomeDir_Absolute}"
+branchJsonFileScriptDir_Absolute=${CurrentDIR_Script_Absolute}
+echo "branchJsonFileScriptDir_Absolute222=${branchJsonFileScriptDir_Absolute}"
+
 
 echo "分支创建准备..."
 # 1：需要切换到被拉取的分支，并且拉取项目，命令如下：
@@ -112,5 +109,5 @@ git checkout "$newbranch"
 # $git pull
 
 # 4、添加分支信息
-# echo "正在执行命令:《 python3 \"${CurrentDIR_Script_Absolute}/branchJsonFile_create.py\" 》"
-python3 "${CurrentDIR_Script_Absolute}/branchJsonFile_create.py"
+echo "正在执行命令:《 python3 \"${branchJsonFileScriptDir_Absolute}/branchJsonFile_create.py\" 》"
+python3 "${branchJsonFileScriptDir_Absolute}/branchJsonFile_create.py"
