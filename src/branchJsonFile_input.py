@@ -1,8 +1,8 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
-LastEditors: dvlproad
-LastEditTime: 2023-04-13 13:32:14
+LastEditors: dvlproad dvlproad@163.com
+LastEditTime: 2023-04-16 23:21:17
 FilePath: /bulidScript/branch_create/branchInfo_create.py
 Description: 分支JSON文件的创建-输入
 '''
@@ -17,20 +17,28 @@ def chooseAnswer():
         "2": "谢晓龙",
         "3": "李再超",
         "4": "王毅",
-        "5": "刘璟"
+        "5": "刘璟",
+        "6": "张良俊"
     }
     for key, value in answer_mapping.items():
         print(key, value)
     
     while True:
-        answer_input = input("请输入需求方人员编号（1、2、3、4、5）：")
-        if answer_input in answer_mapping:
+        answer_input = input("请输入需求方人员编号（自定义请填0）：")
+        if answer_input == "q" or answer_input == "Q":
+            exit()
+        elif answer_input in answer_mapping:
             answerName = answer_mapping[answer_input]
             # print("key = {}, value = {}".format(answer_input, answerName))
             print("您选择输入需求方人员名：\033[1;31m{}\033[0m\n".format(answerName))
             break
         else:
-            print("输入有误，请重新输入！")
+            if answer_input == "0":
+                answerName = input("请输入需求方人员姓名：")
+                break
+            
+            else:
+                print("输入有误，请重新输入！")
     
     return answerName
 
@@ -54,17 +62,22 @@ def chooseTester():
         print(key, value)
 
     while True:
-        tester_input = input("请输入测试人员编号（1、2、3、4）：")
-        if tester_input in tester_mapping:
+        tester_input = input("请输入测试人员编号（自定义请填0）：")
+        if tester_input == "q" or tester_input == "Q":
+            exit()
+        elif tester_input in tester_mapping:
             testerName = tester_mapping[tester_input]
             # print("key = {}, value = {}".format(tester_input, testerName))
             print("选择的测试人员姓名：\033[1;31m{}\033[0m\n".format(testerName))
             break
         else:
-            print("输入有误，请重新输入！")
+            if tester_input == "0":
+                testerName = input("请输入测试人员姓名：")
+                break
+            else:
+                print("输入有误，请重新输入！")
 
     
     return testerName
 
     
-

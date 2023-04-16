@@ -4,12 +4,12 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2023-04-16 19:48:36
+ # @LastEditTime: 2023-04-16 23:37:34
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 工具选项
 ###
 
-bjfVersion=0.0.4
+bjfVersion=0.0.5
 
 # 定义颜色常量
 NC='\033[0m' # No Color
@@ -20,6 +20,7 @@ BLUE='\033[34m'
 PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 
+quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退出
 
 
 # export BRANCH_JSON_FILE_GIT_HOME=~/Project/Bojue/mobile_flutter_wish/                     # 要操作的git
@@ -64,7 +65,7 @@ fi
 # $PWD代表获取当前路径，当cd后，$PWD也会跟着更新到新的cd路径。这个和在终端操作是一样的道理的
 # CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
 # branchJsonFileScriptDir_Absolute=${CurrentDIR_Script_Absolute}/src
-branchJsonFileScriptDir_Absolute="/usr/local/Cellar/bjf/${bjfVersion}/lib/src/"
+branchJsonFileScriptDir_Absolute="/usr/local/Cellar/bjf/${bjfVersion}/lib/src"
 # echo "branchJsonFileScriptDir_Absolute=${branchJsonFileScriptDir_Absolute}"
 
 
@@ -85,8 +86,9 @@ gitHome() {
 tool_menu() {
     # 定义菜单选项
     options=(
-        "1|create    创建分支(含初始分支信息)"
-        "2|update    更新分支信息(人员、提测时间、测试通过时间)"
+        "1|gitBranch        创建分支(且创建完可选择继续2操作)"
+        "2|createJsonFile   创建当前所处分支的信息文件"
+        "3|updateJsonFile   更新当前所处分支的信息文件(人员、提测时间、测试通过时间)"
     )
 
 
@@ -104,12 +106,49 @@ tool_menu() {
 # 显示工具选项
 tool_menu
 
+
+_gitBranch() {
+    sh ${branchJsonFileScriptDir_Absolute}/branchGit_create.sh
+}
+
+
+# 分支信息文件添加
+createBranchJsonFile() {
+    # echo "正在执行命令:《 python3 \"${branchJsonFileScriptDir_Absolute}/branchJsonFile_create.py\" 》"
+    python3 "${branchJsonFileScriptDir_Absolute}/branchJsonFile_create.py"
+
+}
+
+# 分支信息文件修改
+updateBranchJsonFile() {
+    python3 ${branchJsonFileScriptDir_Absolute}/branchJsonFile_update.py
+}
+
+gitBranchAndJsonFile() {
+    _gitBranch
+    if [ $? != 0 ]; then
+        exit 1
+    fi
+
+    # 是否继续
+    newbranch=""
+    printf "分支${RED}%s${NC}创建成功，是否继续创建分支信息文件.[继续y/退出n] : " "$newbranch"
+    read -r continueNewbranch
+    if echo "${quitStrings[@]}" | grep -wq "${continueNewbranch}" &>/dev/null; then
+        echo "恭喜Git分支创建成功！"
+        exit 0
+    fi
+
+    createBranchJsonFile
+}
+
 # 读取用户输入的选项，并根据选项执行相应操作
 read -r -p "请选择您想要执行的操作(若要退出请输入Q|q) : " option
 while [ "$option" != 'Q' ] && [ "$option" != 'q' ]; do
     case $option in
-        1|create) sh ${branchJsonFileScriptDir_Absolute}/branchJsonFile_create.sh ;;
-        2|update) python3 ${branchJsonFileScriptDir_Absolute}/branchJsonFile_update.py ;;
+        1|gitBranch) gitBranchAndJsonFile ;;
+        2|createJsonFile) createBranchJsonFile ;;
+        3|updateJsonFile) updateBranchJsonFile ;;
         *) echo "无此选项..." ;;
     esac
 
@@ -120,6 +159,7 @@ while [ "$option" != 'Q' ] && [ "$option" != 'q' ]; do
     fi
     break
 done
+
 
 # 退出程序
 exit 0
