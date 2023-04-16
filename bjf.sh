@@ -4,10 +4,12 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2023-04-16 02:46:19
+ # @LastEditTime: 2023-04-16 19:48:36
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 工具选项
 ###
+
+bjfVersion=0.0.4
 
 # 定义颜色常量
 NC='\033[0m' # No Color
@@ -60,8 +62,9 @@ fi
 
 # 当前【shell脚本】的工作目录
 # $PWD代表获取当前路径，当cd后，$PWD也会跟着更新到新的cd路径。这个和在终端操作是一样的道理的
-CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
-branchJsonFileScriptDir_Absolute=${CurrentDIR_Script_Absolute}/src
+# CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
+# branchJsonFileScriptDir_Absolute=${CurrentDIR_Script_Absolute}/src
+branchJsonFileScriptDir_Absolute="/usr/local/Cellar/bjf/${bjfVersion}/lib/src/"
 # echo "branchJsonFileScriptDir_Absolute=${branchJsonFileScriptDir_Absolute}"
 
 
