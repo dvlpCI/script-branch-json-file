@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2023-04-16 23:37:34
+ # @LastEditTime: 2023-04-18 03:37:02
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 工具选项
 ###
@@ -63,9 +63,9 @@ fi
 
 # 当前【shell脚本】的工作目录
 # $PWD代表获取当前路径，当cd后，$PWD也会跟着更新到新的cd路径。这个和在终端操作是一样的道理的
-# CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
-# branchJsonFileScriptDir_Absolute=${CurrentDIR_Script_Absolute}/src
-branchJsonFileScriptDir_Absolute="/usr/local/Cellar/bjf/${bjfVersion}/lib/src"
+CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
+branchJsonFileScriptDir_Absolute=${CurrentDIR_Script_Absolute}/src
+# branchJsonFileScriptDir_Absolute="/usr/local/Cellar/bjf/${bjfVersion}/lib/src"
 # echo "branchJsonFileScriptDir_Absolute=${branchJsonFileScriptDir_Absolute}"
 
 
@@ -88,7 +88,8 @@ tool_menu() {
     options=(
         "1|gitBranch        创建分支(且创建完可选择继续2操作)"
         "2|createJsonFile   创建当前所处分支的信息文件"
-        "3|updateJsonFile   更新当前所处分支的信息文件(人员、提测时间、测试通过时间)"
+        "3|updateJsonFile   更新当前所处分支的信息文件(人员、提测时间、提测时间、测试通过时间)"
+        "4|jenkins          Jenkins打包"
     )
 
 
@@ -124,6 +125,12 @@ updateBranchJsonFile() {
     python3 ${branchJsonFileScriptDir_Absolute}/branchJsonFile_update.py
 }
 
+# 二、执行Jenkins上的Job
+buildJenkinsJob() {
+    echo "正在执行命令：《 sh ${branchJsonFileScriptDir_Absolute}/jenkins.sh \"${branchJsonFileScriptDir_Absolute}\" 》"
+    sh ${branchJsonFileScriptDir_Absolute}/jenkins.sh "${branchJsonFileScriptDir_Absolute}"
+}
+
 gitBranchAndJsonFile() {
     _gitBranch
     if [ $? != 0 ]; then
@@ -149,6 +156,7 @@ while [ "$option" != 'Q' ] && [ "$option" != 'q' ]; do
         1|gitBranch) gitBranchAndJsonFile ;;
         2|createJsonFile) createBranchJsonFile ;;
         3|updateJsonFile) updateBranchJsonFile ;;
+        4|jenkins) buildJenkinsJob ;;
         *) echo "无此选项..." ;;
     esac
 

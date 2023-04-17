@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad dvlproad@163.com
-LastEditTime: 2023-04-16 23:15:01
+LastEditTime: 2023-04-17 23:56:07
 FilePath: /branchJsonFile_create/branchInfoManager.py
 Description: 分支Json文件的信息更新
 '''
@@ -49,9 +49,10 @@ def branch_info():
 def chooseUpdateAction(file_path): 
     # 更新操作的类型
     updateAction_mapping = {
-        "0": "更改人员信息",
-        "1": "添加信息",
-        "2": "更新测试通过日期和合入日期"
+        "1": "更改人员信息(需求方/测试方)",
+        "2": "添加信息",
+        "3": "更新提测开始日期",
+        "4": "更新测试通过日期和合入日期"
     }
     for key, value in updateAction_mapping.items():
         print(key, value)
@@ -61,18 +62,22 @@ def chooseUpdateAction(file_path):
     # print("key = {}, value = {}".format(updateAction_input, updateActionDes))
     print("您选择操作类型：\033[1;31m{}\033[0m\n".format(updateActionDes))
     
-    if updateAction_input == "0":
+    if updateAction_input == "1":
         answerName=chooseAnswer()
         change("answer.name", f"{answerName}", file_path)
 
         testerName=chooseTester()
         change("tester.name", f"{testerName}", file_path)
 
-    elif updateAction_input == "1":
+    elif updateAction_input == "2":
         cur_date = datetime.now().strftime("%m.%d")
         change("pass_test_time", f"{cur_date}", file_path)
 
-    elif updateAction_input == "2":
+    elif updateAction_input == "3":
+        cur_date = datetime.now().strftime("%m.%d")
+        change("submit_test_time", f"{cur_date}", file_path)
+
+    elif updateAction_input == "4":
         cur_date = datetime.now().strftime("%m.%d")
         change("pass_test_time", f"{cur_date}", file_path)
         change("merger_pre_time", f"{cur_date}", file_path)

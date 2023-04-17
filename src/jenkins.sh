@@ -3,8 +3,8 @@
 ###
 # @Author: dvlproad
 # @Date: 2023-04-13 10:40:15
- # @LastEditors: dvlproad
- # @LastEditTime: 2023-04-17 16:07:03
+ # @LastEditors: dvlproad dvlproad@163.com
+ # @LastEditTime: 2023-04-18 03:32:30
 # @Description:
 ###
 
@@ -16,6 +16,12 @@
 # 5. 如果作业执行成功，则输出日志信息。
 
 # 请注意，这个示例脚本需要使用 curl 命令和 Python 3 运行 Python 脚本。如果您的系统上没有安装 curl 和 Python 3，请先安装它们。
+
+jenkinsScriptDir_Absolute=$1
+if [ ${#jenkinsScriptDir_Absolute} -eq 0 ]; then
+    echo "❌Error：请先设置jenkins脚本的绝对路径"
+    exit 1
+fi
 
 # 设置 Jenkins 服务器的地址、用户名和 API token
 JENKINS_URL="http://192.168.72.202:8080"
@@ -94,40 +100,33 @@ list_jobs() {
 # UseDoKit=true
 
 
+echo  "正在执行命令:《 python3 ${jenkinsScriptDir_Absolute}/jenkins_input.py 》"
+# JENKINS_JOB_URLs=$(python3 ${jenkinsScriptDir_Absolute}/jenkins_input.py)
+JENKINS_JOB_URLs=$(echo "option_id" | python3 ${jenkinsScriptDir_Absolute}/jenkins_input.py)
+echo "-----------${JENKINS_JOB_URLs}"
 
-# 获取job参数
-JOB_NAMES=("wish_iOS_测试" "wish_android_测试")
-# 简单
-# PARAMS="PackageNetworkType=${PackageNetworkType}&ChangeLog=${ChangeLog}&NotificatePeople=${NotificatePeople}&MultiChannel=${MultiChannel}&UseDoKit=${UseDoKit}"
+# 将输出按行分割成数组
+IFS=$'\n' read -d '' -ra urls <<< "$JENKINS_JOB_URLs"
 
-# 自动
-jobParams='{
-  "PackageNetworkType": "测试",
-  "NotificatePeople": "all",
-  "MultiChannel":"false",
-  "UseDoKit": "true"
-}'
+# 遍历并输出数组中的每个元素
+for url in "${urls[@]}"
+do
+    echo "===========$url"
+    # buildJob "$url"
+done
 
-# jobParams=$(echo ${jobParams} | jq --arg job_name "${JOB_NAME}" '. + {jobName: $job_name}')
-
-# ChangeLog="Please ignore me"
-ChangeLog=$(git log -1 --pretty=format:'%an %s')
-ChangeLog=$(urlencode "$ChangeLog") # 避免出现空格
-jobParams=$(echo ${jobParams} | jq --arg ChangeLog "${ChangeLog}" '. + {ChangeLog: $ChangeLog}')
-
-# encoded_jobParams=$(echo ${jobParams})
-encoded_jobParams=$(echo ${jobParams} | jq -r @uri)
-PARAMS=$(echo ${encoded_jobParams} | sed 's/%0A/\&/g')
+buildJob() {
+    # JENKINS_JOB_URL="$JENKINS_URL/job/$JOB_NAME/buildWithParameters?$PARAMS"
+    JENKINS_JOB_URL=$1
+    echo "正在执行命令：《 curl -sS -X POST -u \"$JENKINS_USER:$JENKINS_API_TOKEN\" \"$JENKINS_JOB_URL\" 》"
+    return
+    job_url=$(curl -sS -X POST -u "$JENKINS_USER:$JENKINS_API_TOKEN" "$JENKINS_JOB_URL")
+    echo "======job_url:$job_url"
+    build_url=$(echo "$job_url" | jq -r '.url')
+    echo "======build_url:$build_url"
+}
 
 
-
-JENKINS_JOB_URL="$JENKINS_URL/job/$JOB_NAME/buildWithParameters?$PARAMS"
-echo "正在执行命令：《 curl -sS -X POST -u \"$JENKINS_USER:$JENKINS_API_TOKEN\" \"$JENKINS_JOB_URL\" 》"
-exit
-job_url=$(curl -sS -X POST -u "$JENKINS_USER:$JENKINS_API_TOKEN" "$JENKINS_JOB_URL")
-echo "======job_url:$job_url"
-build_url=$(echo "$job_url" | jq -r '.url')
-echo "======build_url:$build_url"
 
 # # 等待作业执行完成，并检查作业执行结果
 # echo "Waiting for the job to complete..."

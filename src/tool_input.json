@@ -1,0 +1,118 @@
+{
+  "version": "package unknow version",
+  "buildNumber": "package unknow buildNumber",
+  "person": [
+    {
+      "id": "developer1",
+      "name": "李超前"
+    },
+    {
+      "id": "producter1",
+      "name": "谢晓龙"
+    },
+    {
+      "id": "producter2",
+      "name": "李再超"
+    },
+    {
+      "id": "producter3",
+      "name": "王毅"
+    },
+    {
+      "id": "producter4",
+      "name": "刘璟"
+    },
+    {
+      "id": "producter5",
+      "name": "张良俊"
+    },
+    {
+      "id": "tester1",
+      "name": "李智荣"
+    },
+    {
+      "id": "tester2",
+      "name": "苏婉艺"
+    },
+    {
+      "id": "tester3",
+      "name": "谭贤"
+    },
+    {
+      "id": "tester4",
+      "name": "林尚挺"
+    }
+  ],
+  "branchGit": {
+    "BRANCH_JSON_FILE_GIT_HOME": "~/Project/Bojue/mobile_flutter_wish/"
+  },
+  "branchJsonFile": {
+    "BRANCH_JSON_FILE_DIR_PATH": "~/Project/Bojue/mobile_flutter_wish/bulidScript/featureBrances",
+    "answerAllowId": [
+      "developer1",
+      "producter1",
+      "producter2",
+      "producter3",
+      "producter4",
+      "producter5"
+    ],
+    "testerAllowId": [
+      "tester1",
+      "tester2",
+      "tester3",
+      "tester4"
+    ]
+  },
+  "jenkins": {
+    "jenkins_base": {
+      "JENKINS_BASE_URL": "http://192.168.72.202:8080",
+      "JENKINS_USER": "lichaoqian",
+      "JENKINS_API_TOKEN": "114a967bff5f8cc3a4803aea747f2ddec4"
+    },
+    "jenkins_input_option_param": [
+      {
+        "test": {
+          "PackageNetworkType": "测试",
+          "NotificatePeople": "all",
+          "MultiChannel": "false",
+          "UseDoKit": "true"
+        }
+      },
+      {
+        "product_pgyer": {
+          "PackageNetworkType": "生产蒲公英",
+          "NotificatePeople": "all",
+          "MultiChannel": "false",
+          "UseDoKit": "true"
+        }
+      }
+    ],
+    "jenkins_input_option": [
+      {
+        "inputId": "ti",
+        "inputMeaning": "只打iOS测试版",
+        "jobNames": [
+          "wish_iOS_测试"
+        ],
+        "jobUseParamType": "test"
+      },
+      {
+        "inputId": "ta",
+        "inputMeaning": "只打Android测试版",
+        "jobNames": [
+          "wish_android_测试"
+        ],
+        "jobUseParamType": "test"
+      },
+      {
+        "inputId": "tia",
+        "inputMeaning": "同时打iOS和Android测试版",
+        "jobNames": [
+          "wish_iOS_测试",
+          "wish_android_测试"
+        ],
+        "jobUseParamType": "test"
+      }
+    ]
+  }
+}

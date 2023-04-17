@@ -1,70 +1,93 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
-LastEditors: dvlproad
-LastEditTime: 2023-04-13 13:32:14
+LastEditors: dvlproad dvlproad@163.com
+LastEditTime: 2023-04-18 03:26:00
 FilePath: /bulidScript/branch_create/branchInfo_create.py
-Description: 分支JSON文件的创建-输入
+Description: Jenkins打包-输入
 '''
 # -*- coding: utf-8 -*-
 
 # 如果你希望用户在输入答案时不换行，可以使用 input() 函数的 end 参数将输入的结尾字符改为一个空字符串。默认情况下，input() 函数的 end 参数是一个换行符 \n，这会导致用户输入答案后自动换行。
 # print("请输入测试人员编号：", end="")
 
-def chooseAnswer():
-    answer_mapping = {
-        "1": "李超前",
-        "2": "谢晓龙",
-        "3": "李再超",
-        "4": "王毅",
-        "5": "刘璟"
-    }
-    for key, value in answer_mapping.items():
-        print(key, value)
-    
-    while True:
-        answer_input = input("请输入需求方人员编号（1、2、3、4、5）：")
-        if answer_input in answer_mapping:
-            answerName = answer_mapping[answer_input]
-            # print("key = {}, value = {}".format(answer_input, answerName))
-            print("您选择输入需求方人员名：\033[1;31m{}\033[0m\n".format(answerName))
+import os
+import json
+import urllib.parse
+import subprocess
+
+
+def getOptionById(options, optionInputId):
+    option=None
+    for iOption in options:
+        if iOption['inputId'] == optionInputId:
+            option=iOption
             break
-        else:
-            print("输入有误，请重新输入！")
-    
-    return answerName
+    return option
 
 
-def chooseTester():
-    # 3、测试方信息
-    # while True:
-    #     try:
-    #         # 尝试使用 UTF-8 编码解码用户输入
-    #         tester = input("输入测试人：") or "null"
-    #         break  # 如果解码成功，则跳出循环
-    #     except UnicodeDecodeError:
-    #         print("输入的编码不是 UTF-8，请重新输入。")
-    tester_mapping = {
-        "1": "李智荣",
-        "2": "苏婉艺",
-        "3": "谭贤",
-        "4": "林尚挺"
-    }
-    for key, value in tester_mapping.items():
-        print(key, value)
+def chooseOptionForPack():
+    tool_params_file_path = os.getenv('TOOL_PARAMS_FILE_PATH')
+    with open(tool_params_file_path) as f:
+        data = json.load(f)
 
+    options = data['jenkins']['jenkins_input_option']
+    for i, option in enumerate(options):        
+        print(f"{option['inputId']}: {option['inputMeaning']}")
+        
     while True:
-        tester_input = input("请输入测试人员编号（1、2、3、4）：")
-        if tester_input in tester_mapping:
-            testerName = tester_mapping[tester_input]
-            # print("key = {}, value = {}".format(tester_input, testerName))
-            print("选择的测试人员姓名：\033[1;31m{}\033[0m\n".format(testerName))
-            break
+        option_input_id = input("请输入想要打包的id（退出q/Q）：")
+        if option_input_id == "q" or option_input_id == "Q":
+            exit()
+
+        option=getOptionById(options, option_input_id)
+        if not option:
+            print("不存在\033[1;31m{}\033[0m，请重新输入想要打包的id（退出q/Q）：".format(option_input_id))
+            continue
         else:
-            print("输入有误，请重新输入！")
+            break
 
-    
-    return testerName
+    print("您选择打包的类型为：\033[1;31m{}\033[0m\n".format(option['inputMeaning']))
 
+    return getPackParamStringForOption(data['jenkins'], option)
+
+def getChangeLog():
+    while True:
+        changelog_input = input("请输入更新说明（退出q/Q）：")
+        if changelog_input == "q" or changelog_input == "Q":
+            exit()
+        else:
+            break
+    return changelog_input
     
+    output = subprocess.check_output(["git", "log", "-1", "--pretty=format:%an %s"])
+    change_log = output.decode("utf-8").strip()
+    return change_log
+    
+def getPackParamStringForOption(jenkins_data, option):
+    # baseUrl
+    JENKINS_BaseURL=jenkins_data['jenkins_base']["JENKINS_BASE_URL"]
+    
+    # fixedBodyParams
+    paramMap=jenkins_data['jenkins_input_option_param']
+    jobUseParamType=option['jobUseParamType']
+    param = next(filter(lambda x: jobUseParamType in x, paramMap))
+    # print(json.dumps(param[jobUseParamType], indent=2))
+
+    change_log=getChangeLog()
+    param[jobUseParamType]['ChangeLog'] = change_log
+    
+    query_string = urllib.parse.urlencode(param[jobUseParamType])
+
+    jenkinUrls = []
+    jobNames=option['jobNames']
+    for job_name in jobNames:
+        jenkinUrl = f"{JENKINS_BaseURL}/job/{job_name}/buildWithParameters?" + query_string
+        jenkinUrls.append(jenkinUrl)
+    # print(jenkinUrls)
+
+    return jenkinUrls
+
+chooseOptionForPack()
+
 
