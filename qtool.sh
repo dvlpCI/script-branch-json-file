@@ -4,12 +4,23 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-04-18 13:38:18
+ # @LastEditTime: 2023-04-18 17:31:08
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 工具选项
 ###
 
+
+# 本地测试
+# CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
+# branchJsonFileScriptDir_Absolute=${CurrentDIR_Script_Absolute}/src
+
+# 实际项目
 bjfVersion=0.0.5
+branchJsonFileScriptDir_Absolute="/usr/local/Cellar/bjf/${bjfVersion}/lib/src"
+
+# echo "branchJsonFileScriptDir_Absolute=${branchJsonFileScriptDir_Absolute}"
+
+
 
 # 定义颜色常量
 NC='\033[0m' # No Color
@@ -42,12 +53,7 @@ if [ $? != 0 ]; then
 fi
 
 
-# 当前【shell脚本】的工作目录
-# $PWD代表获取当前路径，当cd后，$PWD也会跟着更新到新的cd路径。这个和在终端操作是一样的道理的
-CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
-branchJsonFileScriptDir_Absolute=${CurrentDIR_Script_Absolute}/src
-# branchJsonFileScriptDir_Absolute="/usr/local/Cellar/bjf/${bjfVersion}/lib/src"
-# echo "branchJsonFileScriptDir_Absolute=${branchJsonFileScriptDir_Absolute}"
+
 
 
 # 读取文件内容
