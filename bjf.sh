@@ -3,8 +3,8 @@
 ###
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
- # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2023-04-18 03:37:02
+ # @LastEditors: dvlproad
+ # @LastEditTime: 2023-04-18 13:38:18
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 工具选项
 ###
@@ -23,39 +23,20 @@ CYAN='\033[0;36m'
 quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退出
 
 
-# export BRANCH_JSON_FILE_GIT_HOME=~/Project/Bojue/mobile_flutter_wish/                     # 要操作的git
-# export BRANCH_JSON_FILE_DIR_PATH=${BRANCH_JSON_FILE_GIT_HOME}/bulidScript/featureBrances  # jsonFile存放的位置
 
-# 环境变量检查--BRANCH_JSON_FILE_GIT_HOME（才能保证可以正确创建分支）
-checkEnvValue_BRANCH_JSON_FILE_GIT_HOME() {
-    if [ "${#BRANCH_JSON_FILE_GIT_HOME}" -eq 0 ]; then
-        printf "${RED}您还未设置【git项目路径】的环境变量，请open ~/.bash_profile 或 open ~/.zhsrc后,将${BLUE}export BRANCH_JSON_FILE_GIT_HOME=yourProjectAbsolutePath ${RED}添加到环境变量中(其中${YELLOW}yourProjectAbsolutePath${RED}需替换成自己的项目实际绝对路径)%s${NC}\n"
+# 环境变量检查--TOOL_PARAMS_FILE_PATH（才能保证可以正确创建分支）
+checkEnvValue_TOOL_PARAMS_FILE_PATH() {
+    if [ "${#TOOL_PARAMS_FILE_PATH}" -eq 0 ]; then
+        printf "${RED}您还未设置【git项目路径】的环境变量，请open ~/.bash_profile 或 open ~/.zhsrc后,将${BLUE}export TOOL_PARAMS_FILE_PATH=yourToolParamsFileAbsolutePath ${RED}添加到环境变量中(其中${YELLOW}yourToolParamsFileAbsolutePath${RED}需替换成自己的项目实际绝对路径)%s${NC}\n"
         return 1
     fi
-    if [ ! -d "${BRANCH_JSON_FILE_GIT_HOME}" ]; then
-        printf "${RED}您设置的环境变量BRANCH_JSON_FILE_GIT_HOME=${BRANCH_JSON_FILE_GIT_HOME}目录不存在，请检查%s${NC}\n"
-        return 1
-    fi
-}
-
-checkEnvValue_BRANCH_JSON_FILE_GIT_HOME
-if [ $? != 0 ]; then
-    exit
-fi
-
-# 环境变量检查--BRANCH_JSON_FILE_DIR_PATH（才能保证可以分支信息存放的位置）
-checkEnvValue_BRANCH_JSON_FILE_DIR_PATH() {
-    if [ "${#BRANCH_JSON_FILE_DIR_PATH}" -eq 0 ]; then
-        printf "${RED}您还未设置【git项目里json文件路径】的环境变量，请open ~/.bash_profile 或 open ~/.zhsrc后,将${BLUE}export BRANCH_JSON_FILE_DIR_PATH=yourProjectBranchJsonFileAbsoluteDir ${RED}添加到环境变量中(其中${YELLOW}yourProjectBranchJsonFileAbsoluteDir${RED}需替换成自己的项目实际绝对路径)%s${NC}\n"
-        return 1
-    fi
-    if [ ! -d "${BRANCH_JSON_FILE_GIT_HOME}" ]; then
-        printf "${RED}您设置的环境变量BRANCH_JSON_FILE_GIT_HOME=${BRANCH_JSON_FILE_GIT_HOME}目录不存在，请检查%s${NC}\n"
+    if [ ! -f "${TOOL_PARAMS_FILE_PATH}" ]; then
+        printf "${RED}您设置的环境变量TOOL_PARAMS_FILE_PATH=${TOOL_PARAMS_FILE_PATH}目录不存在，请检查%s${NC}\n"
         return 1
     fi
 }
 
-checkEnvValue_BRANCH_JSON_FILE_DIR_PATH
+checkEnvValue_TOOL_PARAMS_FILE_PATH
 if [ $? != 0 ]; then
     exit
 fi
@@ -69,8 +50,16 @@ branchJsonFileScriptDir_Absolute=${CurrentDIR_Script_Absolute}/src
 # echo "branchJsonFileScriptDir_Absolute=${branchJsonFileScriptDir_Absolute}"
 
 
+# 读取文件内容
+content=$(cat TOOL_PARAMS_FILE_PATH)
 
-cd "$BRANCH_JSON_FILE_GIT_HOME" # 切换到工作目录后，才能争取创建git分支
+# 获取branchGit和branchJsonFile的值
+branch_git_home=$(echo "$content" | jq -r '.branchGit.BRANCH_JSON_FILE_GIT_HOME')
+# branch_json_dir_path=$(echo "$content" | jq -r '.branchJsonFile.BRANCH_JSON_FILE_DIR_PATH')
+# echo "branchGit: $branch_git_home"
+# echo "branchJsonFile: $branch_json_dir_path"
+
+cd "$branch_git_home" # 切换到工作目录后，才能争取创建git分支
 
 gitHome() {
     git_output=$(git rev-parse --show-toplevel)
@@ -97,9 +86,11 @@ tool_menu() {
     for i in "${!options[@]}"
     do
         if [ "$i" -eq 0 ]; then
-        printf "\033[34m%s\033[0m\n" "${options[$i]}"
+        printf "${BLUE}%s\033[0m\n" "${options[$i]}"
+        elif [ "$i" -gt 2 ]; then
+        printf "${GREEN}%s\033[0m\n" "${options[$i]}"
         else
-        printf "\033[33m%s\033[0m\n" "${options[$i]}"
+        printf "${YELLOW}%s\033[0m\n" "${options[$i]}"
         fi
     done
 }
@@ -150,7 +141,7 @@ gitBranchAndJsonFile() {
 }
 
 # 读取用户输入的选项，并根据选项执行相应操作
-read -r -p "请选择您想要执行的操作(若要退出请输入Q|q) : " option
+read -r -p "请选择您想要执行的操作编号或id(若要退出请输入Q|q) : " option
 while [ "$option" != 'Q' ] && [ "$option" != 'q' ]; do
     case $option in
         1|gitBranch) gitBranchAndJsonFile ;;

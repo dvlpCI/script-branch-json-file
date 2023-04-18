@@ -43,9 +43,9 @@ menu() {
     # 遍历数组并输出带颜色的文本
     for i in "${!options[@]}"; do
         if [ "$i" -eq 0 ]; then
-            printf "\033[34m%s${NC}\n" "${options[$i]}"
+            printf "${BLUE}%s${NC}\n" "${options[$i]}"
         else
-            printf "\033[34m%s${NC}\n" "${options[$i]}"
+            printf "${BLUE}%s${NC}\n" "${options[$i]}"
         fi
     done
 }

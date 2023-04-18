@@ -47,7 +47,7 @@
     "BRANCH_JSON_FILE_GIT_HOME": "~/Project/Bojue/mobile_flutter_wish/"
   },
   "branchJsonFile": {
-    "BRANCH_JSON_FILE_DIR_PATH": "~/Project/Bojue/mobile_flutter_wish/bulidScript/featureBrances",
+    "BRANCH_JSON_FILE_DIR_PATH": "~/Project/Bojue/mobile_flutter_wish/bulidScript/featureBrances/",
     "answerAllowId": [
       "developer1",
       "producter1",
@@ -79,7 +79,7 @@
         }
       },
       {
-        "product_pgyer": {
+        "dev_product": {
           "PackageNetworkType": "生产蒲公英",
           "NotificatePeople": "all",
           "MultiChannel": "false",
@@ -112,6 +112,31 @@
           "wish_android_测试"
         ],
         "jobUseParamType": "test"
+      },
+      {
+        "inputId": "devproi",
+        "inputMeaning": "只打蒲公英_生产_iOS",
+        "jobNames": [
+          "wish_iOS_生产_蒲公英"
+        ],
+        "jobUseParamType": "dev_product"
+      },
+      {
+        "inputId": "devproa",
+        "inputMeaning": "只打蒲公英_生产_Android",
+        "jobNames": [
+          "wish_android_生产_蒲公英"
+        ],
+        "jobUseParamType": "dev_product"
+      },
+      {
+        "inputId": "tia",
+        "inputMeaning": "同时打蒲公英_生产_iOS和Android",
+        "jobNames": [
+          "wish_iOS_生产_蒲公英",
+          "wish_android_生产_蒲公英"
+        ],
+        "jobUseParamType": "dev_product"
       }
     ]
   }

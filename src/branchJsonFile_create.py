@@ -1,8 +1,8 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
-LastEditors: dvlproad dvlproad@163.com
-LastEditTime: 2023-04-16 03:01:52
+LastEditors: dvlproad
+LastEditTime: 2023-04-18 14:46:41
 FilePath: /bulidScript/branch_create/branchInfo_create.py
 Description: 分支JSON文件的创建-python
 '''
@@ -36,11 +36,16 @@ def create_branch_json_file():
 
     parts = currentBranchFullName.split("/")
     branchShortName = parts[-1]
-    branchType = parts[-2]
+    if len(parts) >= 2:
+        branchType = parts[-2]
+    else:
+        # branchType = None
+        branchType = "unkonw"
+
     # print("分支类型 = {}, 分支简名 = {}".format(branchType, branchShortName))
     jsonFileName = f"{branchType}_{branchShortName}.json"
 
-    file_path = f"{branch_json_file_dir_path}/{jsonFileName}"
+    file_path = os.path.join(branch_json_file_dir_path, jsonFileName)
     # print("等下要在以下路径创建的json文件：\033[1;31m{}\033[0m\n".format(file_path))
     
     create(branchType, branchShortName, file_path)

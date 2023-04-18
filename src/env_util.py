@@ -1,8 +1,8 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
-LastEditors: dvlproad dvlproad@163.com
-LastEditTime: 2023-04-17 23:52:06
+LastEditors: dvlproad
+LastEditTime: 2023-04-18 14:07:52
 FilePath: /script-branch-json-file/src/env_util.py
 Description: 获取环境变量的值
 '''
@@ -28,6 +28,8 @@ def getEnvValue_branch_json_file_git_home():
         data = json.load(f)
 
     branch_json_file_git_home = data['branchGit']['BRANCH_JSON_FILE_GIT_HOME']
+    if branch_json_file_git_home.startswith('~'):
+        branch_json_file_git_home = os.path.expanduser(branch_json_file_git_home) # 将~扩展为当前用户的home目录
     return branch_json_file_git_home
 
 # 获取环境变量的值
@@ -37,8 +39,9 @@ def getEnvValue_branch_json_file_dir_path():
         data = json.load(f)
 
     branch_json_file_dir_path = data['branchJsonFile']['BRANCH_JSON_FILE_DIR_PATH']
-
-    print("branch_json_file_dir_path: \033[1;31m{}\033[0m".format(branch_json_file_dir_path))
+    if branch_json_file_dir_path.startswith('~'):
+        branch_json_file_dir_path = os.path.expanduser(branch_json_file_dir_path) # 将~扩展为当前用户的home目录
+    # print("branch_json_file_dir_path: \033[1;31m{}\033[0m".format(branch_json_file_dir_path))
     return branch_json_file_dir_path
 
 

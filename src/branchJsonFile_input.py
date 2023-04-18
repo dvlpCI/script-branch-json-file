@@ -1,8 +1,8 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
-LastEditors: dvlproad dvlproad@163.com
-LastEditTime: 2023-04-18 01:33:31
+LastEditors: dvlproad
+LastEditTime: 2023-04-18 14:38:12
 FilePath: /bulidScript/branch_create/branchInfo_create.py
 Description: 分支JSON文件的创建-输入
 '''
@@ -13,6 +13,9 @@ Description: 分支JSON文件的创建-输入
 
 import os
 import json
+
+
+
 
 
 def getPersonById(persons, personId):
@@ -33,7 +36,6 @@ def chooseAnswer():
     tool_params_file_path = os.getenv('TOOL_PARAMS_FILE_PATH')
     with open(tool_params_file_path) as f:
         data = json.load(f)
-    print("输入的不是一个数字，请重新输入！")
 
     personMaps = data['branchJsonFile']['answerAllowId']
     for i, personId in enumerate(personMaps):
@@ -74,7 +76,6 @@ def chooseTester():
     tool_params_file_path = os.getenv('TOOL_PARAMS_FILE_PATH')
     with open(tool_params_file_path) as f:
         data = json.load(f)
-    print("输入的不是一个数字，请重新输入！")
 
     personMaps = data['branchJsonFile']['testerAllowId']
     for i, personId in enumerate(personMaps):

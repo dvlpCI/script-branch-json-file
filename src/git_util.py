@@ -2,13 +2,15 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-04-13 18:14:41
+LastEditTime: 2023-04-18 14:53:53
 FilePath: /branchJsonFile_create/branchInfoManager.py
 Description: git工具
 '''
 # -*- coding: utf-8 -*-
 
 import subprocess
+import os
+from env_util import getEnvValue_branch_json_file_git_home, getEnvValue_branch_json_file_dir_path
 
 def get_gitHomeDir():
     git_output = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], text=True)
@@ -35,3 +37,33 @@ def get_currentBranchFullName():
         currentBranchFullName = currentBranchFullName[len('refs/heads/'):]
     
     return currentBranchFullName
+
+project_dir=getEnvValue_branch_json_file_git_home()
+branch_json_file_dir_path = getEnvValue_branch_json_file_dir_path()
+
+
+def get_branch_json_file_path():
+    os.chdir(project_dir) # 修改当前 Python 进程的工作目录
+
+    currentBranchFullName = get_currentBranchFullName()
+    print("当前分支全名：\033[1;31m{}\033[0m\n".format(currentBranchFullName))
+
+    parts = currentBranchFullName.split("/")
+    branchShortName = parts[-1]
+    if len(parts) >= 2:
+        branchType = parts[-2]
+    else:
+        # branchType = None
+        branchType = "unkonw"
+
+    # print("分支类型 = {}, 分支简名 = {}".format(branchType, branchShortName))
+    jsonFileName = f"{branchType}_{branchShortName}.json"
+
+    file_path = os.path.join(branch_json_file_dir_path, jsonFileName)
+    print("要更新的json文件：\033[1;31m{}\033[0m\n".format(file_path))
+    if not os.path.exists(file_path):
+        print("Error❌:在\033[1;31m{}\033[0m分支中不存在\033[1;31m{}\033[0m文件，请检查！\n".format(currentBranchFullName, file_path))
+        exit(1)
+    else:
+        return file_path
+
