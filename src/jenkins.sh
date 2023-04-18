@@ -3,8 +3,8 @@
 ###
 # @Author: dvlproad
 # @Date: 2023-04-13 10:40:15
- # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2023-04-18 03:32:30
+ # @LastEditors: dvlproad
+ # @LastEditTime: 2023-04-18 16:31:06
 # @Description:
 ###
 
@@ -22,6 +22,8 @@ if [ ${#jenkinsScriptDir_Absolute} -eq 0 ]; then
     echo "❌Error：请先设置jenkins脚本的绝对路径"
     exit 1
 fi
+
+temp_reslut_file_path=${jenkinsScriptDir_Absolute}/temp_result.json
 
 # 设置 Jenkins 服务器的地址、用户名和 API token
 JENKINS_URL="http://192.168.72.202:8080"
@@ -100,31 +102,42 @@ list_jobs() {
 # UseDoKit=true
 
 
-echo  "正在执行命令:《 python3 ${jenkinsScriptDir_Absolute}/jenkins_input.py 》"
-# JENKINS_JOB_URLs=$(python3 ${jenkinsScriptDir_Absolute}/jenkins_input.py)
-JENKINS_JOB_URLs=$(echo "option_id" | python3 ${jenkinsScriptDir_Absolute}/jenkins_input.py)
-echo "-----------${JENKINS_JOB_URLs}"
+# echo  "正在执行命令:《 python3 ${jenkinsScriptDir_Absolute}/jenkins_input.py \"$temp_reslut_file_path\" 》"
+python3 ${jenkinsScriptDir_Absolute}/jenkins_input.py "$temp_reslut_file_path"    # 内部含需交互的输入操作，所以结果先存到临时文件中
 
-# 将输出按行分割成数组
-IFS=$'\n' read -d '' -ra urls <<< "$JENKINS_JOB_URLs"
+# JENKINS_JOB_URLs=$(python3 ${jenkinsScriptDir_Absolute}/jenkins_input_result_get.py "$temp_reslut_file_path")
+# echo "-----------JENKINS_JOB_URLs=\n${JENKINS_JOB_URLs}"
 
-# 遍历并输出数组中的每个元素
-for url in "${urls[@]}"
-do
-    echo "===========$url"
-    # buildJob "$url"
-done
+# 读取temp_result.json文件中的jenkinsUrls字段的值
+# jenkinsUrls=$(cat "${temp_reslut_file_path}" | jq -r '.jenkinsUrls[]')
+
+
+buildResultJobs() {
+    AllInterceptArrayKey="jenkinsUrls"
+    jenkinsUrlCount=$(cat ${temp_reslut_file_path} | jq ".${AllInterceptArrayKey}" | jq ".|length")
+    # echo "=============TEST_ROBOT_CONENT_COUNT=${TEST_ROBOT_CONENT_COUNT}"
+    if [ ${jenkinsUrlCount} -eq 0 ]; then
+        echo "友情提醒💡💡💡：没有找到可发送的测试数据"
+        return 1
+    fi
+
+    for (( i = 0; i < ${jenkinsUrlCount}; i++ )); do
+        jenkinsUrl=$(cat "${temp_reslut_file_path}" | jq ".${AllInterceptArrayKey}" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
+        buildJob "$jenkinsUrl"
+        echo "----------✅[$((i+1))] $jenkinsUrl 已开始执行"
+    done
+}
+
+
 
 buildJob() {
     # JENKINS_JOB_URL="$JENKINS_URL/job/$JOB_NAME/buildWithParameters?$PARAMS"
     JENKINS_JOB_URL=$1
     echo "正在执行命令：《 curl -sS -X POST -u \"$JENKINS_USER:$JENKINS_API_TOKEN\" \"$JENKINS_JOB_URL\" 》"
-    return
-    job_url=$(curl -sS -X POST -u "$JENKINS_USER:$JENKINS_API_TOKEN" "$JENKINS_JOB_URL")
-    echo "======job_url:$job_url"
-    build_url=$(echo "$job_url" | jq -r '.url')
-    echo "======build_url:$build_url"
+    curl -sS -X POST -u "$JENKINS_USER:$JENKINS_API_TOKEN" "$JENKINS_JOB_URL"
 }
+
+buildResultJobs
 
 
 

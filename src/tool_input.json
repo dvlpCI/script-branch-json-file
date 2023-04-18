@@ -80,10 +80,10 @@
       },
       {
         "dev_product": {
-          "PackageNetworkType": "生产蒲公英",
-          "NotificatePeople": "all",
-          "MultiChannel": "false",
-          "UseDoKit": "true"
+          "BRANCH": "dev_publish_in",
+          "PgyerUploadUrlType": "先上传到临时地址，通过后再添加到最终地址",
+          "ShouldBackupToCos": "false",
+          "NotificatePeople": "all"
         }
       }
     ],
@@ -130,7 +130,7 @@
         "jobUseParamType": "dev_product"
       },
       {
-        "inputId": "tia",
+        "inputId": "devproia",
         "inputMeaning": "同时打蒲公英_生产_iOS和Android",
         "jobNames": [
           "wish_iOS_生产_蒲公英",

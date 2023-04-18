@@ -1,9 +1,9 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
-LastEditors: dvlproad dvlproad@163.com
-LastEditTime: 2023-04-18 03:26:00
-FilePath: /bulidScript/branch_create/branchInfo_create.py
+LastEditors: dvlproad
+LastEditTime: 2023-04-18 15:58:20
+FilePath: jenkins_input.py
 Description: Jenkins打包-输入
 '''
 # -*- coding: utf-8 -*-
@@ -16,6 +16,13 @@ import json
 import urllib.parse
 import subprocess
 
+from jenkins_input_result_util import save_jenkins_urls_to_file
+
+
+
+import sys
+temp_reslut_file_path=sys.argv[1]
+# print("====保存结果的临时文件的路径为：\033[1;31m{}\033[0m\n".format(temp_reslut_file_path))
 
 def getOptionById(options, optionInputId):
     option=None
@@ -49,7 +56,7 @@ def chooseOptionForPack():
 
     print("您选择打包的类型为：\033[1;31m{}\033[0m\n".format(option['inputMeaning']))
 
-    return getPackParamStringForOption(data['jenkins'], option)
+    return getAndSavePackParamStringToFileForOption(data['jenkins'], option)
 
 def getChangeLog():
     while True:
@@ -64,7 +71,7 @@ def getChangeLog():
     change_log = output.decode("utf-8").strip()
     return change_log
     
-def getPackParamStringForOption(jenkins_data, option):
+def getAndSavePackParamStringToFileForOption(jenkins_data, option):
     # baseUrl
     JENKINS_BaseURL=jenkins_data['jenkins_base']["JENKINS_BASE_URL"]
     
@@ -86,7 +93,10 @@ def getPackParamStringForOption(jenkins_data, option):
         jenkinUrls.append(jenkinUrl)
     # print(jenkinUrls)
 
+    save_jenkins_urls_to_file(jenkinUrls, temp_reslut_file_path)
+
     return jenkinUrls
+
 
 chooseOptionForPack()
 
