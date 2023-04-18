@@ -11,6 +11,7 @@ import os
 import json
 import subprocess
 from datetime import datetime
+import re
 
 from env_util import getEnvValue_branch_json_file_git_home, getEnvValue_branch_json_file_dir_path
 from git_util import get_gitHomeDir, get_currentBranchFullName
@@ -21,7 +22,7 @@ username = getpass.getuser()
 # print("当前登录用户的用户名是：{}\n".format(username))
 
 
-project_dir=getEnvValue_branch_json_file_git_home()
+project_dir = getEnvValue_branch_json_file_git_home()
 print("当前项目目录===========：", project_dir)
 
 
@@ -29,7 +30,7 @@ branch_json_file_dir_path = getEnvValue_branch_json_file_dir_path()
 
 
 def create_branch_json_file():
-    os.chdir(project_dir) # 修改当前 Python 进程的工作目录
+    os.chdir(project_dir)  # 修改当前 Python 进程的工作目录
 
     currentBranchFullName = get_currentBranchFullName()
     print("当前分支全名：\033[1;31m{}\033[0m\n".format(currentBranchFullName))
@@ -47,9 +48,32 @@ def create_branch_json_file():
 
     file_path = os.path.join(branch_json_file_dir_path, jsonFileName)
     # print("等下要在以下路径创建的json文件：\033[1;31m{}\033[0m\n".format(file_path))
-    
+
     create(branchType, branchShortName, file_path)
 
+
+def getOutline(text):
+    result = {}
+    
+    # 使用正则表达式提取标题和URL
+    title_pattern = r"(.+)"
+    title_match = re.search(title_pattern, text)
+    title = title_match.group(1)
+    
+    
+    
+    url_pattern = r"(https?://\S+)"
+    url_match = re.search(url_pattern, text)
+    if url_match:
+        url = url_match.group(1)
+        title = title.replace(url, "") # 将title中的url移除
+        result["url"] = url
+    else:
+        url = None
+    
+    result["title"] = title
+
+    return result
 
 
 def create(branchType, branchShortName, file_path):
@@ -70,7 +94,6 @@ def create(branchType, branchShortName, file_path):
         developerName = "unknown"
         print("无法找到开发者\033[1;31m{}\033[0m的映射，将其设置为未知开发者。\n".format(username))
 
-
     # 1、分支描述
     while True:
         try:
@@ -81,11 +104,14 @@ def create(branchType, branchShortName, file_path):
             print("输入的编码不是 UTF-8，请重新输入。")
     print("输入的分支描述：\033[1;31m{}\033[0m\n".format(branchDes))
 
+    # branchDes = "【【线上问题】复制口令，并且杀掉app重新打开，进入游戏会卡再初始图界面3s并且没有加载条】https://www.tapd.cn/69657441/bugtrace/bugs/view?bug_id=1169657442001003014"
+    outlineMap = getOutline(branchDes)
+
     # 2、需求方信息
     answerName = chooseAnswer()
-   
+
     # 3、测试方信息
-    testerName=chooseTester()
+    testerName = chooseTester()
 
     json_data = {
         "create_time": cur_date,
@@ -96,7 +122,7 @@ def create(branchType, branchShortName, file_path):
         "name": branchShortName,
         "des": "详见outlines",
         "outlines": [
-            {"title": branchDes}
+            outlineMap
         ],
         "answer": {
             "name": answerName
@@ -105,7 +131,7 @@ def create(branchType, branchShortName, file_path):
             "name": testerName
         }
     }
-    
+
     # 确保文件夹存在
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     # 打开文件并写入数据
@@ -119,5 +145,6 @@ def create(branchType, branchShortName, file_path):
     # 在 macOS 或 Linux 上打开 file_path 文件。
     # subprocess.Popen(['open', file_path])
     subprocess.Popen(['open', file_path])
+
 
 create_branch_json_file()
