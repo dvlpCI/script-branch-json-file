@@ -84,7 +84,8 @@ tool_menu() {
         "1|gitBranch        创建分支(且创建完可选择继续2操作)"
         "2|createJsonFile   创建当前所处分支的信息文件"
         "3|updateJsonFile   更新当前所处分支的信息文件(人员、提测时间、提测时间、测试通过时间)"
-        "4|jenkins          Jenkins打包"
+        "4|lastBranchJsons_removeJsonByName   从上次打包的分支信息里根据指定分支名删除json"
+        "5|jenkins          Jenkins打包"
     )
 
 
@@ -93,7 +94,7 @@ tool_menu() {
     do
         if [ "$i" -eq 0 ]; then
         printf "${BLUE}%s\033[0m\n" "${options[$i]}"
-        elif [ "$i" -gt 2 ]; then
+        elif [ "$i" -gt 3 ]; then
         printf "${GREEN}%s\033[0m\n" "${options[$i]}"
         else
         printf "${YELLOW}%s\033[0m\n" "${options[$i]}"
@@ -128,6 +129,10 @@ buildJenkinsJob() {
     sh ${branchJsonFileScriptDir_Absolute}/jenkins.sh "${branchJsonFileScriptDir_Absolute}"
 }
 
+lastBranchJsonFile_update() {
+    python3 ${branchJsonFileScriptDir_Absolute}/lastBranchJsonFile_update.py
+}
+
 gitBranchAndJsonFile() {
     _gitBranch
     if [ $? != 0 ]; then
@@ -153,7 +158,8 @@ while [ "$option" != 'Q' ] && [ "$option" != 'q' ]; do
         1|gitBranch) gitBranchAndJsonFile ;;
         2|createJsonFile) createBranchJsonFile ;;
         3|updateJsonFile) updateBranchJsonFile ;;
-        4|jenkins) buildJenkinsJob ;;
+        4|lastBranchJsons_removeJsonByName) lastBranchJsonFile_update;;
+        5|jenkins) buildJenkinsJob ;;
         *) echo "无此选项..." ;;
     esac
 

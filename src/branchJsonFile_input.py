@@ -14,6 +14,12 @@ Description: 分支JSON文件的创建-输入
 import os
 import json
 
+import re
+
+# 定义颜色常量
+RED = "\033[31m"
+NC = "\033[0m"
+
 
 
 
@@ -111,6 +117,21 @@ def chooseTester():
     print("您选择输入测试方人员名：\033[1;31m{}\033[0m\n".format(personName))
     return personName
 
+
+
+
+def inputBranchName():
+    while True:
+        branchName = input("②请输入您的分支名(若要退出请输入Q|q) : ")
+        if branchName.lower() == 'q':
+            exit(2)
+        else:
+            # 使用正则表达式判断字符串以字母开头且不小于4位，同时内容只能为字母和_和其他数字
+            if re.match(r'^[a-zA-Z][a-zA-Z0-9_]{3,}$', branchName):
+                break
+            else:
+                print(f"字符串{RED}{branchName}{NC}不符合要求，请重新输入(要求以字母开头，且不小于4位)\n")
+    return branchName
 
 # chooseAnswer()
 # chooseTester()

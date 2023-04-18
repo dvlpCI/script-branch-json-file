@@ -46,5 +46,17 @@ def getEnvValue_branch_json_file_dir_path():
 
 
 
+def getEnvValue_jenkins_workspace():
+    tool_params_file_path = os.getenv('TOOL_PARAMS_FILE_PATH')
+    with open(tool_params_file_path) as f:
+        data = json.load(f)
+        
+    jenkins_data=data['jenkins']
+    jenkins_workspace=jenkins_data['workspace']
+    if jenkins_workspace.startswith('~'):
+        jenkins_workspace = os.path.expanduser(jenkins_workspace) # 将~扩展为当前用户的home目录
+    
+    return jenkins_workspace
+
 # branch_json_file_git_home=getEnvValue_branch_json_file_git_home()
 # getEnvValue_branch_json_file_dir_path()
