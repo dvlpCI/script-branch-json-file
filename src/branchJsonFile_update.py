@@ -45,7 +45,7 @@ def chooseUpdateAction(file_path):
 
     elif updateAction_input == "2":
         outlineMap = inputOutline()
-        change("outlines", f"{outlineMap}", file_path)
+        addOutline(file_path, outlineMap)
 
     elif updateAction_input == "3":
         cur_date = datetime.now().strftime("%m.%d")
@@ -56,10 +56,21 @@ def chooseUpdateAction(file_path):
         change("pass_test_time", f"{cur_date}", file_path)
         change("merger_pre_time", f"{cur_date}", file_path)
 
+
+
+def addOutline(file_path, outlineMap):
+    with open(file_path, 'r') as json_file:
+        json_data = json.load(json_file)
+
+    json_data['outlines'].append(outlineMap)
+
+    # 将更新后的数据写入json文件
+    with open(file_path, 'w') as file:
+        json.dump(json_data, file, indent=4, ensure_ascii=False)
     
 
 def change(key, value, file_path):
-    with open(file_path, "r+") as json_file:
+    with open(file_path, "r+", encoding="utf-8") as json_file:
         json_data = json.load(json_file)
         # json_data[key] = value
         update_dict_value(json_data, key, value)
