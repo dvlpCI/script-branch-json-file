@@ -131,8 +131,8 @@ updateBranchJsonFile() {
 
 # 二、执行Jenkins上的Job
 buildJenkinsJob() {
-    echo "正在执行命令：《 sh ${jenkinsScriptDir_Absolute}/jenkins.sh \"${branchJsonFileScriptDir_Absolute}\" 》"
-    sh ${jenkinsScriptDir_Absolute}/jenkins.sh "${branchJsonFileScriptDir_Absolute}"
+    echo "正在执行命令：《 sh ${jenkinsScriptDir_Absolute}/jenkins.sh \"${jenkinsScriptDir_Absolute}\" 》"
+    sh ${jenkinsScriptDir_Absolute}/jenkins.sh "${jenkinsScriptDir_Absolute}"
 }
 
 gitBranchAndJsonFile() {
