@@ -12,7 +12,7 @@ from datetime import datetime
 
 from git_util import get_branch_json_file_path
 from object_update import update_dict_value
-from branchJsonFile_input import chooseAnswer, chooseTester
+from branchJsonFile_input import inputOutline, chooseAnswer, chooseTester
 
 def branch_info():
     branch_json_file_path=get_branch_json_file_path()
@@ -44,8 +44,8 @@ def chooseUpdateAction(file_path):
         change("tester.name", f"{testerName}", file_path)
 
     elif updateAction_input == "2":
-        cur_date = datetime.now().strftime("%m.%d")
-        change("pass_test_time", f"{cur_date}", file_path)
+        outlineMap = inputOutline()
+        change("outlines", f"{outlineMap}", file_path)
 
     elif updateAction_input == "3":
         cur_date = datetime.now().strftime("%m.%d")
