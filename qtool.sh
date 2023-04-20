@@ -5,7 +5,7 @@
 # qtoolScriptDir_Absolute=${CurrentDIR_Script_Absolute}
 
 # 实际项目
-bjfVersion=0.0.6
+bjfVersion=0.0.8
 qtoolScriptDir_Absolute="/usr/local/Cellar/qtool/${bjfVersion}/lib"
 
 # echo "qtoolScriptDir_Absolute=${qtoolScriptDir_Absolute}"
