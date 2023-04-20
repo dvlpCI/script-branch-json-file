@@ -8,4 +8,4 @@
  # @Description: qtool的help
 ### 
 
-echo "暂未支持"
+echo "This is help"
