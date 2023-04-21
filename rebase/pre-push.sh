@@ -3,9 +3,20 @@
  # @Author: dvlproad
  # @Date: 2023-04-14 14:09:09
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-04-21 10:47:07
+ # @LastEditTime: 2023-04-21 12:57:03
  # @Description: 
 ### 
+
+# 定义颜色常量
+NC='\033[0m' # No Color
+RED='\033[31m'
+GREEN='\033[32m'
+YELLOW='\033[33m'
+BLUE='\033[34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+
+git gc --prune=now # 启动 Git 的垃圾回收机制，清理不可达的松散对象。--prune=now 参数告诉 Git 立即清理这些对象。
 
 # 读取文件内容
 content=$(cat "${TOOL_PARAMS_FILE_PATH}")
@@ -34,6 +45,7 @@ if [[ $? = 0 ]]; then
   #echo '已经合并develop最新代码'
   exit 0
 fi
-	echo '你的分支未rebase develop最新代码，请先rebase======'
-exit 1
+  rebaseErrorMessage="你的分支未rebase develop最新代码，请先rebase======"
+  printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
+  exit 1
 
