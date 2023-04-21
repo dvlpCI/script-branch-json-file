@@ -38,9 +38,10 @@ def chooseOptionForPack():
     with open(tool_params_file_path) as f:
         data = json.load(f)
 
+    print("\033[1;32m{}\033[0m".format("已支持的Jenkins Job："))
     options = data['jenkins']['jenkins_input_option']
-    for i, option in enumerate(options):        
-        print(f"{option['inputId']}: {option['inputMeaning']}")
+    for i, option in enumerate(options):
+        print("\033[1;32m{}\033[0m：\033[1;33m{}\033[0m".format(option['inputId'], option['inputMeaning']))
         
     while True:
         option_input_id = input("请输入想要打包的id（退出q/Q）：")

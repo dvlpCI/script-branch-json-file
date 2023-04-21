@@ -55,7 +55,7 @@ urlencode() {
 # List all jobs: 列出所有的 Jenkins 作业
 list_jobs() {
     JENKINS_JOBS_URL="$JENKINS_URL/api/json?tree=jobs\[name\]"
-    echo "正在执行命令：《 curl -sS -u \"$JENKINS_USER:$JENKINS_API_TOKEN\" \"$JENKINS_JOBS_URL\" 》"
+    # echo "正在执行命令：《 curl -sS -u \"$JENKINS_USER:$JENKINS_API_TOKEN\" \"$JENKINS_JOBS_URL\" 》"
     jobs=$(curl -sS -u "$JENKINS_USER:$JENKINS_API_TOKEN" "$JENKINS_JOBS_URL")
     # echo "=======job名分别为:\n$jobs"
     jobNames=$(echo "$jobs" | jq -r '.jobs[].name')
@@ -137,7 +137,7 @@ buildResultJobs() {
 buildJob() {
     # JENKINS_JOB_URL="$JENKINS_URL/job/$JOB_NAME/buildWithParameters?$PARAMS"
     JENKINS_JOB_URL=$1
-    echo "正在执行命令：《 curl -sS -X POST -u \"$JENKINS_USER:$JENKINS_API_TOKEN\" \"$JENKINS_JOB_URL\" 》"
+    # echo "正在执行命令：《 curl -sS -X POST -u \"$JENKINS_USER:$JENKINS_API_TOKEN\" \"$JENKINS_JOB_URL\" 》"
     curl -sS -X POST -u "$JENKINS_USER:$JENKINS_API_TOKEN" "$JENKINS_JOB_URL"
 }
 
