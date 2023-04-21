@@ -3,8 +3,8 @@
 ###
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
- # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2023-04-16 23:20:49
+ # @LastEditors: dvlproad
+ # @LastEditTime: 2023-04-21 13:07:50
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 分支JSON的创建-shell
 ###
@@ -59,9 +59,9 @@ while [ "$option" != 'quit' ]; do
     3 | optimize) branchType="optimize" break ;;
     4 | other) branchType="other" break ;;
     Q | q) exit 2 ;;
-    *) echo "无此选项..." ;;
+    # *) echo "无此选项..." ;;
     esac
-    read -r -p "①请选择您所要创建的分支类型(若要退出请输入Q|q) : " option
+    read -r -p "无此选项...①请选择您所要创建的分支类型(若要退出请输入Q|q) : " option
 done
 printf "①已选择您所要创建的分支类型${RED}%s${NC}\n\n" "$branchType"
 

@@ -27,8 +27,6 @@ temp_reslut_file_path=${qtoolScriptDir_Absolute}/src/temp_result.json
 # echo "branchJsonFileScriptDir_Absolute=${branchJsonFileScriptDir_Absolute}"
 # echo "jenkinsScriptDir_Absolute=${jenkinsScriptDir_Absolute}"
 
-
-
 # 定义颜色常量
 NC='\033[0m' # No Color
 RED='\033[31m'
@@ -39,8 +37,6 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 
 quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退出
-
-
 
 # 环境变量检查--TOOL_PARAMS_FILE_PATH（才能保证可以正确创建分支）
 checkEnvValue_TOOL_PARAMS_FILE_PATH() {
@@ -59,18 +55,14 @@ if [ $? != 0 ]; then
     exit
 fi
 
-
-
-
-
 # 读取文件内容
 content=$(cat "${TOOL_PARAMS_FILE_PATH}")
 
 # 获取branchGit和branchJsonFile的值
 branch_git_home=$(echo "$content" | jq -r '.branchGit.BRANCH_JSON_FILE_GIT_HOME')
 if [[ $branch_git_home =~ ^~.* ]]; then
-  # 如果 $branch_git_home 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
-  branch_git_home="${HOME}${branch_git_home:1}"
+    # 如果 $branch_git_home 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
+    branch_git_home="${HOME}${branch_git_home:1}"
 fi
 # branch_json_dir_path=$(echo "$content" | jq -r '.branchJsonFile.BRANCH_JSON_FILE_DIR_PATH')
 # echo "branch_git_home: $branch_git_home"
@@ -86,8 +78,6 @@ gitHome() {
 }
 # gitHome
 
-
-
 # 工具选项
 tool_menu() {
     # 定义菜单选项
@@ -99,16 +89,16 @@ tool_menu() {
         "5|jenkins          Jenkins打包"
     )
 
-
     # 遍历数组并输出带颜色的文本
-    for i in "${!options[@]}"
-    do
+    for i in "${!options[@]}"; do
         if [ "$i" -eq 0 ]; then
-        printf "${BLUE}%s\033[0m\n" "${options[$i]}"
-        elif [ "$i" -gt 2 ]; then
-        printf "${GREEN}%s\033[0m\n" "${options[$i]}"
+            printf "${BLUE}%s\033[0m\n" "${options[$i]}"
+        elif [ "$i" -gt 2 ] && [ "$i" -le 3 ]; then
+            printf "${GREEN}%s\033[0m\n" "${options[$i]}"
+        elif [ "$i" -gt 3 ] && [ "$i" -le 4 ]; then
+            printf "${PURPLE}%s\033[0m\n" "${options[$i]}"
         else
-        printf "${YELLOW}%s\033[0m\n" "${options[$i]}"
+            printf "${YELLOW}%s\033[0m\n" "${options[$i]}"
         fi
     done
 }
@@ -116,33 +106,34 @@ tool_menu() {
 # 显示工具选项
 tool_menu
 
-
 _gitBranch() {
     sh ${branchJsonFileScriptDir_Absolute}/branchGit_create.sh
 }
-
 
 # 分支信息文件添加
 createBranchJsonFile() {
     # echo "正在执行命令:《 python3 \"${branchJsonFileScriptDir_Absolute}/branchJsonFile_create.py\" 》"
     python3 "${branchJsonFileScriptDir_Absolute}/branchJsonFile_create.py"
-
+    checkResultCode $?
 }
 
 # 分支信息文件修改
 updateBranchJsonFile() {
     python3 ${branchJsonFileScriptDir_Absolute}/branchJsonFile_update.py
+    checkResultCode $?
 }
 
 # 将当前分支合并到其他分支前的rebase检查
 rebaseCheckBranch() {
     sh ${rebaseScriptDir_Absolute}/pre-push.sh
+    checkResultCode $?
 }
 
 # 二、执行Jenkins上的Job
 buildJenkinsJob() {
     # echo "正在执行命令：《 sh ${jenkinsScriptDir_Absolute}/jenkins.sh \"${jenkinsScriptDir_Absolute}\" \"${temp_reslut_file_path}\" 》"
     sh ${jenkinsScriptDir_Absolute}/jenkins.sh "${jenkinsScriptDir_Absolute}" "${temp_reslut_file_path}"
+    checkResultCode $?
 }
 
 gitBranchAndJsonFile() {
@@ -163,26 +154,29 @@ gitBranchAndJsonFile() {
     createBranchJsonFile
 }
 
+checkResultCode() {
+    resultCode=$1
+    if [ $resultCode = 0 ]; then
+        printf "恭喜💐:您选择%s操作已执行完成\n" "${options[$option - 1]}"
+    else
+        printf "很遗憾😭:您选择%s操作执行失败\n" "${options[$option - 1]}"
+    fi
+}
+
 # 读取用户输入的选项，并根据选项执行相应操作
 read -r -p "请选择您想要执行的操作编号或id(若要退出请输入Q|q) : " option
-while [ "$option" != 'Q' ] && [ "$option" != 'q' ]; do
+while [ "$option" != 'quit' ]; do
     case $option in
-        1|gitBranch) gitBranchAndJsonFile ;;
-        2|createJsonFile) createBranchJsonFile ;;
-        3|updateJsonFile) updateBranchJsonFile ;;
-        4|rebaseCheck) rebaseCheckBranch;;
-        5|jenkins) buildJenkinsJob ;;
-        *) echo "无此选项..." ;;
+    1 | gitBranch) gitBranchAndJsonFile ;;
+    2 | createJsonFile) createBranchJsonFile ;;
+    3 | updateJsonFile) updateBranchJsonFile ;;
+    4 | rebaseCheck) rebaseCheckBranch ;;
+    5 | jenkins) buildJenkinsJob ;;
+    Q | q) exit 2 ;;
+        # *) echo "无此选项..." ;;
     esac
-
-    if [ $? = 0 ]; then
-        printf "恭喜💐:您选择%s操作已执行完成\n" "${options[$option-1]}"
-    else
-        printf "很遗憾😭:您选择%s操作执行失败\n" "${options[$option-1]}"
-    fi
-    break
+    read -r -p "无此选项...请选择您想要执行的操作编号或id(若要退出请输入Q|q) : " option
 done
-
 
 # 退出程序
 exit 0
