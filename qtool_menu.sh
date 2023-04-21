@@ -18,7 +18,11 @@ elif [ ! -d "${qtoolScriptDir_Absolute}" ]; then
     exit 1
 fi
 branchJsonFileScriptDir_Absolute=$qtoolScriptDir_Absolute/src
+
+rebaseScriptDir_Absolute=$qtoolScriptDir_Absolute/rebase
+
 jenkinsScriptDir_Absolute=$qtoolScriptDir_Absolute/jenkins
+temp_reslut_file_path=${qtoolScriptDir_Absolute}/src/temp_result.json
 
 # echo "branchJsonFileScriptDir_Absolute=${branchJsonFileScriptDir_Absolute}"
 # echo "jenkinsScriptDir_Absolute=${jenkinsScriptDir_Absolute}"
@@ -91,7 +95,8 @@ tool_menu() {
         "1|gitBranch        创建分支(且创建完可选择继续2操作)"
         "2|createJsonFile   创建当前所处分支的信息文件"
         "3|updateJsonFile   更新当前所处分支的信息文件(人员、提测时间、提测时间、测试通过时间)"
-        "4|jenkins          Jenkins打包"
+        "4|rebaseCheck      将当前分支合并到其他分支前的rebase检查"
+        "5|jenkins          Jenkins打包"
     )
 
 
@@ -129,10 +134,15 @@ updateBranchJsonFile() {
     python3 ${branchJsonFileScriptDir_Absolute}/branchJsonFile_update.py
 }
 
+# 将当前分支合并到其他分支前的rebase检查
+rebaseCheckBranch() {
+    sh ${rebaseScriptDir_Absolute}/pre-push.sh
+}
+
 # 二、执行Jenkins上的Job
 buildJenkinsJob() {
-    echo "正在执行命令：《 sh ${jenkinsScriptDir_Absolute}/jenkins.sh \"${jenkinsScriptDir_Absolute}\" 》"
-    sh ${jenkinsScriptDir_Absolute}/jenkins.sh "${jenkinsScriptDir_Absolute}"
+    echo "正在执行命令：《 sh ${jenkinsScriptDir_Absolute}/jenkins.sh \"${jenkinsScriptDir_Absolute}\" \"${temp_reslut_file_path}\" 》"
+    sh ${jenkinsScriptDir_Absolute}/jenkins.sh "${jenkinsScriptDir_Absolute}" "${temp_reslut_file_path}"
 }
 
 gitBranchAndJsonFile() {
@@ -160,7 +170,8 @@ while [ "$option" != 'Q' ] && [ "$option" != 'q' ]; do
         1|gitBranch) gitBranchAndJsonFile ;;
         2|createJsonFile) createBranchJsonFile ;;
         3|updateJsonFile) updateBranchJsonFile ;;
-        4|jenkins) buildJenkinsJob ;;
+        4|rebaseCheck) rebaseCheckBranch;;
+        5|jenkins) buildJenkinsJob ;;
         *) echo "无此选项..." ;;
     esac
 

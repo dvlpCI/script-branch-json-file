@@ -23,7 +23,11 @@ if [ ${#jenkinsScriptDir_Absolute} -eq 0 ]; then
     exit 1
 fi
 
-temp_reslut_file_path=${jenkinsScriptDir_Absolute}/temp_result.json
+temp_reslut_file_path=$2
+if [ ${#temp_reslut_file_path} -eq 0 ]; then
+    echo "❌Error：脚本内部出错，请检查"
+    exit 1
+fi
 
 # 设置 Jenkins 服务器的地址、用户名和 API token
 JENKINS_URL="http://192.168.72.202:8080"
