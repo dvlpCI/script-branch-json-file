@@ -167,11 +167,11 @@ checkResultCode() {
 read -r -p "请选择您想要执行的操作编号或id(若要退出请输入Q|q) : " option
 while [ "$option" != 'quit' ]; do
     case $option in
-    1 | gitBranch) gitBranchAndJsonFile ;;
-    2 | createJsonFile) createBranchJsonFile ;;
-    3 | updateJsonFile) updateBranchJsonFile ;;
-    4 | rebaseCheck) rebaseCheckBranch ;;
-    5 | jenkins) buildJenkinsJob ;;
+    1 | gitBranch) gitBranchAndJsonFile break;;
+    2 | createJsonFile) createBranchJsonFile break;;
+    3 | updateJsonFile) updateBranchJsonFile break;;
+    4 | rebaseCheck) rebaseCheckBranch break;;
+    5 | jenkins) buildJenkinsJob break;;
     Q | q) exit 2 ;;
         # *) echo "无此选项..." ;;
     esac
