@@ -42,7 +42,8 @@ GIT_CAN_PUSH=$(git branch --contains origin/develop |grep -w $GIT_BRANCH)
 #echo $?
 
 if [[ $? = 0 ]]; then
-  #echo '已经合并develop最新代码'
+  rebaseSuccessMessage="恭喜，您的分支已rebase develop最新代码"
+  printf "${GREEN}%s${NC}\n" "${rebaseSuccessMessage}"
   exit 0
 fi
   rebaseErrorMessage="你的分支未rebase develop最新代码，请先rebase======"
