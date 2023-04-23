@@ -2,12 +2,13 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-04-18 14:54:31
-FilePath: /branchJsonFile_create/branchInfoManager.py
+LastEditTime: 2023-04-23 13:17:54
+FilePath: branchJsonFile_update.py
 Description: 分支Json文件的信息更新
 '''
 # -*- coding: utf-8 -*-
 import json
+import subprocess
 from datetime import datetime
 
 from git_util import get_branch_json_file_path
@@ -56,6 +57,10 @@ def chooseUpdateAction(file_path):
         change("pass_test_time", f"{cur_date}", file_path)
         change("merger_pre_time", f"{cur_date}", file_path)
 
+    # 在 macOS 或 Linux 上打开 file_path 文件。
+    # subprocess.Popen(['open', file_path])
+    subprocess.Popen(['open', file_path])
+
 
 
 def addOutline(file_path, outlineMap):
@@ -77,7 +82,7 @@ def change(key, value, file_path):
         json_file.seek(0)
         json.dump(json_data, json_file, indent=4, ensure_ascii=False)
         json_file.truncate()
-    print(f"已成功更新字段 {key} 为 {value} 在文件 {file_path}")
+    # print(f"已成功更新字段 {key} 为 {value} 在文件 {file_path}")
 
 
 branch_info()

@@ -87,6 +87,7 @@ tool_menu() {
         "3|updateJsonFile   更新当前所处分支的信息文件(人员、提测时间、提测时间、测试通过时间)"
         "4|rebaseCheck      将当前分支合并到其他分支前的rebase检查"
         "5|jenkins          Jenkins打包"
+        # "6|onlyTest         我只是测试项..."
     )
 
     # 遍历数组并输出带颜色的文本
@@ -161,21 +162,23 @@ checkResultCode() {
     else
         printf "很遗憾😭:您选择%s操作执行失败\n" "${options[$option - 1]}"
     fi
+    valid_option=ture
 }
 
 # 读取用户输入的选项，并根据选项执行相应操作
-read -r -p "请选择您想要执行的操作编号或id(若要退出请输入Q|q) : " option
-while [ "$option" != 'quit' ]; do
+valid_option=false
+while [ "$valid_option" = false ]; do
+    read -r -p "请选择您想要执行的操作编号或id(若要退出请输入Q|q) : " option
     case $option in
-    1 | gitBranch) gitBranchAndJsonFile break;;
-    2 | createJsonFile) createBranchJsonFile break;;
-    3 | updateJsonFile) updateBranchJsonFile break;;
-    4 | rebaseCheck) rebaseCheckBranch break;;
-    5 | jenkins) buildJenkinsJob break;;
+    1 | gitBranch) gitBranchAndJsonFile break ;;
+    2 | createJsonFile) createBranchJsonFile break ;;
+    3 | updateJsonFile) updateBranchJsonFile break ;;
+    4 | rebaseCheck) rebaseCheckBranch break ;;
+    5 | jenkins) buildJenkinsJob break ;;
+    # 6 | onlyTest) valid_option=ture break ;;
     Q | q) exit 2 ;;
-        # *) echo "无此选项..." ;;
+    *) valid_option=false echo "无此选项，请重新输入。" ;;
     esac
-    read -r -p "无此选项...请选择您想要执行的操作编号或id(若要退出请输入Q|q) : " option
 done
 
 # 退出程序

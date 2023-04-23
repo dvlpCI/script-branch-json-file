@@ -1,13 +1,16 @@
 #!/bin/bash
 
 # 本地测试
-# CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
-# qtoolScriptDir_Absolute=${CurrentDIR_Script_Absolute}
+local_test() {
+    CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
+    qtoolScriptDir_Absolute=${CurrentDIR_Script_Absolute}
+}
+
 
 # 实际项目
-bjfVersion=0.1.5
+bjfVersion=0.1.6
 qtoolScriptDir_Absolute="/usr/local/Cellar/qtool/${bjfVersion}/lib"
-
+# local_test
 # echo "qtoolScriptDir_Absolute=${qtoolScriptDir_Absolute}"
 
 versionCmdStrings=("--version" "-version" "-v")

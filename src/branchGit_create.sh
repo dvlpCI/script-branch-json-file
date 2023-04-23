@@ -50,18 +50,23 @@ menu() {
     done
 }
 
+chooseBranchType() {
+    branchType=$1
+    valid_option=true
+}
+
 menu
-read -r -p "①请选择您所要创建的分支类型(若要退出请输入Q|q) : " option
-while [ "$option" != 'quit' ]; do
+valid_option=false
+while [ "$valid_option" = false ]; do
+    read -r -p "①请选择您所要创建的分支类型(若要退出请输入Q|q) : " option
     case $option in
-    1 | hotfix) branchType="hotfix" break ;;
-    2 | feature) branchType="feature" break ;;
-    3 | optimize) branchType="optimize" break ;;
-    4 | other) branchType="other" break ;;
+    1 | hotfix) chooseBranchType "hotfix" break ;;
+    2 | feature) chooseBranchType "feature" break ;;
+    3 | optimize) chooseBranchType "optimize" break ;;
+    4 | other) chooseBranchType "other" break ;;
     Q | q) exit 2 ;;
-    # *) echo "无此选项..." ;;
+    *) valid_option=false echo "无此选项，请重新输入。" ;;
     esac
-    read -r -p "无此选项...①请选择您所要创建的分支类型(若要退出请输入Q|q) : " option
 done
 printf "①已选择您所要创建的分支类型${RED}%s${NC}\n\n" "$branchType"
 
