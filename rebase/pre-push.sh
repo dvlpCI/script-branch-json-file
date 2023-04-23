@@ -33,20 +33,28 @@ fi
 cd "$branch_git_home" || exit # 切换到工作目录后，才能争取创建git分支。"exit" 命令用于确保如果更改目录时出现错误，则脚本将退出。
 
 
+should_rebase_from_branch=$(echo "$content" | jq -r '.rebase.rebaseFrom')
+# echo "should_rebase_from_branch=${should_rebase_from_branch}"
+if [ -z "${should_rebase_from_branch}" ] || [ "${should_rebase_from_branch}" == "null" ]; then
+  rebaseErrorMessage="请先在${TOOL_PARAMS_FILE_PATH}文件中设置 .rebase.rebaseFrom "
+  printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
+  exit 1
+fi
 
 PATH=$PATH:/usr/local/bin:/usr/local/sbin
 git fetch --prune origin
 git fetch --prune origin "+refs/tags/*:refs/tags/*"
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-GIT_CAN_PUSH=$(git branch --contains origin/develop |grep -w $GIT_BRANCH)
+# GIT_CAN_PUSH=$(git branch --contains origin/develop |grep -w $GIT_BRANCH)
+GIT_CAN_PUSH=$(git branch --contains ${should_rebase_from_branch} |grep -w $GIT_BRANCH)
 #echo $?
 
 if [[ $? = 0 ]]; then
-  rebaseSuccessMessage="恭喜，您的分支已rebase develop最新代码"
+  rebaseSuccessMessage="恭喜，您的分支已rebase ${should_rebase_from_branch} 最新代码"
   printf "${GREEN}%s${NC}\n" "${rebaseSuccessMessage}"
   exit 0
 fi
-  rebaseErrorMessage="你的分支未rebase develop最新代码，请先rebase======"
+  rebaseErrorMessage="你的分支未rebase ${should_rebase_from_branch} 最新代码，请先rebase======"
   printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
   exit 1
 

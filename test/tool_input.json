@@ -63,6 +63,9 @@
       "tester4"
     ]
   },
+  "rebase": {
+    "rebaseFrom": "origin/master"
+  },
   "jenkins": {
     "workspace": "~/Project/CQCI/script-branch-json-file/test/jenkinsworkspace/",
     "jenkins_base": {
