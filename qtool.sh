@@ -8,13 +8,22 @@ local_test() {
 
 
 # 实际项目
-bjfVersion=0.1.8
+bjfVersion=0.1.9
 qtoolScriptDir_Absolute="/usr/local/Cellar/qtool/${bjfVersion}/lib"
 # local_test # 本地测试
 # echo "qtoolScriptDir_Absolute=${qtoolScriptDir_Absolute}"
 
-versionCmdStrings=("--version" "-version" "-v")
 
+
+# 检查运行环境
+sh ${qtoolScriptDir_Absolute}/qtool_runenv.sh
+if [ $? != 0 ]; then
+    exit 1
+fi
+
+
+
+versionCmdStrings=("--version" "-version" "-v")
 if [ -z "$1" ]; then
     sh ${qtoolScriptDir_Absolute}/qtool_menu.sh "${qtoolScriptDir_Absolute}"
 elif echo "${versionCmdStrings[@]}" | grep -wq "$1" &>/dev/null; then

@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-14 14:09:09
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-04-21 12:57:03
+ # @LastEditTime: 2023-04-24 16:34:18
  # @Description: 
 ### 
 
@@ -17,6 +17,19 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 
 git gc --prune=now # 启动 Git 的垃圾回收机制，清理不可达的松散对象。--prune=now 参数告诉 Git 立即清理这些对象。
+
+# 判断当前目录是否为 Git 仓库
+if ! git rev-parse --is-inside-work-tree &> /dev/null; then
+    echo "当前目录不是 Git 仓库"
+    exit 1
+fi
+
+# 获取当前分支名称
+currentBranch=$(git rev-parse --abbrev-ref HEAD)
+# echo "当前分支为 $currentBranch"
+
+
+
 
 # 读取文件内容
 content=$(cat "${TOOL_PARAMS_FILE_PATH}")
@@ -50,11 +63,11 @@ GIT_CAN_PUSH=$(git branch --contains ${should_rebase_from_branch} |grep -w $GIT_
 #echo $?
 
 if [[ $? = 0 ]]; then
-  rebaseSuccessMessage="恭喜，您的分支已rebase ${should_rebase_from_branch} 最新代码"
+  rebaseSuccessMessage="恭喜，您的${currentBranch}分支已rebase ${should_rebase_from_branch} 最新代码"
   printf "${GREEN}%s${NC}\n" "${rebaseSuccessMessage}"
   exit 0
 fi
-  rebaseErrorMessage="你的分支未rebase ${should_rebase_from_branch} 最新代码，请先rebase======"
+  rebaseErrorMessage="抱歉，您的${currentBranch}分支未rebase ${should_rebase_from_branch} 最新代码，请先rebase======"
   printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
   exit 1
 
