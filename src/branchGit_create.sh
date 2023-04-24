@@ -73,15 +73,15 @@ printf "①已选择您所要创建的分支类型${RED}%s${NC}\n\n" "$branchTyp
 # 1.2、分支名输入
 read -r -p "②请输入您的分支名(若要退出请输入Q|q) : " branchName
 while [ "$branchName" != 'quit' ]; do
-    case $option in
+    case $branchName in
     Q | q) exit 2 ;;
     *)
         # echo "您输入的分支名为$branchName."
         # 使用正则表达式判断字符串以字母开头且不小于4位，同时内容只能为字母和_和其他数字
-        if echo "$branchName" | grep -Eq '^[a-zA-Z][a-zA-Z0-9_]{3,}$'; then
+        if echo "$branchName" | grep -Eq '^[a-zA-Z][a-zA-Z0-9_.]{3,}$'; then
             break
         else
-            printf "字符串${RED}%s${NC}不符合要求，请重新输入(要求以字母开头，且不小于4位)\n\n" "$branchName"
+            printf "字符串${RED}%s${NC}不符合要求，请重新输入(要求以字母开头，且不小于4位，支持字数、数字、下划线、小数点)\n\n" "$branchName"
         fi
         ;;
     esac

@@ -8,7 +8,7 @@ local_test() {
 
 
 # 实际项目
-bjfVersion=0.1.7
+bjfVersion=0.1.8
 qtoolScriptDir_Absolute="/usr/local/Cellar/qtool/${bjfVersion}/lib"
 # local_test # 本地测试
 # echo "qtoolScriptDir_Absolute=${qtoolScriptDir_Absolute}"
