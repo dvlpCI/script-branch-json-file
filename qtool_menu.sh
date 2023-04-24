@@ -3,8 +3,8 @@
 ###
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
-# @LastEditors: dvlproad dvlproad@163.com
-# @LastEditTime: 2023-04-20 23:25:46
+# @LastEditors: dvlproad
+# @LastEditTime: 2023-04-24 21:13:53
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -23,6 +23,7 @@ rebaseScriptDir_Absolute=$qtoolScriptDir_Absolute/rebase
 
 jenkinsScriptDir_Absolute=$qtoolScriptDir_Absolute/jenkins
 temp_reslut_file_path=${qtoolScriptDir_Absolute}/src/temp_result.json
+chmod u+wr "${temp_reslut_file_path}" # chmod 命令用于修改文件权限，u 表示修改文件所有者的权限，+wr 表示添加读取和写入权限。
 
 # echo "branchJsonFileScriptDir_Absolute=${branchJsonFileScriptDir_Absolute}"
 # echo "jenkinsScriptDir_Absolute=${jenkinsScriptDir_Absolute}"
@@ -40,12 +41,12 @@ quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退�
 
 # 环境变量检查--TOOL_PARAMS_FILE_PATH（才能保证可以正确创建分支）
 checkEnvValue_TOOL_PARAMS_FILE_PATH() {
-    if [ "${#TOOL_PARAMS_FILE_PATH}" -eq 0 ]; then
-        printf "${RED}您还未设置【git项目路径】的环境变量，请open ~/.bash_profile 或 open ~/.zhsrc后,将${BLUE}export TOOL_PARAMS_FILE_PATH=yourToolParamsFileAbsolutePath ${RED}添加到环境变量中(其中${YELLOW}yourToolParamsFileAbsolutePath${RED}需替换成自己的项目实际绝对路径)%s${NC}\n"
+    if [ "${#TOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" -eq 0 ]; then
+        printf "${RED}您还未设置【git项目路径】的环境变量，请open ~/.bash_profile 或 open ~/.zhsrc后,将${BLUE}export TOOL_DEAL_PROJECT_PARAMS_FILE_PATH=yourToolParamsFileAbsolutePath ${RED}添加到环境变量中(其中${YELLOW}yourToolParamsFileAbsolutePath${RED}需替换成自己的项目实际绝对路径)%s${NC}\n"
         return 1
     fi
-    if [ ! -f "${TOOL_PARAMS_FILE_PATH}" ]; then
-        printf "${RED}您设置的环境变量TOOL_PARAMS_FILE_PATH=${TOOL_PARAMS_FILE_PATH}目录不存在，请检查%s${NC}\n"
+    if [ ! -f "${TOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" ]; then
+        printf "${RED}您设置的环境变量 TOOL_DEAL_PROJECT_PARAMS_FILE_PATH=${TOOL_DEAL_PROJECT_PARAMS_FILE_PATH} 目录不存在，请检查%s${NC}\n"
         return 1
     fi
 }
