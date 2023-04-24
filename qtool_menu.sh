@@ -55,20 +55,12 @@ if [ $? != 0 ]; then
     exit
 fi
 
-# 读取文件内容
-content=$(cat "${TOOL_PARAMS_FILE_PATH}")
-
-# 获取branchGit和branchJsonFile的值
-branch_git_home=$(echo "$content" | jq -r '.branchGit.BRANCH_JSON_FILE_GIT_HOME')
-if [[ $branch_git_home =~ ^~.* ]]; then
-    # 如果 $branch_git_home 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
-    branch_git_home="${HOME}${branch_git_home:1}"
+project_dir=$(cat "${TOOL_DEAL_PROJECT_DIR_PATH}")
+if [[ $project_dir =~ ^~.* ]]; then
+    # 如果 $project_dir 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
+    project_dir="${HOME}${project_dir:1}"
 fi
-# branch_json_dir_path=$(echo "$content" | jq -r '.branchJsonFile.BRANCH_JSON_FILE_DIR_PATH')
-# echo "branch_git_home: $branch_git_home"
-# echo "branchJsonFile: $branch_json_dir_path"
-
-cd "$branch_git_home" || exit # 切换到工作目录后，才能争取创建git分支。"exit" 命令用于确保如果更改目录时出现错误，则脚本将退出。
+cd "$project_dir" || exit # 切换到工作目录后，才能争取创建git分支。"exit" 命令用于确保如果更改目录时出现错误，则脚本将退出。
 
 gitHome() {
     git_output=$(git rev-parse --show-toplevel)

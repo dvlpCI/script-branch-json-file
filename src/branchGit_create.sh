@@ -98,22 +98,15 @@ if echo "${quitStrings[@]}" | grep -wq "${continueNewbranch}" &>/dev/null; then
     exit 1
 fi
 
-# 2、创建分支
-# 当前【shell脚本】的工作目录
-# $PWD代表获取当前路径，当cd后，$PWD也会跟着更新到新的cd路径。这个和在终端操作是一样的道理的
-CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
-branchJsonFileScriptDir_Absolute=${CurrentDIR_Script_Absolute}
-echo "branchJsonFileScriptDir_Absolute222=${branchJsonFileScriptDir_Absolute}"
-
 
 # echo "分支创建准备..."
 # 1：需要切换到被拉取的分支，并且拉取项目，命令如下：
 # 读取文件内容
-content=$(cat "${TOOL_PARAMS_FILE_PATH}")
+content=$(cat "${TOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
 should_rebase_from_branch=$(echo "$content" | jq -r '.rebase.rebaseFrom')
 # echo "should_rebase_from_branch=${should_rebase_from_branch}"
 if [ -z "${should_rebase_from_branch}" ] || [ "${should_rebase_from_branch}" == "null" ]; then
-  rebaseErrorMessage="请先在${TOOL_PARAMS_FILE_PATH}文件中设置 .rebase.rebaseFrom "
+  rebaseErrorMessage="请先在${TOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .rebase.rebaseFrom "
   printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
   exit 1
 fi

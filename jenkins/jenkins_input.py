@@ -34,7 +34,7 @@ def getOptionById(options, optionInputId):
 
 
 def chooseOptionForPack():
-    tool_params_file_path = os.getenv('TOOL_PARAMS_FILE_PATH')
+    tool_params_file_path = os.getenv('TOOL_DEAL_PROJECT_PARAMS_FILE_PATH')
     with open(tool_params_file_path) as f:
         data = json.load(f)
 

@@ -43,11 +43,8 @@
       "name": "林尚挺"
     }
   ],
-  "branchGit": {
-    "BRANCH_JSON_FILE_GIT_HOME": "~/Project/Bojue/mobile_flutter_wish/"
-  },
   "branchJsonFile": {
-    "BRANCH_JSON_FILE_DIR_PATH": "~/Project/Bojue/mobile_flutter_wish/bulidScript/featureBrances/",
+    "BRANCH_JSON_FILE_DIR_RELATIVE_PATH": "/bulidScript/featureBrances/",
     "answerAllowId": [
       "developer1",
       "producter1",

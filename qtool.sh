@@ -1,4 +1,11 @@
 #!/bin/bash
+###
+ # @Author: dvlproad
+ # @Date: 2023-04-23 13:18:33
+ # @LastEditors: dvlproad
+ # @LastEditTime: 2023-04-24 20:43:21
+ # @Description: 
+### 
 
 # 本地测试
 local_test() {
@@ -8,7 +15,7 @@ local_test() {
 
 
 # 实际项目
-bjfVersion=0.1.9
+bjfVersion=0.2.0
 qtoolScriptDir_Absolute="/usr/local/Cellar/qtool/${bjfVersion}/lib"
 # local_test # 本地测试
 # echo "qtoolScriptDir_Absolute=${qtoolScriptDir_Absolute}"
