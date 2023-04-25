@@ -23,18 +23,18 @@ def getEnvValueByKey(key):
 
 # 获取环境变量的值
 def getEnvValue_branch_json_file_git_home():
-    branch_json_file_git_home = os.getenv('TOOL_DEAL_PROJECT_DIR_PATH')
+    branch_json_file_git_home = os.getenv('QTOOL_DEAL_PROJECT_DIR_PATH')
     if branch_json_file_git_home.startswith('~'):
         branch_json_file_git_home = os.path.expanduser(branch_json_file_git_home) # 将~扩展为当前用户的home目录
     return branch_json_file_git_home
 
 # 获取环境变量的值
 def getEnvValue_branch_json_file_dir_path():
-    branch_json_file_git_home = os.getenv('TOOL_DEAL_PROJECT_DIR_PATH')
+    branch_json_file_git_home = os.getenv('QTOOL_DEAL_PROJECT_DIR_PATH')
     if branch_json_file_git_home.startswith('~'):
         branch_json_file_git_home = os.path.expanduser(branch_json_file_git_home) # 将~扩展为当前用户的home目录
 
-    tool_params_file_path = os.getenv('TOOL_DEAL_PROJECT_PARAMS_FILE_PATH')
+    tool_params_file_path = os.getenv('QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH')
     with open(tool_params_file_path) as f:
         data = json.load(f)
 
@@ -47,7 +47,7 @@ def getEnvValue_branch_json_file_dir_path():
 
 
 def getEnvValue_jenkins_workspace():
-    tool_params_file_path = os.getenv('TOOL_DEAL_PROJECT_PARAMS_FILE_PATH')
+    tool_params_file_path = os.getenv('QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH')
     with open(tool_params_file_path) as f:
         data = json.load(f)
         

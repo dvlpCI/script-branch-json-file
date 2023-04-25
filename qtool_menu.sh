@@ -3,8 +3,8 @@
 ###
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
-# @LastEditors: dvlproad
-# @LastEditTime: 2023-04-24 21:13:53
+ # @LastEditors: dvlproad
+ # @LastEditTime: 2023-04-25 11:25:05
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -41,22 +41,22 @@ quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退�
 
 # 环境变量检查--TOOL_PARAMS_FILE_PATH（才能保证可以正确创建分支）
 checkEnvValue_TOOL_PARAMS_FILE_PATH() {
-    if [ "${#TOOL_DEAL_PROJECT_DIR_PATH}" -eq 0 ]; then
-        printf "${RED}您还未设置【git项目路径】的环境变量，请open ~/.bash_profile 或 open ~/.zshrc后,将${BLUE}export TOOL_DEAL_PROJECT_DIR_PATH=your_project_dir ${RED}添加到环境变量中(其中${YELLOW}your_project_dir${RED}需替换成自己的项目实际绝对路径)%s${NC}\n"
+    if [ "${#QTOOL_DEAL_PROJECT_DIR_PATH}" -eq 0 ]; then
+        printf "${RED}您还未设置【git项目路径】的环境变量，请open ~/.bash_profile 或 open ~/.zshrc后,将${BLUE}export QTOOL_DEAL_PROJECT_DIR_PATH=your_project_dir ${RED}添加到环境变量中(其中${YELLOW}your_project_dir${RED}需替换成自己的项目实际绝对路径)%s${NC}\n"
         return 1
     fi
-    if [ ! -f "${TOOL_DEAL_PROJECT_DIR_PATH}" ]; then
-        printf "${RED}您设置的环境变量 TOOL_DEAL_PROJECT_DIR_PATH=${TOOL_DEAL_PROJECT_DIR_PATH} 目录不存在，请检查%s${NC}\n"
+    if [ ! -f "${QTOOL_DEAL_PROJECT_DIR_PATH}" ]; then
+        printf "${RED}您设置的环境变量 QTOOL_DEAL_PROJECT_DIR_PATH=${QTOOL_DEAL_PROJECT_DIR_PATH} 目录不存在，请检查%s${NC}\n"
         return 1
     fi
 
 
-    if [ "${#TOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" -eq 0 ]; then
-        printf "${RED}您还未设置【git项目路径】的环境变量，请open ~/.bash_profile 或 open ~/.zshrc后,将${BLUE}export TOOL_DEAL_PROJECT_PARAMS_FILE_PATH=yourToolParamsFileAbsolutePath ${RED}添加到环境变量中(其中${YELLOW}yourToolParamsFileAbsolutePath${RED}需替换成自己的项目实际绝对路径)%s${NC}\n"
+    if [ "${#QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" -eq 0 ]; then
+        printf "${RED}您还未设置【git项目路径】的环境变量，请open ~/.bash_profile 或 open ~/.zshrc后,将${BLUE}export QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH=yourToolParamsFileAbsolutePath ${RED}添加到环境变量中(其中${YELLOW}yourToolParamsFileAbsolutePath${RED}需替换成自己的项目实际绝对路径)%s${NC}\n"
         return 1
     fi
-    if [ ! -f "${TOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" ]; then
-        printf "${RED}您设置的环境变量 TOOL_DEAL_PROJECT_PARAMS_FILE_PATH=${TOOL_DEAL_PROJECT_PARAMS_FILE_PATH} 目录不存在，请检查%s${NC}\n"
+    if [ ! -f "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" ]; then
+        printf "${RED}您设置的环境变量 QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH} 目录不存在，请检查%s${NC}\n"
         return 1
     fi
 
@@ -68,7 +68,7 @@ if [ $? != 0 ]; then
     exit
 fi
 
-project_dir=$(cat "${TOOL_DEAL_PROJECT_DIR_PATH}")
+project_dir=$(cat "${QTOOL_DEAL_PROJECT_DIR_PATH}")
 if [[ $project_dir =~ ^~.* ]]; then
     # 如果 $project_dir 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
     project_dir="${HOME}${project_dir:1}"

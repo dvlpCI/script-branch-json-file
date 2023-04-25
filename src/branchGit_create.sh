@@ -102,11 +102,11 @@ fi
 # echo "分支创建准备..."
 # 1：需要切换到被拉取的分支，并且拉取项目，命令如下：
 # 读取文件内容
-content=$(cat "${TOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
+content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
 should_rebase_from_branch=$(echo "$content" | jq -r '.rebase.rebaseFrom')
 # echo "should_rebase_from_branch=${should_rebase_from_branch}"
 if [ -z "${should_rebase_from_branch}" ] || [ "${should_rebase_from_branch}" == "null" ]; then
-  rebaseErrorMessage="请先在${TOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .rebase.rebaseFrom "
+  rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .rebase.rebaseFrom "
   printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
   exit 1
 fi

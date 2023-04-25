@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-14 14:09:09
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-04-24 16:34:18
+ # @LastEditTime: 2023-04-24 20:29:50
  # @Description: 
 ### 
 
@@ -31,7 +31,7 @@ currentBranch=$(git rev-parse --abbrev-ref HEAD)
 
 
 
-project_dir=$(cat "${TOOL_DEAL_PROJECT_DIR_PATH}")
+project_dir=$(cat "${QTOOL_DEAL_PROJECT_DIR_PATH}")
 if [[ $project_dir =~ ^~.* ]]; then
     # 如果 $project_dir 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
     project_dir="${HOME}${project_dir:1}"
@@ -40,11 +40,11 @@ cd "$project_dir" || exit # 切换到工作目录后，才能争取创建git分�
 
 
 # 读取文件内容
-content=$(cat "${TOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
+content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
 should_rebase_from_branch=$(echo "$content" | jq -r '.rebase.rebaseFrom')
 # echo "should_rebase_from_branch=${should_rebase_from_branch}"
 if [ -z "${should_rebase_from_branch}" ] || [ "${should_rebase_from_branch}" == "null" ]; then
-  rebaseErrorMessage="请先在${TOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .rebase.rebaseFrom "
+  rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .rebase.rebaseFrom "
   printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
   exit 1
 fi
