@@ -41,14 +41,26 @@ quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退�
 
 # 环境变量检查--TOOL_PARAMS_FILE_PATH（才能保证可以正确创建分支）
 checkEnvValue_TOOL_PARAMS_FILE_PATH() {
+    if [ "${#TOOL_DEAL_PROJECT_DIR_PATH}" -eq 0 ]; then
+        printf "${RED}您还未设置【git项目路径】的环境变量，请open ~/.bash_profile 或 open ~/.zshrc后,将${BLUE}export TOOL_DEAL_PROJECT_DIR_PATH=your_project_dir ${RED}添加到环境变量中(其中${YELLOW}your_project_dir${RED}需替换成自己的项目实际绝对路径)%s${NC}\n"
+        return 1
+    fi
+    if [ ! -f "${TOOL_DEAL_PROJECT_DIR_PATH}" ]; then
+        printf "${RED}您设置的环境变量 TOOL_DEAL_PROJECT_DIR_PATH=${TOOL_DEAL_PROJECT_DIR_PATH} 目录不存在，请检查%s${NC}\n"
+        return 1
+    fi
+
+
     if [ "${#TOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" -eq 0 ]; then
-        printf "${RED}您还未设置【git项目路径】的环境变量，请open ~/.bash_profile 或 open ~/.zhsrc后,将${BLUE}export TOOL_DEAL_PROJECT_PARAMS_FILE_PATH=yourToolParamsFileAbsolutePath ${RED}添加到环境变量中(其中${YELLOW}yourToolParamsFileAbsolutePath${RED}需替换成自己的项目实际绝对路径)%s${NC}\n"
+        printf "${RED}您还未设置【git项目路径】的环境变量，请open ~/.bash_profile 或 open ~/.zshrc后,将${BLUE}export TOOL_DEAL_PROJECT_PARAMS_FILE_PATH=yourToolParamsFileAbsolutePath ${RED}添加到环境变量中(其中${YELLOW}yourToolParamsFileAbsolutePath${RED}需替换成自己的项目实际绝对路径)%s${NC}\n"
         return 1
     fi
     if [ ! -f "${TOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" ]; then
         printf "${RED}您设置的环境变量 TOOL_DEAL_PROJECT_PARAMS_FILE_PATH=${TOOL_DEAL_PROJECT_PARAMS_FILE_PATH} 目录不存在，请检查%s${NC}\n"
         return 1
     fi
+
+    
 }
 
 checkEnvValue_TOOL_PARAMS_FILE_PATH
