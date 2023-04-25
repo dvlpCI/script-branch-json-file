@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-04-25 12:58:35
+ # @LastEditTime: 2023-04-25 13:57:02
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 工具选项
 ###
@@ -116,10 +116,9 @@ install_package() {
     if [[ "$(uname -s)" == "Darwin" ]]; then
         # 判断 CPU 架构
         if [[ "$(uname -m)" == "arm64" ]]; then
-            # 在 Apple Silicon M1 芯片的 Mac 设备上使用 Rosetta 下的 Homebrew 安装 x86_64 架构的软件包
-            arch -x86_64 brew install $1
+            arch -arm64 brew install $1
         else
-            # 在 x86_64 架构的 Intel 芯片的 Mac 设备上使用 Homebrew 安装软件包
+            # arch -x86_64 brew install $1
             brew install $1
         fi
     else
