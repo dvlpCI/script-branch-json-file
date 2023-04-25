@@ -14,7 +14,7 @@ local_test() {
 }
 
 # 实际项目
-bjfVersion=0.2.5
+bjfVersion=0.2.6
 
 # 粗略计算，容易出现arm64芯片上的路径不对等问题
 # qtoolScriptDir_Absolute="/usr/local/Cellar/qtool/${bjfVersion}/lib"
@@ -25,16 +25,16 @@ bjfVersion=0.2.5
 # echo "which_qtool_bin_dir_path: $which_qtool_bin_dir_path"
 # echo "which_qtool_source_dir_path: $which_qtool_source_dir_path"
 homebrew_Cellar_dir="$(echo $(which qtool) | sed 's/\/bin\/.*//')"
-if [[ "${homebrew_Cellar_dir}" != */ ]]; then
-    homebrew_Cellar_dir="${homebrew_Cellar_dir}/"
+if [[ "${homebrew_Cellar_dir}" == */ ]]; then
+    homebrew_Cellar_dir="${homebrew_Cellar_dir::-1}"
 fi
-homebrew_Cellar_dir=${homebrew_Cellar_dir}/Cellar/
+homebrew_Cellar_dir=${homebrew_Cellar_dir}/Cellar
 
 qtool_version_relpath="/qtool/${bjfVersion}/lib"
 if [[ "${qtool_version_relpath}" == /?* ]]; then
-  qtool_version_relpath="${qtool_version_relpath:1}"
+    qtool_version_relpath="${qtool_version_relpath:1}"
 fi
-qtoolScriptDir_Absolute="${homebrew_Cellar_dir}${qtool_version_relpath}"
+qtoolScriptDir_Absolute="${homebrew_Cellar_dir}/${qtool_version_relpath}"
 # echo "qtoolScriptDir_Absolute: $qtoolScriptDir_Absolute"
 
 # local_test # 本地测试
