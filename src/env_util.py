@@ -2,12 +2,14 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
 LastEditors: dvlproad
-LastEditTime: 2023-04-24 20:38:46
+LastEditTime: 2023-04-25 20:18:29
 FilePath: /script-branch-json-file/src/env_util.py
 Description: 获取环境变量的值
 '''
 import os
 import json
+
+from path_util import joinFullPath
 
 # 获取环境变量的值
 def getEnvValueByKey(key):
@@ -39,7 +41,7 @@ def getEnvValue_branch_json_file_dir_path():
         data = json.load(f)
 
     branch_json_file_dir_relpath = data['branchJsonFile']['BRANCH_JSON_FILE_DIR_RELATIVE_PATH']
-    branch_json_file_dir_abspath = os.path.join(branch_json_file_git_home, branch_json_file_dir_relpath)
+    branch_json_file_dir_abspath = joinFullPath(branch_json_file_git_home, branch_json_file_dir_relpath)
 
     # print("branch_json_file_dir_abspath: \033[1;31m{}\033[0m".format(branch_json_file_dir_abspath))
     return branch_json_file_dir_abspath

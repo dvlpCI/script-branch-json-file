@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-04-18 14:53:53
+LastEditTime: 2023-04-25 20:20:11
 FilePath: /branchJsonFile_create/branchInfoManager.py
 Description: git工具
 '''
@@ -10,6 +10,7 @@ Description: git工具
 
 import subprocess
 import os
+from path_util import joinFullPath
 from env_util import getEnvValue_branch_json_file_git_home, getEnvValue_branch_json_file_dir_path
 
 def get_gitHomeDir():
@@ -59,7 +60,7 @@ def get_branch_json_file_path():
     # print("分支类型 = {}, 分支简名 = {}".format(branchType, branchShortName))
     jsonFileName = f"{branchType}_{branchShortName}.json"
 
-    file_path = os.path.join(branch_json_file_dir_path, jsonFileName)
+    file_path = joinFullPath(branch_json_file_dir_path, jsonFileName)
     print("要更新的json文件：\033[1;31m{}\033[0m\n".format(file_path))
     if not os.path.exists(file_path):
         print("Error❌:在\033[1;31m{}\033[0m分支中不存在\033[1;31m{}\033[0m文件，请检查！\n".format(currentBranchFullName, file_path))
