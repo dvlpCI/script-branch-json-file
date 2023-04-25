@@ -31,7 +31,7 @@ currentBranch=$(git rev-parse --abbrev-ref HEAD)
 
 
 
-project_dir=$(cat "${QTOOL_DEAL_PROJECT_DIR_PATH}")
+project_dir=${QTOOL_DEAL_PROJECT_DIR_PATH}
 if [[ $project_dir =~ ^~.* ]]; then
     # 如果 $project_dir 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
     project_dir="${HOME}${project_dir:1}"
