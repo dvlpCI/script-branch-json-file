@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-04-25 13:00:28
+ # @LastEditTime: 2023-04-25 14:25:08
  # @Description: 
 ### 
 
@@ -14,7 +14,7 @@ local_test() {
 }
 
 # 实际项目
-bjfVersion=0.2.4
+bjfVersion=0.2.5
 
 # 粗略计算，容易出现arm64芯片上的路径不对等问题
 # qtoolScriptDir_Absolute="/usr/local/Cellar/qtool/${bjfVersion}/lib"
@@ -25,12 +25,14 @@ bjfVersion=0.2.4
 # echo "which_qtool_bin_dir_path: $which_qtool_bin_dir_path"
 # echo "which_qtool_source_dir_path: $which_qtool_source_dir_path"
 homebrew_Cellar_dir="$(echo $(which qtool) | sed 's/\/bin\/.*//')"
-qtool_version_relpath="/qtool/${bjfVersion}/lib"
 if [[ "${homebrew_Cellar_dir}" != */ ]]; then
     homebrew_Cellar_dir="${homebrew_Cellar_dir}/"
 fi
-if [[ "${qtool_version_relpath}" == */ ]]; then
-    qtool_version_relpath="${qtool_version_relpath::-1}" # 删除最后一个字符（即/）
+homebrew_Cellar_dir=${homebrew_Cellar_dir}/Cellar/
+
+qtool_version_relpath="/qtool/${bjfVersion}/lib"
+if [[ "${qtool_version_relpath}" == /?* ]]; then
+  qtool_version_relpath="${qtool_version_relpath:1}"
 fi
 qtoolScriptDir_Absolute="${homebrew_Cellar_dir}${qtool_version_relpath}"
 # echo "qtoolScriptDir_Absolute: $qtoolScriptDir_Absolute"

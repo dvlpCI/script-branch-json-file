@@ -76,7 +76,7 @@ addEnvPathByProjectDir() {
 
     if [ "$SHELL_TYPE" = "bash" ]; then
         # echo "Adding TOOL_PATH to .bash_profile"
-        echo "\n# 添加工具" >>~/.bash_profile
+        echo "# 添加工具" >>~/.bash_profile
         echo "export QTOOL_DEAL_PROJECT_DIR_PATH=${project_dir}" >>~/.bash_profile
         echo "export QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH=${addedEnvPath}" >>~/.bash_profile
         echo "export PATH=\${PATH}:\${QTOOL_DEAL_PROJECT_DIR_PATH}/bin" >>~/.bash_profile # 此行是为了使用tool，且${PATH} 前添加斜杠来转义，避免去取值了
@@ -84,7 +84,7 @@ addEnvPathByProjectDir() {
         # open ~/.bash_profile
     elif [ "$SHELL_TYPE" = "zsh" ]; then
         # echo "Adding TOOL_PATH to .zshrc"
-        echo "\n# 添加工具" >>~/.zshrc
+        echo "# 添加工具" >>~/.zshrc
         echo "export QTOOL_DEAL_PROJECT_DIR_PATH=${project_dir}" >>~/.zshrc
         echo "export QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH=${addedEnvPath}" >>~/.zshrc
         echo "export PATH=\${PATH}:\${QTOOL_DEAL_PROJECT_DIR_PATH}/bin" >>~/.zshrc # 此行是为了使用tool，且${PATH} 前添加斜杠来转义，避免去取值了
