@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-04-25 12:57:19
+ # @LastEditTime: 2023-05-05 21:01:33
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -92,6 +92,7 @@ tool_menu() {
         "3|updateJsonFile   更新当前所处分支的信息文件(人员、提测时间、提测时间、测试通过时间)"
         "4|rebaseCheck      将当前分支合并到其他分支前的rebase检查"
         "5|jenkins          Jenkins打包"
+        "6|goPP             进入更新Apple设备的目录"
         # "6|onlyTest         我只是测试项..."
     )
 
@@ -160,6 +161,17 @@ gitBranchAndJsonFile() {
     createBranchJsonFile
 }
 
+goPPDir() {
+    pp_dir_path="~/Library/MobileDevice/Provisioning Profiles"
+    if [[ $pp_dir_path =~ ^~.* ]]; then
+        # 如果 $pp_dir_path 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
+        pp_dir_path="${HOME}${pp_dir_path:1}"
+    fi
+    open "$pp_dir_path"
+    checkResultCode $?
+}
+
+
 checkResultCode() {
     resultCode=$1
     if [ $resultCode = 0 ]; then
@@ -180,6 +192,7 @@ while [ "$valid_option" = false ]; do
     3 | updateJsonFile) updateBranchJsonFile break ;;
     4 | rebaseCheck) rebaseCheckBranch break ;;
     5 | jenkins) buildJenkinsJob break ;;
+    6 | goPP) goPPDir break ;;
     # 6 | onlyTest) valid_option=ture break ;;
     Q | q) exit 2 ;;
     *) valid_option=false echo "无此选项，请重新输入。" ;;

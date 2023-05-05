@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-04-25 20:22:59
+ # @LastEditTime: 2023-05-05 20:51:04
  # @Description: 
 ### 
 
@@ -37,7 +37,9 @@ fi
 qtoolScriptDir_Absolute="${homebrew_Cellar_dir}/${qtool_version_relpath}"
 # echo "qtoolScriptDir_Absolute: $qtoolScriptDir_Absolute"
 
-# local_test # 本地测试
+if [ -n "$1" ] && [ "$1" == "test" ] ; then
+    local_test # 本地测试
+fi
 # echo "qtoolScriptDir_Absolute=${qtoolScriptDir_Absolute}"
 
 # 检查运行环境
@@ -47,7 +49,7 @@ if [ $? != 0 ]; then
 fi
 
 versionCmdStrings=("--version" "-version" "-v")
-if [ -z "$1" ]; then
+if [ -z "$1" ] || [ "$1" == "test" ]; then
     sh ${qtoolScriptDir_Absolute}/qtool_menu.sh "${qtoolScriptDir_Absolute}"
 elif echo "${versionCmdStrings[@]}" | grep -wq "$1" &>/dev/null; then
     echo "${bjfVersion}"
