@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-06 16:03:44
+ # @LastEditTime: 2023-05-06 17:56:01
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 分支JSON的创建-shell
 ###
@@ -23,7 +23,7 @@ quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退�
 
 # 1、确定分支名(分支类型选择+分支名输入)
 # 1.1、分支类型选择
-menu() {
+branch_type_menu() {
     # 读取文件内容
     content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
     branchBelongKey1="branch_belong1"
@@ -59,7 +59,7 @@ chooseBranchType() {
     valid_option=true
 }
 
-menu
+branch_type_menu
 valid_option=false
 while [ "$valid_option" = false ]; do
     read -r -p "①请选择您所要创建的分支类型的编号(若要退出请输入Q|q) : " option
@@ -84,12 +84,12 @@ menu_module() {
     branchBelongKey2="branch_belong2"
     branchBelongMaps2=$(echo "$content" | jq -r ".${branchBelongKey2}")
     if [ -z "${branchBelongMaps2}" ] || [ "${branchBelongMaps2}" == "null" ]; then
-        rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .${branchBelongMaps2} "
+        rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .${branchBelongKey2} "
         printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
         exit 1
     fi
 
-    # branchBelongMapCount2=$(echo "$content" | jq ".${branchBelongMaps2}" | jq ".|length")
+    # branchBelongMapCount2=$(echo "$content" | jq ".${branchBelongKey2}" | jq ".|length")
     # # echo "=============branchBelongMapCount2=${branchBelongMapCount2}"
     # if [ ${branchBelongMapCount2} -eq 0 ]; then
     #     echo "友情提醒💡💡💡：没有找到可选的分支模块类型"

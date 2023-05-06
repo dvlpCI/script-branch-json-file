@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-06 14:24:22
+ # @LastEditTime: 2023-05-06 17:23:51
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -91,9 +91,10 @@ tool_menu() {
         "4|updateJsonFile   更新当前所处分支的信息文件(人员、提测时间、提测时间、测试通过时间)"
         "5|noPackBranch     修复上次打包了某个分支，但这次确定先不再打包该分支(一定慎用)"
         "6|rebaseCheck      将当前分支合并到其他分支前的rebase检查"
-        "7|jenkins          Jenkins打包"
-        "8|goPP             进入更新Apple设备的目录"
-        "9|goGitRefsRemotes 修复远程删掉了，但本地执行git branch -r 还是显示出来"
+        "7|gitCommitMessage 按规范提交当前所有代码，形如：【Feature】（scope）改动信息"
+        "8|jenkins          Jenkins打包"
+        "9|goPP             进入更新Apple设备的目录"
+        "10|goGitRefsRemotes 修复远程删掉了，但本地执行git branch -r 还是显示出来"
         # "6|onlyTest         我只是测试项..."
     )
 
@@ -107,6 +108,8 @@ tool_menu() {
             printf "${GREEN}%s\033[0m\n" "${options[$i]}"
         elif [ "$i" -ge 4 ] && [ "$i" -le 4 ]; then
             printf "${PURPLE}%s\033[0m\n" "${options[$i]}"
+        elif [ "$i" -ge 5 ] && [ "$i" -le 6 ]; then
+            printf "${BLUE}%s\033[0m\n" "${options[$i]}"
         else
             printf "${CYAN}%s\033[0m\n" "${options[$i]}"
         fi
@@ -151,6 +154,12 @@ updateBranchJsonFile() {
 # 将当前分支合并到其他分支前的rebase检查
 rebaseCheckBranch() {
     sh ${rebaseScriptDir_Absolute}/pre-push.sh
+    checkResultCode $?
+}
+
+# 按规范提交当前所有代码
+pushGitCommitMessage() {
+    sh $qtoolScriptDir_Absolute/commit/commit_message.sh
     checkResultCode $?
 }
 
@@ -220,9 +229,10 @@ while [ "$valid_option" = false ]; do
     4 | updateJsonFile) updateBranchJsonFile break ;;
     5 | noPackBranch) lastBranchJsonFile_update break ;;
     6 | rebaseCheck) rebaseCheckBranch break ;;
-    7 | jenkins) buildJenkinsJob break ;;
-    8 | goPP) goPPDir break ;;
-    9 | goGitRefsRemotes) goGitRefsRemotesDir break ;;
+    7 | gitCommitMessage) pushGitCommitMessage break ;;
+    8 | jenkins) buildJenkinsJob break ;;
+    9 | goPP) goPPDir break ;;
+    10 | goGitRefsRemotes) goGitRefsRemotesDir break ;;
 
     # 6 | onlyTest) valid_option=ture break ;;
     Q | q) exit 2 ;;
