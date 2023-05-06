@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-06 15:38:09
+ # @LastEditTime: 2023-05-06 16:03:44
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 分支JSON的创建-shell
 ###
@@ -77,8 +77,60 @@ while [ "$valid_option" = false ]; do
 done
 printf "①已选择您所要创建的分支类型${RED}%s${NC}\n\n" "$branchType"
 
-# 1.2、分支名输入
-read -r -p "②请输入您的分支名(若要退出请输入Q|q) : " branchName
+# 1.2、分支模块选择
+menu_module() {
+    # 读取文件内容
+    content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
+    branchBelongKey2="branch_belong2"
+    branchBelongMaps2=$(echo "$content" | jq -r ".${branchBelongKey2}")
+    if [ -z "${branchBelongMaps2}" ] || [ "${branchBelongMaps2}" == "null" ]; then
+        rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .${branchBelongMaps2} "
+        printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
+        exit 1
+    fi
+
+    # branchBelongMapCount2=$(echo "$content" | jq ".${branchBelongMaps2}" | jq ".|length")
+    # # echo "=============branchBelongMapCount2=${branchBelongMapCount2}"
+    # if [ ${branchBelongMapCount2} -eq 0 ]; then
+    #     echo "友情提醒💡💡💡：没有找到可选的分支模块类型"
+    #     return 1
+    # fi
+    echo "已知模块选项、已知基础选项："
+    echo "$content" | jq -r '.branch_belong2.strong_business, .branch_belong2.package | to_entries[] | "\(.key): \(.value)"'
+    # 从 JSON 数据中获取 key 列表
+    moduleOptionKeys=($(echo "$content" | jq -r '.branch_belong2.strong_business, .branch_belong2.package | keys[]'))
+}
+menu_module
+
+# 无限循环，监听用户输入
+while true; do
+    read -r -p "②请输入您的模块/基础选项(若要退出请输入Q|q) : " module_option_input
+
+    if echo "${quitStrings[@]}" | grep -wq "${module_option_input}" &>/dev/null; then
+        echo "您已退出创建"
+        exit 1
+    fi
+
+    # 遍历 key 列表，判断输入是否匹配
+    match=false
+    for key in "${moduleOptionKeys[@]}"; do
+        if [ "$module_option_input" == "$key" ]; then
+            match=true
+            break
+        fi
+    done
+
+    # 如果没有匹配的 key，则遍历 JSON 数据中的最里层的所有 key 和 value 并将其打印出来
+    if [ "$match" == false ]; then
+        printf "${RED}输入的${module_option_input}不匹配${NC}\n"
+    else
+        break
+    fi
+done
+
+
+# 1.3、分支名输入
+read -r -p "③请完善您的分支名(若要退出请输入Q|q) : ${module_option_input}_" branchName
 while [ "$branchName" != 'quit' ]; do
     case $branchName in
     Q | q) exit 2 ;;
@@ -92,9 +144,9 @@ while [ "$branchName" != 'quit' ]; do
         fi
         ;;
     esac
-    read -r -p "②请输入您的分支名(若要退出请输入Q|q) : " branchName
+    read -r -p "③请完善您的分支名(若要退出请输入Q|q) : ${module_option_input}_" branchName
 done
-newbranch=$branchType/$branchName
+newbranch=$branchType/${module_option_input}_$branchName
 
 # 1.3、分支名确认
 # read -p "是否确定创建 $newbranch. [继续y/退出n] : " continueNewbranch
