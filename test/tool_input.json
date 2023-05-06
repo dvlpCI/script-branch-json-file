@@ -4,6 +4,24 @@
   "website": {
     "doc_home": "http://wiki.xxx.com/zh/app/home"
   },
+  "branch_belong1": [
+    {
+      "key": "hotfix",
+      "des": "线上修复"
+    },
+    {
+      "key": "feature",
+      "des": "产品需求"
+    },
+    {
+      "key": "optimize",
+      "des": "技术优化"
+    },
+    {
+      "key": "other",
+      "des": "其他"
+    }
+  ],
   "person": [
     {
       "id": "developer1",

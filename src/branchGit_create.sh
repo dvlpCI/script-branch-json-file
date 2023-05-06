@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-04-21 13:07:50
+ # @LastEditTime: 2023-05-06 15:38:09
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 分支JSON的创建-shell
 ###
@@ -24,29 +24,33 @@ quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退�
 # 1、确定分支名(分支类型选择+分支名输入)
 # 1.1、分支类型选择
 menu() {
-    # echo "请选择您所要创建的分支类型(若要退出请输入Q|q):"
-    #     cat <<EOF
-    #     1|hotfix    hotfix(线上修复)
-    #     2|feature   feature(产品需求)
-    #     3|optimize  optimize(技术优化)
-    #     4|other     other(其他)
-    # EOF
+    # 读取文件内容
+    content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
+    branchBelongKey1="branch_belong1"
+    branchBelongMaps1=$(echo "$content" | jq -r ".${branchBelongKey1}")
+    if [ -z "${branchBelongMaps1}" ] || [ "${branchBelongMaps1}" == "null" ]; then
+        rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .${branchBelongKey1} "
+        printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
+        exit 1
+    fi
 
-    # 定义菜单选项
-    options=(
-        "1|hotfix    hotfix(线上修复)"
-        "2|feature   feature(产品需求)"
-        "3|optimize  optimize(技术优化)"
-        "4|other     other(其他)"
-    )
+    branchBelongMapCount=$(echo "$content" | jq ".${branchBelongKey1}" | jq ".|length")
+    # echo "=============branchBelongMapCount=${branchBelongMapCount}"
+    if [ ${branchBelongMapCount} -eq 0 ]; then
+        echo "友情提醒💡💡💡：没有找到可选的分支类型"
+        return 1
+    fi
 
-    # 遍历数组并输出带颜色的文本
-    for i in "${!options[@]}"; do
-        if [ "$i" -eq 0 ]; then
-            printf "${BLUE}%s${NC}\n" "${options[$i]}"
-        else
-            printf "${BLUE}%s${NC}\n" "${options[$i]}"
+    happenError=false
+    for ((i = 0; i < ${branchBelongMapCount}; i++)); do
+        iBranchBelongMap=$(echo "$content" | jq ".${branchBelongKey1}" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
+        iBranchBelongName=$(echo "$iBranchBelongMap" | jq -r ".key")
+        iBranchBelongDes=$(echo "$iBranchBelongMap" | jq -r ".des")
+        if [ $? != 0 ]; then
+            happenError=true
         fi
+        iBranchOption="$((i + 1))|${iBranchBelongName}"
+        printf "${BLUE}%-15s%s${NC}\n" "${iBranchOption}" "$iBranchBelongName(${iBranchBelongDes})" # 要拼接两个字符串，并在拼接的结果中，如果第一个字符串不够 15 位则自动补充空格到 15 位
     done
 }
 
@@ -58,15 +62,18 @@ chooseBranchType() {
 menu
 valid_option=false
 while [ "$valid_option" = false ]; do
-    read -r -p "①请选择您所要创建的分支类型(若要退出请输入Q|q) : " option
-    case $option in
-    1 | hotfix) chooseBranchType "hotfix" break ;;
-    2 | feature) chooseBranchType "feature" break ;;
-    3 | optimize) chooseBranchType "optimize" break ;;
-    4 | other) chooseBranchType "other" break ;;
-    Q | q) exit 2 ;;
-    *) valid_option=false echo "无此选项，请重新输入。" ;;
-    esac
+    read -r -p "①请选择您所要创建的分支类型的编号(若要退出请输入Q|q) : " option
+    if [ ${option} == "q" ] || [ ${option} == "Q" ]; then
+        exit 2
+    elif [ ${option} -le ${branchBelongMapCount} ]; then
+        tBranchBelongMap=$(echo "$content" | jq ".${branchBelongKey1}" | jq -r ".[$((option - 1))]") # 添加 jq -r 的-r以去掉双引号
+        tBranchBelongName=$(echo "$tBranchBelongMap" | jq -r ".key")
+        tBranchBelongDes=$(echo "$tBranchBelongMap" | jq -r ".des")
+        chooseBranchType "${tBranchBelongName}"
+        break
+    else
+        valid_option=false echo "无此选项，请重新输入。"
+    fi
 done
 printf "①已选择您所要创建的分支类型${RED}%s${NC}\n\n" "$branchType"
 
@@ -98,7 +105,6 @@ if echo "${quitStrings[@]}" | grep -wq "${continueNewbranch}" &>/dev/null; then
     exit 1
 fi
 
-
 # echo "分支创建准备..."
 # 1：需要切换到被拉取的分支，并且拉取项目，命令如下：
 # 读取文件内容
@@ -106,9 +112,9 @@ content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
 should_rebase_from_branch=$(echo "$content" | jq -r '.rebase.rebaseFrom')
 # echo "should_rebase_from_branch=${should_rebase_from_branch}"
 if [ -z "${should_rebase_from_branch}" ] || [ "${should_rebase_from_branch}" == "null" ]; then
-  rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .rebase.rebaseFrom "
-  printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
-  exit 1
+    rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .rebase.rebaseFrom "
+    printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
+    exit 1
 fi
 should_rebase_from_branch=${should_rebase_from_branch##*/} # 取最后的component
 
