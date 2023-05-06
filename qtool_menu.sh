@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-05 21:01:33
+ # @LastEditTime: 2023-05-06 14:24:22
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -50,7 +50,6 @@ checkEnvValue_TOOL_PARAMS_FILE_PATH() {
         return 1
     fi
 
-
     if [ "${#QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" -eq 0 ]; then
         printf "${RED}您还未设置【要处理的项目的配置信息】的环境变量，请open ~/.bash_profile 或 open ~/.zshrc后,将${BLUE}export QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH=yourToolParamsFileAbsolutePath ${RED}添加到环境变量中(其中${YELLOW}yourToolParamsFileAbsolutePath${RED}需替换成自己的项目实际绝对路径)%s${NC}\n"
         return 1
@@ -60,7 +59,6 @@ checkEnvValue_TOOL_PARAMS_FILE_PATH() {
         return 1
     fi
 
-    
 }
 
 checkEnvValue_TOOL_PARAMS_FILE_PATH
@@ -90,9 +88,11 @@ tool_menu() {
         "1|gitBranch        创建分支(且创建完可选择继续2操作)"
         "2|createJsonFile   创建当前所处分支的信息文件"
         "3|updateJsonFile   更新当前所处分支的信息文件(人员、提测时间、提测时间、测试通过时间)"
-        "4|rebaseCheck      将当前分支合并到其他分支前的rebase检查"
-        "5|jenkins          Jenkins打包"
-        "6|goPP             进入更新Apple设备的目录"
+        "4|noPackBranch     修复上次打包了某个分支，但这次确定先不再打包该分支(一定慎用)"
+        "5|rebaseCheck      将当前分支合并到其他分支前的rebase检查"
+        "6|jenkins          Jenkins打包"
+        "7|goPP             进入更新Apple设备的目录"
+        "8|goGitRefsRemotes 修复远程删掉了，但本地执行git branch -r 还是显示出来"
         # "6|onlyTest         我只是测试项..."
     )
 
@@ -100,12 +100,14 @@ tool_menu() {
     for i in "${!options[@]}"; do
         if [ "$i" -eq 0 ]; then
             printf "${BLUE}%s\033[0m\n" "${options[$i]}"
-        elif [ "$i" -gt 2 ] && [ "$i" -le 3 ]; then
+        elif [ "$i" -ge 1 ] && [ "$i" -le 2 ]; then
+            printf "${YELLOW}%s\033[0m\n" "${options[$i]}"
+        elif [ "$i" -ge 3 ] && [ "$i" -le 3 ]; then
             printf "${GREEN}%s\033[0m\n" "${options[$i]}"
-        elif [ "$i" -gt 3 ] && [ "$i" -le 4 ]; then
+        elif [ "$i" -ge 4 ] && [ "$i" -le 4 ]; then
             printf "${PURPLE}%s\033[0m\n" "${options[$i]}"
         else
-            printf "${YELLOW}%s\033[0m\n" "${options[$i]}"
+            printf "${CYAN}%s\033[0m\n" "${options[$i]}"
         fi
     done
 }
@@ -161,6 +163,11 @@ gitBranchAndJsonFile() {
     createBranchJsonFile
 }
 
+lastBranchJsonFile_update() {
+    python3 "${branchJsonFileScriptDir_Absolute}/lastBranchJsonFile_update.py"
+    checkResultCode $?
+}
+
 goPPDir() {
     pp_dir_path="~/Library/MobileDevice/Provisioning Profiles"
     if [[ $pp_dir_path =~ ^~.* ]]; then
@@ -171,6 +178,10 @@ goPPDir() {
     checkResultCode $?
 }
 
+goGitRefsRemotesDir() {
+    python3 ${branchJsonFileScriptDir_Absolute}/git_project_choose.py
+    checkResultCode $?
+}
 
 checkResultCode() {
     resultCode=$1
@@ -190,9 +201,11 @@ while [ "$valid_option" = false ]; do
     1 | gitBranch) gitBranchAndJsonFile break ;;
     2 | createJsonFile) createBranchJsonFile break ;;
     3 | updateJsonFile) updateBranchJsonFile break ;;
-    4 | rebaseCheck) rebaseCheckBranch break ;;
-    5 | jenkins) buildJenkinsJob break ;;
-    6 | goPP) goPPDir break ;;
+    4 | noPackBranch) lastBranchJsonFile_update break ;;
+    5 | rebaseCheck) rebaseCheckBranch break ;;
+    6 | jenkins) buildJenkinsJob break ;;
+    7 | goPP) goPPDir break ;;
+    8 | goGitRefsRemotes) goGitRefsRemotesDir break ;;
     # 6 | onlyTest) valid_option=ture break ;;
     Q | q) exit 2 ;;
     *) valid_option=false echo "无此选项，请重新输入。" ;;

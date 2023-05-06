@@ -2,14 +2,18 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
 LastEditors: dvlproad
-LastEditTime: 2023-04-25 20:18:29
+LastEditTime: 2023-05-06 10:11:29
 FilePath: /script-branch-json-file/src/env_util.py
 Description: 获取环境变量的值
 '''
 import os
 import json
-
+import subprocess
 from path_util import joinFullPath
+
+# 定义颜色常量
+RED = "\033[31m"
+NC = "\033[0m"
 
 # 获取环境变量的值
 def getEnvValueByKey(key):
@@ -57,6 +61,13 @@ def getEnvValue_jenkins_workspace():
     jenkins_workspace=jenkins_data['workspace']
     if jenkins_workspace.startswith('~'):
         jenkins_workspace = os.path.expanduser(jenkins_workspace) # 将~扩展为当前用户的home目录
+
+    if not os.path.isdir(jenkins_workspace):
+        print(f"{RED}目录{jenkins_workspace}不存在，请检查{tool_params_file_path}中的jenkins.workspace字段 {NC}")
+        # 在 macOS 或 Linux 上打开 file_path 文件。
+        # subprocess.Popen(['open', file_path])
+        subprocess.Popen(['open', tool_params_file_path])
+        return 1
     
     return jenkins_workspace
 

@@ -4,7 +4,7 @@
 # @Author: dvlproad
 # @Date: 2023-04-13 10:40:15
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-04-18 16:31:06
+ # @LastEditTime: 2023-05-06 14:16:48
 # @Description:
 ###
 
@@ -16,6 +16,15 @@
 # 5. 如果作业执行成功，则输出日志信息。
 
 # 请注意，这个示例脚本需要使用 curl 命令和 Python 3 运行 Python 脚本。如果您的系统上没有安装 curl 和 Python 3，请先安装它们。
+
+# 定义颜色常量
+NC='\033[0m' # No Color
+RED='\033[31m'
+GREEN='\033[32m'
+YELLOW='\033[33m'
+BLUE='\033[34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
 
 jenkinsScriptDir_Absolute=$1
 if [ ${#jenkinsScriptDir_Absolute} -eq 0 ]; then
@@ -125,11 +134,25 @@ buildResultJobs() {
         return 1
     fi
 
+    happenError=false
     for (( i = 0; i < ${jenkinsUrlCount}; i++ )); do
         jenkinsUrl=$(cat "${temp_reslut_file_path}" | jq ".${AllInterceptArrayKey}" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
+        # http://localhost:8080/job/xxx_iOS_测试/buildWithParameters? 获取job之后和buildWithParameters之前的job名
+        job=${jenkinsUrl##*/job/}   # 先去掉job前面的部分
+        jobName=${job%%/*}       # 再去掉buildWithParameters后面的部分
         buildJob "$jenkinsUrl"
-        echo "----------✅[$((i+1))] $jenkinsUrl 已开始执行"
+        if [ $? != 0 ]; then
+            happenError=true
+        fi
+        echo "✅[$((i+1))] $jobName 已开始执行"
     done
+    if [ ${happenError} == false ]; then
+        printf "${GREEN}恭喜：jenkins打包任务已启动${NC}\n"
+    fi
+
+    firstJenkinsUrl=$(cat "${temp_reslut_file_path}" | jq ".${AllInterceptArrayKey}" | jq -r ".[0]") # 添加 jq -r 的-r以去掉双引号
+    jenkinsBaseUrl=${firstJenkinsUrl%%/job*}
+    open "${jenkinsBaseUrl}"
 }
 
 

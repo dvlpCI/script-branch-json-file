@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-05-05 21:38:45
+LastEditTime: 2023-05-06 10:19:50
 FilePath: lastBranchJsonFile_update.py
 Description: 分支Json文件的信息更新
 '''
@@ -24,13 +24,15 @@ NC = "\033[0m"
 
 def choose_last_branchs_info_file_path():
     jenkins_workspace_dir_path=getEnvValue_jenkins_workspace()
+    if jenkins_workspace_dir_path == 1:
+        return 1
     # print("文件路径1：", jenkins_workspace_dir_path)
     
     # 获取上级目录，使用 os.path.abspath()函数获取jenkins_workspace文件夹的绝对路径，能有效去除目录路径结尾可能多一个/的问题
     jenkins_workspace_dir_path=os.path.abspath(jenkins_workspace_dir_path)
     last_branchs_info_dir_path = os.path.dirname(jenkins_workspace_dir_path)
     if not os.path.isdir(last_branchs_info_dir_path):
-        print(f"{RED}目录{last_branchs_info_dir_path}不存在，请检查{NC}")
+        print(f"{RED}目录last_branchs_info_dir_path={last_branchs_info_dir_path}不存在，请检查{NC}")
         return 1
     
     
@@ -45,7 +47,7 @@ def choose_last_branchs_info_file_path():
 
 
     while True:
-        user_input = input("请输入文件名（输入Q或q退出）：")
+        user_input = input("请输入想要操作的文件名（输入Q或q退出）：")
         if user_input.lower() == 'q':
             exit(2)
             break
