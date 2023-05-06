@@ -1,6 +1,9 @@
 {
   "version": "package unknow version",
   "buildNumber": "package unknow buildNumber",
+  "website": {
+    "doc_home": "http://wiki.xxx.com/zh/app/home"
+  },
   "person": [
     {
       "id": "developer1",

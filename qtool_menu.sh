@@ -85,14 +85,15 @@ gitHome() {
 tool_menu() {
     # 定义菜单选项
     options=(
-        "1|gitBranch        创建分支(且创建完可选择继续2操作)"
-        "2|createJsonFile   创建当前所处分支的信息文件"
-        "3|updateJsonFile   更新当前所处分支的信息文件(人员、提测时间、提测时间、测试通过时间)"
-        "4|noPackBranch     修复上次打包了某个分支，但这次确定先不再打包该分支(一定慎用)"
-        "5|rebaseCheck      将当前分支合并到其他分支前的rebase检查"
-        "6|jenkins          Jenkins打包"
-        "7|goPP             进入更新Apple设备的目录"
-        "8|goGitRefsRemotes 修复远程删掉了，但本地执行git branch -r 还是显示出来"
+        "1|docHome          打开移动端文档主页"
+        "2|gitBranch        创建分支(且创建完可选择继续2操作)"
+        "3|createJsonFile   创建当前所处分支的信息文件"
+        "4|updateJsonFile   更新当前所处分支的信息文件(人员、提测时间、提测时间、测试通过时间)"
+        "5|noPackBranch     修复上次打包了某个分支，但这次确定先不再打包该分支(一定慎用)"
+        "6|rebaseCheck      将当前分支合并到其他分支前的rebase检查"
+        "7|jenkins          Jenkins打包"
+        "8|goPP             进入更新Apple设备的目录"
+        "9|goGitRefsRemotes 修复远程删掉了，但本地执行git branch -r 还是显示出来"
         # "6|onlyTest         我只是测试项..."
     )
 
@@ -114,6 +115,21 @@ tool_menu() {
 
 # 显示工具选项
 tool_menu
+
+# 打开移动端文档主页
+openDocHome() {
+    # 读取文件内容
+    content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
+    doc_home_website=$(echo "$content" | jq -r '.website.doc_home')
+    if [ -z "${doc_home_website}" ] || [ "${doc_home_website}" == "null" ]; then
+        rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .website.doc_home "
+        printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
+        exit 1
+    fi
+
+    open "${doc_home_website}"
+    checkResultCode $?
+}
 
 _gitBranch() {
     sh ${branchJsonFileScriptDir_Absolute}/branchGit_create.sh
@@ -198,14 +214,16 @@ valid_option=false
 while [ "$valid_option" = false ]; do
     read -r -p "请选择您想要执行的操作编号或id(若要退出请输入Q|q) : " option
     case $option in
-    1 | gitBranch) gitBranchAndJsonFile break ;;
-    2 | createJsonFile) createBranchJsonFile break ;;
-    3 | updateJsonFile) updateBranchJsonFile break ;;
-    4 | noPackBranch) lastBranchJsonFile_update break ;;
-    5 | rebaseCheck) rebaseCheckBranch break ;;
-    6 | jenkins) buildJenkinsJob break ;;
-    7 | goPP) goPPDir break ;;
-    8 | goGitRefsRemotes) goGitRefsRemotesDir break ;;
+    1 | docHome) openDocHome break ;;
+    2 | gitBranch) gitBranchAndJsonFile break ;;
+    3 | createJsonFile) createBranchJsonFile break ;;
+    4 | updateJsonFile) updateBranchJsonFile break ;;
+    5 | noPackBranch) lastBranchJsonFile_update break ;;
+    6 | rebaseCheck) rebaseCheckBranch break ;;
+    7 | jenkins) buildJenkinsJob break ;;
+    8 | goPP) goPPDir break ;;
+    9 | goGitRefsRemotes) goGitRefsRemotesDir break ;;
+
     # 6 | onlyTest) valid_option=ture break ;;
     Q | q) exit 2 ;;
     *) valid_option=false echo "无此选项，请重新输入。" ;;
