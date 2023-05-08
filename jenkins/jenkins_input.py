@@ -21,15 +21,29 @@ from jenkins_input_result_util import save_jenkins_urls_to_file
 
 
 import sys
+
+# 定义颜色常量
+NC='\033[0m' # No Color
+RED='\033[31m'
+GREEN='\033[32m'
+YELLOW='\033[33m'
+BLUE='\033[34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+
+
+
 temp_reslut_file_path=sys.argv[1]
 # print("====保存结果的临时文件的路径为：\033[1;31m{}\033[0m\n".format(temp_reslut_file_path))
 
 def getOptionById(options, optionInputId):
+    # print("\033[1;32m哈哈哈{}\033[0m".format(optionInputId))
     option=None
     for iOption in options:
         if iOption['inputId'] == optionInputId:
             option=iOption
             break
+    # print("\033[1;32m哈哈哈{}\033[0m".format(option))
     return option
 
 
@@ -46,7 +60,7 @@ def chooseOptionForPack():
     while True:
         option_input_id = input("请输入想要打包的id（退出q/Q）：")
         if option_input_id == "q" or option_input_id == "Q":
-            exit()
+            exit(2)
 
         option=getOptionById(options, option_input_id)
         if not option:
@@ -59,11 +73,11 @@ def chooseOptionForPack():
 
     return getAndSavePackParamStringToFileForOption(data['jenkins'], option)
 
-def getChangeLog():
+def getChangeLog(jobUseParamType):
     while True:
         changelog_input = input("请输入更新说明（退出q/Q）：")
         if changelog_input == "q" or changelog_input == "Q":
-            exit()
+            exit(2)
         else:
             break
     return changelog_input
@@ -79,13 +93,20 @@ def getAndSavePackParamStringToFileForOption(jenkins_data, option):
     # fixedBodyParams
     paramMap=jenkins_data['jenkins_input_option_param']
     jobUseParamType=option['jobUseParamType']
+    # 获取 jenkins_input_option_param 中key为 jobUseParamType 的值
     param = next(filter(lambda x: jobUseParamType in x, paramMap))
-    # print(json.dumps(param[jobUseParamType], indent=2))
-
-    change_log=getChangeLog()
-    param[jobUseParamType]['ChangeLog'] = change_log
+    networkParams=param[jobUseParamType]
+    print(json.dumps(networkParams, indent=2))
     
-    query_string = urllib.parse.urlencode(param[jobUseParamType])
+    if "CHANGE_LOG" not in networkParams:
+        print(f"{networkParams}中不存在key为 CHNAGE_LOG 的值，请手动输入")
+        change_log=getChangeLog(jobUseParamType)
+    else:
+        change_log = networkParams['CHANGE_LOG']
+        # print('CHANGE_LOG 的值为：', change_log)
+    networkParams['ChangeLog'] = change_log
+    
+    query_string = urllib.parse.urlencode(networkParams)
 
     jenkinUrls = []
     jobNames=option['jobNames']

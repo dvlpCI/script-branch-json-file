@@ -2,8 +2,8 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-04-18 16:08:06
-FilePath: jenkins_input.py
+LastEditTime: 2023-05-08 16:02:57
+FilePath: jenkins_input_result_get.py
 Description: Jenkins打包-输入
 '''
 # -*- coding: utf-8 -*-

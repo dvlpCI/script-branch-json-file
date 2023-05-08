@@ -117,7 +117,9 @@ list_jobs() {
 
 # echo  "正在执行命令:《 python3 ${jenkinsScriptDir_Absolute}/jenkins_input.py \"$temp_reslut_file_path\" 》"
 python3 ${jenkinsScriptDir_Absolute}/jenkins_input.py "$temp_reslut_file_path"    # 内部含需交互的输入操作，所以结果先存到临时文件中
-
+if [ $? != 0 ]; then
+    exit 1
+fi
 # JENKINS_JOB_URLs=$(python3 ${jenkinsScriptDir_Absolute}/jenkins_input_result_get.py "$temp_reslut_file_path")
 # echo "-----------JENKINS_JOB_URLs=\n${JENKINS_JOB_URLs}"
 

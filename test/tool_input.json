@@ -129,6 +129,7 @@
       {
         "dev_product": {
           "BRANCH": "dev_publish_in",
+          "CHANGE_LOG": "版本更新",
           "PgyerUploadUrlType": "先上传到临时地址，通过后再添加到最终地址",
           "ShouldBackupToCos": "false",
           "NotificatePeople": "all"
