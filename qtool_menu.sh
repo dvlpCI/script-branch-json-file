@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-09 20:03:18
+ # @LastEditTime: 2023-05-09 20:25:35
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -153,6 +153,11 @@ updateBranchJsonFile() {
 # 将当前分支合并到其他分支前的rebase检查
 rebaseCheckBranch() {
     sh ${rebaseScriptDir_Absolute}/pre-push.sh
+    checkResultCode $?
+}
+
+rebaseHook() {
+    sh ${rebaseScriptDir_Absolute}/pre-push-hook-copy.sh
     checkResultCode $?
 }
 

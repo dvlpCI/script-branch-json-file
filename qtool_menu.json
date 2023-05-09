@@ -54,6 +54,11 @@
                     "action": "rebaseCheckBranch"
                 },
                 {
+                    "name": "rebaseHook",
+                    "des": "代码相关(检查):hook pre-push",
+                    "action": "rebaseHook"
+                },
+                {
                     "name": "updatePageKey",
                     "des": "代码相关(埋点):更新埋点页面的类与key值",
                     "action": "updateMonitorPageKey"
