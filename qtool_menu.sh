@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-06 17:23:51
+ # @LastEditTime: 2023-05-09 17:54:13
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -84,35 +84,34 @@ gitHome() {
 # 工具选项
 tool_menu() {
     # 定义菜单选项
-    options=(
-        "1|docHome          打开移动端文档主页"
-        "2|gitBranch        创建分支(且创建完可选择继续2操作)"
-        "3|createJsonFile   创建当前所处分支的信息文件"
-        "4|updateJsonFile   更新当前所处分支的信息文件(人员、提测时间、提测时间、测试通过时间)"
-        "5|noPackBranch     修复上次打包了某个分支，但这次确定先不再打包该分支(一定慎用)"
-        "6|rebaseCheck      将当前分支合并到其他分支前的rebase检查"
-        "7|gitCommitMessage 按规范提交当前所有代码，形如：【Feature】（scope）改动信息"
-        "8|jenkins          Jenkins打包"
-        "9|goPP             进入更新Apple设备的目录"
-        "10|goGitRefsRemotes 修复远程删掉了，但本地执行git branch -r 还是显示出来"
-        # "6|onlyTest         我只是测试项..."
-    )
+    qtool_menu_json_file_path=${qtoolScriptDir_Absolute}/qtool_menu.json
 
-    # 遍历数组并输出带颜色的文本
-    for i in "${!options[@]}"; do
-        if [ "$i" -eq 0 ]; then
-            printf "${BLUE}%s\033[0m\n" "${options[$i]}"
-        elif [ "$i" -ge 1 ] && [ "$i" -le 2 ]; then
-            printf "${YELLOW}%s\033[0m\n" "${options[$i]}"
-        elif [ "$i" -ge 3 ] && [ "$i" -le 3 ]; then
-            printf "${GREEN}%s\033[0m\n" "${options[$i]}"
-        elif [ "$i" -ge 4 ] && [ "$i" -le 4 ]; then
-            printf "${PURPLE}%s\033[0m\n" "${options[$i]}"
-        elif [ "$i" -ge 5 ] && [ "$i" -le 6 ]; then
-            printf "${BLUE}%s\033[0m\n" "${options[$i]}"
+    # 使用 jq 命令解析 JSON 数据并遍历
+    catalogCount=$(cat "$qtool_menu_json_file_path" | jq '.catalog|length')
+    # echo "catalogCount=${catalogCount}"
+    for ((i = 0; i < ${catalogCount}; i++)); do
+        iCatalogMap=$(cat "$qtool_menu_json_file_path" | jq ".catalog" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
+        iCatalogOutlineMaps=$(echo "$iCatalogMap" | jq -r ".category_values")
+        iCatalogOutlineCount=$(echo "$iCatalogOutlineMaps" | jq '.|length')
+        if [ $i = 0 ]; then
+            iCatalogColor=${BLUE}
+        elif [ $i = 1 ]; then
+            iCatalogColor=${PURPLE}
+        elif [ $i = 2 ]; then
+            iCatalogColor=${GREEN}
+        elif [ $i = 3 ]; then
+            iCatalogColor=${CYAN}
         else
-            printf "${CYAN}%s\033[0m\n" "${options[$i]}"
+            iCatalogColor=${YELLOW}
         fi
+        for ((j = 0; j < ${iCatalogOutlineCount}; j++)); do
+            iCatalogOutlineMap=$(echo "$iCatalogOutlineMaps" | jq -r ".[${j}]") # 添加 jq -r 的-r以去掉双引号
+            iCatalogOutlineName=$(echo "$iCatalogOutlineMap" | jq -r ".name")
+            iCatalogOutlineDes=$(echo "$iCatalogOutlineMap" | jq -r ".des")
+            
+            iBranchOption="$((i + 1)).$((j + 1))|${iCatalogOutlineName}"
+            printf "${iCatalogColor}%-25s%s${NC}\n" "${iBranchOption}" "$iCatalogOutlineDes" # 要拼接两个字符串，并在拼接的结果中，如果第一个字符串不够 15 位则自动补充空格到 15 位
+        done
     done
 }
 
@@ -156,6 +155,13 @@ rebaseCheckBranch() {
     sh ${rebaseScriptDir_Absolute}/pre-push.sh
     checkResultCode $?
 }
+
+updateMonitorPageKey() {
+    echo "-----------"
+    sh $qtoolScriptDir_Absolute/monitor/update_monitor_key.sh
+    checkResultCode $?
+}
+
 
 # 按规范提交当前所有代码
 pushGitCommitMessage() {
@@ -222,22 +228,48 @@ checkResultCode() {
 valid_option=false
 while [ "$valid_option" = false ]; do
     read -r -p "请选择您想要执行的操作编号或id(若要退出请输入Q|q) : " option
-    case $option in
-    1 | docHome) openDocHome break ;;
-    2 | gitBranch) gitBranchAndJsonFile break ;;
-    3 | createJsonFile) createBranchJsonFile break ;;
-    4 | updateJsonFile) updateBranchJsonFile break ;;
-    5 | noPackBranch) lastBranchJsonFile_update break ;;
-    6 | rebaseCheck) rebaseCheckBranch break ;;
-    7 | gitCommitMessage) pushGitCommitMessage break ;;
-    8 | jenkins) buildJenkinsJob break ;;
-    9 | goPP) goPPDir break ;;
-    10 | goGitRefsRemotes) goGitRefsRemotesDir break ;;
 
-    # 6 | onlyTest) valid_option=ture break ;;
-    Q | q) exit 2 ;;
-    *) valid_option=false echo "无此选项，请重新输入。" ;;
-    esac
+    if [ "${option}" == q ] || [ "${option}" == "Q" ]; then
+        exit 2
+    fi
+
+    # 定义菜单选项
+    qtool_menu_json_file_path=${qtoolScriptDir_Absolute}/qtool_menu.json
+    catalogCount=$(cat "$qtool_menu_json_file_path" | jq '.catalog|length')
+    tCatalogOutlineAction=""
+    for ((i = 0; i < ${catalogCount}; i++)); do
+        iCatalogMap=$(cat "$qtool_menu_json_file_path" | jq ".catalog" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
+        iCatalogOutlineMaps=$(echo "$iCatalogMap" | jq -r ".category_values")
+        iCatalogOutlineCount=$(echo "$iCatalogOutlineMaps" | jq '.|length')
+        hasFound=false
+        for ((j = 0; j < ${iCatalogOutlineCount}; j++)); do
+            iCatalogOutlineMap=$(echo "$iCatalogOutlineMaps" | jq -r ".[${j}]") # 添加 jq -r 的-r以去掉双引号
+            iCatalogOutlineName=$(echo "$iCatalogOutlineMap" | jq -r ".name")
+            iCatalogOutlineAction=$(echo "$iCatalogOutlineMap" | jq -r ".action")
+            
+            iBranchOptionId="$((i + 1)).$((j + 1))"
+            iBranchOptionName="${iCatalogOutlineName}"
+
+            if [ "${option}" = ${iBranchOptionId} ] || [ "${option}" == ${iBranchOptionName} ]; then
+                tCatalogOutlineAction=$iCatalogOutlineAction
+                printf "${BLUE}将执行%-4s${NC}\n" "${tCatalogOutlineAction}"
+                hasFound=true
+                break
+            # else
+            #     printf "${RED}%-4s%-25s${NC}不是想要找的%s\n" "${iBranchOptionId}" "$iBranchOptionName" "${option}"
+            fi
+        done
+        if [ ${hasFound} == true ]; then
+            break
+        fi
+    done
+
+    if [ -n "${tCatalogOutlineAction}" ]; then
+        # printf "正在执行命令：${BLUE}%s${NC}\n" "${iCatalogOutlineAction}"
+        eval "$iCatalogOutlineAction"
+    else
+        echo "无此选项，请重新输入。"
+    fi
 done
 
 # 退出程序
