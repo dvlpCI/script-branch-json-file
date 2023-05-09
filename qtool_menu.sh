@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-09 17:54:13
+ # @LastEditTime: 2023-05-09 20:03:18
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -215,11 +215,16 @@ goGitRefsRemotesDir() {
 }
 
 checkResultCode() {
+    tCatalogOutlineName=$(echo "$tCatalogOutlineMap" | jq -r ".name")
+    tCatalogOutlineDes=$(echo "$tCatalogOutlineMap" | jq -r ".des")
+
     resultCode=$1
     if [ $resultCode = 0 ]; then
-        printf "恭喜💐:您选择%s操作已执行完成\n" "${options[$option - 1]}"
+        printf "${GREEN}恭喜💐:您选择${YELLOW}%s${GREEN}操作已执行完成${NC}\n" "$option|$tCatalogOutlineName $tCatalogOutlineDes"
+    elif [ $resultCode = 300 ]; then
+        printf "${BLUE}温馨提示🤝:您选择${YELLOW}%s${RED}操作已退出${NC}\n" "$option|$tCatalogOutlineName $tCatalogOutlineDes"
     else
-        printf "很遗憾😭:您选择%s操作执行失败\n" "${options[$option - 1]}"
+        printf "${RED}很遗憾😭:您选择${YELLOW}%s${RED}操作执行未执行/失败${NC}\n" "$option|$tCatalogOutlineName $tCatalogOutlineDes"
     fi
     valid_option=ture
 }
@@ -236,7 +241,7 @@ while [ "$valid_option" = false ]; do
     # 定义菜单选项
     qtool_menu_json_file_path=${qtoolScriptDir_Absolute}/qtool_menu.json
     catalogCount=$(cat "$qtool_menu_json_file_path" | jq '.catalog|length')
-    tCatalogOutlineAction=""
+    tCatalogOutlineMap=""
     for ((i = 0; i < ${catalogCount}; i++)); do
         iCatalogMap=$(cat "$qtool_menu_json_file_path" | jq ".catalog" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
         iCatalogOutlineMaps=$(echo "$iCatalogMap" | jq -r ".category_values")
@@ -245,14 +250,12 @@ while [ "$valid_option" = false ]; do
         for ((j = 0; j < ${iCatalogOutlineCount}; j++)); do
             iCatalogOutlineMap=$(echo "$iCatalogOutlineMaps" | jq -r ".[${j}]") # 添加 jq -r 的-r以去掉双引号
             iCatalogOutlineName=$(echo "$iCatalogOutlineMap" | jq -r ".name")
-            iCatalogOutlineAction=$(echo "$iCatalogOutlineMap" | jq -r ".action")
             
             iBranchOptionId="$((i + 1)).$((j + 1))"
             iBranchOptionName="${iCatalogOutlineName}"
 
             if [ "${option}" = ${iBranchOptionId} ] || [ "${option}" == ${iBranchOptionName} ]; then
-                tCatalogOutlineAction=$iCatalogOutlineAction
-                printf "${BLUE}将执行%-4s${NC}\n" "${tCatalogOutlineAction}"
+                tCatalogOutlineMap=$iCatalogOutlineMap
                 hasFound=true
                 break
             # else
@@ -264,9 +267,10 @@ while [ "$valid_option" = false ]; do
         fi
     done
 
-    if [ -n "${tCatalogOutlineAction}" ]; then
-        # printf "正在执行命令：${BLUE}%s${NC}\n" "${iCatalogOutlineAction}"
-        eval "$iCatalogOutlineAction"
+    if [ -n "${tCatalogOutlineMap}" ]; then
+        tCatalogOutlineAction=$(echo "$tCatalogOutlineMap" | jq -r ".action")
+        # printf "正在执行命令：${BLUE}%s${NC}\n" "${tCatalogOutlineAction}"
+        eval "$tCatalogOutlineAction"
     else
         echo "无此选项，请重新输入。"
     fi

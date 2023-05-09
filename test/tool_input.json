@@ -111,7 +111,6 @@
     "rebaseFrom": "origin/master"
   },
   "jenkins": {
-    "workspace": "~/Project/CQCI/script-branch-json-file/test/jenkinsworkspace/",
     "jenkins_base": {
       "JENKINS_BASE_URL": "http://192.168.72.202:8080",
       "JENKINS_USER": "lichaoqian",

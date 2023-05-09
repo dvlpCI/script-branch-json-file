@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-05-06 13:49:11
+LastEditTime: 2023-05-09 19:33:08
 FilePath: git_project_choose.py
 Description: 分支Json文件的信息更新
 '''
@@ -14,7 +14,7 @@ import shutil
 
 from branchJsonFile_input import inputBranchName
 from path_util import joinFullPath
-from env_util import getEnvValue_jenkins_workspace
+from env_util import getEnvValue_pack_workspace
 
 
 # 定义颜色常量
@@ -29,7 +29,7 @@ CYAN='\033[0;36m'
 
 # 选择git项目文件夹
 def choose_git_project_dir_path():
-    jenkins_workspace_dir_path=getEnvValue_jenkins_workspace()
+    jenkins_workspace_dir_path=getEnvValue_pack_workspace()
     if jenkins_workspace_dir_path == 1:
         return 1
     # print("文件路径1：", jenkins_workspace_dir_path)

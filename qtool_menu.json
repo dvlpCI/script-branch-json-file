@@ -30,7 +30,7 @@
                 },
                 {
                     "name": "noPackBranch",
-                    "des": "分支相关:修复上次打包了某个分支，但这次确定先不再打包该分支(一定慎用)",
+                    "des": "分支相关:修复本机上次打包了某个分支，但这次确定先不再打包该分支(一定慎用)",
                     "action": "lastBranchJsonFile_update"
                 },
                 {
