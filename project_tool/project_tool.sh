@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-04-25 13:57:02
+ # @LastEditTime: 2023-05-10 09:54:08
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 工具选项
 ###
@@ -19,6 +19,7 @@ PURPLE="\033[0;35m"
 CYAN="\033[0;36m"
 
 quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退出
+versionCmdStrings=("--version" "-version" "-v" "version")
 
 # cd "$BJProject_WISHHOME"
 
@@ -164,7 +165,7 @@ initTool() {
 updateTool() {
     brew update
     if [ $? != 0 ]; then
-        echo "❌Error:初始化终端，请重新执行"
+        echo "❌Error:更新终端，请重新执行"
         exit 1
     fi
 
@@ -225,6 +226,8 @@ elif [ "$1" == "init" ]; then
     initTool
 elif [ "$1" == "update" ]; then
     updateTool
+elif echo "${versionCmdStrings[@]}" | grep -wq "$1" &>/dev/null; then
+    qtool --version
 else
     chooseMenuOption
 fi

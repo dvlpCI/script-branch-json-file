@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-09 17:57:00
+ # @LastEditTime: 2023-05-09 21:20:23
  # @Description: 
 ### 
 
@@ -48,7 +48,7 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
-versionCmdStrings=("--version" "-version" "-v")
+versionCmdStrings=("--version" "-version" "-v" "version")
 if [ -z "$1" ] || [ "$1" == "test" ]; then
     sh ${qtoolScriptDir_Absolute}/qtool_menu.sh "${qtoolScriptDir_Absolute}"
 elif echo "${versionCmdStrings[@]}" | grep -wq "$1" &>/dev/null; then
