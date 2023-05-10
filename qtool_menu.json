@@ -5,8 +5,18 @@
             "category_values": [
                 {
                     "name": "docHome",
-                    "des": "打开移动端文档主页",
+                    "des": "打开《移动端文档主页》",
                     "action": "openDocHome"
+                },
+                {
+                    "name": "docVersionPlan",
+                    "des": "打开《版本需求/计划》",
+                    "action": "openDocVersionPlan"
+                },
+                {
+                    "name": "docWorkPlan",
+                    "des": "打开《工作计划》",
+                    "action": "openDocWorkPlan"
                 }
             ]
         },

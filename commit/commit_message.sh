@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-06 19:01:24
+ # @LastEditTime: 2023-05-10 10:17:49
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 分支JSON的创建-shell
 ###
@@ -38,7 +38,7 @@ quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退�
 branch_type_menu() {
     # 读取文件内容
     content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
-    branchBelongKey1="branch_belong1"
+    branchBelongKey1="commit_belong"
     branchBelongMaps1=$(echo "$content" | jq -r ".${branchBelongKey1}")
     if [ -z "${branchBelongMaps1}" ] || [ "${branchBelongMaps1}" == "null" ]; then
         rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .${branchBelongKey1} "

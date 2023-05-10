@@ -2,8 +2,48 @@
   "version": "package unknow version",
   "buildNumber": "package unknow buildNumber",
   "website": {
-    "doc_home": "http://wiki.xxx.com/zh/app/home"
+    "doc_home": "http://wiki.xxx.com/zh/app/home",
+    "doc_version_plan": "https://www.baidu.com",
+    "doc_work_plan": "https://www.sina.com"
   },
+  "commit_belong": [
+    {
+      "key": "Fix",
+      "des": "修复bug"
+    },
+    {
+      "key": "Feature",
+      "des": "新增功能点"
+    },
+    {
+      "key": "Revert",
+      "des": "版本回滚"
+    },
+    {
+      "key": "Optimize",
+      "des": "技术优化"
+    },
+    {
+      "key": "Refactor",
+      "des": "代码重构，没有新增功能或修复bug"
+    },
+    {
+      "key": "Style",
+      "des": "格式化(仅仅是对格式进行修改，如逗号、缩进、空格等。不改变代码逻辑)"
+    },
+    {
+      "key": "docs",
+      "des": "仅仅修改了文档，如 README.md"
+    },
+    {
+      "key": "chore",
+      "des": "改变构建流程、或者增加依赖库、工具等。"
+    },
+    {
+      "key": "other",
+      "des": "其他"
+    }
+  ],
   "branch_belong1": [
     {
       "key": "hotfix",

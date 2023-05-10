@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-09 20:25:35
+ # @LastEditTime: 2023-05-10 10:06:59
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -120,11 +120,25 @@ tool_menu
 
 # 打开移动端文档主页
 openDocHome() {
+    openWebsitePage '.website.doc_home'
+}
+
+openDocVersionPlan() {
+    openWebsitePage '.website.doc_version_plan'
+}
+
+openDocWorkPlan() {
+    openWebsitePage '.website.doc_work_plan'
+}
+
+# 打开指定的网页地址
+openWebsitePage() {
+    websiteKey=$1
     # 读取文件内容
     content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
-    doc_home_website=$(echo "$content" | jq -r '.website.doc_home')
+    doc_home_website=$(echo "$content" | jq -r "${websiteKey}")
     if [ -z "${doc_home_website}" ] || [ "${doc_home_website}" == "null" ]; then
-        rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .website.doc_home "
+        rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 ${websiteKey} "
         printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
         exit 1
     fi
