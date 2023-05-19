@@ -2,8 +2,8 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-04-25 20:20:11
-FilePath: /branchJsonFile_create/branchInfoManager.py
+LastEditTime: 2023-05-19 16:36:32
+FilePath: git_util.py
 Description: git工具
 '''
 # -*- coding: utf-8 -*-
@@ -11,7 +11,7 @@ Description: git工具
 import subprocess
 import os
 from path_util import joinFullPath
-from env_util import getEnvValue_branch_json_file_git_home, getEnvValue_branch_json_file_dir_path
+from env_util import getEnvValue_project_dir_path, getEnvValue_branch_json_file_dir_path
 
 def get_gitHomeDir():
     git_output = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], text=True)
@@ -39,7 +39,7 @@ def get_currentBranchFullName():
     
     return currentBranchFullName
 
-project_dir=getEnvValue_branch_json_file_git_home()
+project_dir=getEnvValue_project_dir_path()
 branch_json_file_dir_path = getEnvValue_branch_json_file_dir_path()
 
 

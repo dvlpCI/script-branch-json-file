@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-10 10:06:59
+ # @LastEditTime: 2023-05-19 17:55:58
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -83,8 +83,7 @@ gitHome() {
 
 # 工具选项
 tool_menu() {
-    # 定义菜单选项
-    qtool_menu_json_file_path=${qtoolScriptDir_Absolute}/qtool_menu.json
+    qtool_menu_json_file_path=$1
 
     # 使用 jq 命令解析 JSON 数据并遍历
     catalogCount=$(cat "$qtool_menu_json_file_path" | jq '.catalog|length')
@@ -115,8 +114,8 @@ tool_menu() {
     done
 }
 
-# 显示工具选项
-tool_menu
+
+
 
 # 打开移动端文档主页
 openDocHome() {
@@ -248,52 +247,79 @@ checkResultCode() {
     valid_option=ture
 }
 
-# 读取用户输入的选项，并根据选项执行相应操作
-valid_option=false
-while [ "$valid_option" = false ]; do
-    read -r -p "请选择您想要执行的操作编号或id(若要退出请输入Q|q) : " option
 
-    if [ "${option}" == q ] || [ "${option}" == "Q" ]; then
-        exit 2
-    fi
 
-    # 定义菜单选项
-    qtool_menu_json_file_path=${qtoolScriptDir_Absolute}/qtool_menu.json
-    catalogCount=$(cat "$qtool_menu_json_file_path" | jq '.catalog|length')
-    tCatalogOutlineMap=""
-    for ((i = 0; i < ${catalogCount}; i++)); do
-        iCatalogMap=$(cat "$qtool_menu_json_file_path" | jq ".catalog" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
-        iCatalogOutlineMaps=$(echo "$iCatalogMap" | jq -r ".category_values")
-        iCatalogOutlineCount=$(echo "$iCatalogOutlineMaps" | jq '.|length')
-        hasFound=false
-        for ((j = 0; j < ${iCatalogOutlineCount}; j++)); do
-            iCatalogOutlineMap=$(echo "$iCatalogOutlineMaps" | jq -r ".[${j}]") # 添加 jq -r 的-r以去掉双引号
-            iCatalogOutlineName=$(echo "$iCatalogOutlineMap" | jq -r ".name")
-            
-            iBranchOptionId="$((i + 1)).$((j + 1))"
-            iBranchOptionName="${iCatalogOutlineName}"
+evalActionByInput() {
+    qtool_menu_json_file_path=$1
+    # 读取用户输入的选项，并根据选项执行相应操作
+    valid_option=false
+    moreActionStrings=("qian" "chaoqian" "lichaoqian") # 输入哪些字符串算是想要退出
+    while [ "$valid_option" = false ]; do
+        read -r -p "请选择您想要执行的操作编号或id(若要退出请输入Q|q) : " option
 
-            if [ "${option}" = ${iBranchOptionId} ] || [ "${option}" == ${iBranchOptionName} ]; then
-                tCatalogOutlineMap=$iCatalogOutlineMap
-                hasFound=true
-                break
-            # else
-            #     printf "${RED}%-4s%-25s${NC}不是想要找的%s\n" "${iBranchOptionId}" "$iBranchOptionName" "${option}"
-            fi
-        done
-        if [ ${hasFound} == true ]; then
+        if [ "${option}" == q ] || [ "${option}" == "Q" ]; then
+            exit 2
+        fi
+
+
+        if echo "${moreActionStrings[@]}" | grep -wq "${option}" &>/dev/null; then
+            showMenu "${qtoolScriptDir_Absolute}/qtool_menu_private.json"
             break
         fi
-    done
 
-    if [ -n "${tCatalogOutlineMap}" ]; then
-        tCatalogOutlineAction=$(echo "$tCatalogOutlineMap" | jq -r ".action")
-        # printf "正在执行命令：${BLUE}%s${NC}\n" "${tCatalogOutlineAction}"
-        eval "$tCatalogOutlineAction"
-    else
-        echo "无此选项，请重新输入。"
-    fi
-done
+        # 定义菜单选项
+        catalogCount=$(cat "$qtool_menu_json_file_path" | jq '.catalog|length')
+        tCatalogOutlineMap=""
+        for ((i = 0; i < ${catalogCount}; i++)); do
+            iCatalogMap=$(cat "$qtool_menu_json_file_path" | jq ".catalog" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
+            iCatalogOutlineMaps=$(echo "$iCatalogMap" | jq -r ".category_values")
+            iCatalogOutlineCount=$(echo "$iCatalogOutlineMaps" | jq '.|length')
+            hasFound=false
+            for ((j = 0; j < ${iCatalogOutlineCount}; j++)); do
+                iCatalogOutlineMap=$(echo "$iCatalogOutlineMaps" | jq -r ".[${j}]") # 添加 jq -r 的-r以去掉双引号
+                iCatalogOutlineName=$(echo "$iCatalogOutlineMap" | jq -r ".name")
+                
+                iBranchOptionId="$((i + 1)).$((j + 1))"
+                iBranchOptionName="${iCatalogOutlineName}"
+
+                if [ "${option}" = ${iBranchOptionId} ] || [ "${option}" == ${iBranchOptionName} ]; then
+                    tCatalogOutlineMap=$iCatalogOutlineMap
+                    hasFound=true
+                    break
+                # else
+                #     printf "${RED}%-4s%-25s${NC}不是想要找的%s\n" "${iBranchOptionId}" "$iBranchOptionName" "${option}"
+                fi
+            done
+            if [ ${hasFound} == true ]; then
+                break
+            fi
+        done
+
+        if [ -n "${tCatalogOutlineMap}" ]; then
+            tCatalogOutlineAction=$(echo "$tCatalogOutlineMap" | jq -r ".action")
+            # printf "正在执行命令：${BLUE}%s${NC}\n" "${tCatalogOutlineAction}"
+            eval "$tCatalogOutlineAction"
+        else
+            echo "无此选项，请重新输入。"
+        fi
+    done
+}
+
+checkUnuseImages() {
+    python3 "$qtoolScriptDir_Absolute/package-size/unuse_images.py"
+    checkResultCode $?
+}
+
+
+# 显示工具选项
+showMenu() {
+    qtool_menu_using_json_file_path=$1
+    tool_menu "${qtool_menu_using_json_file_path}"
+    evalActionByInput "${qtool_menu_using_json_file_path}"
+}
+
+showMenu "${qtoolScriptDir_Absolute}/qtool_menu_public.json"    # 定义菜单选项
+
 
 # 退出程序
 exit 0

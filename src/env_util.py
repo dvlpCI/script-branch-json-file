@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
 LastEditors: dvlproad
-LastEditTime: 2023-05-09 19:40:20
+LastEditTime: 2023-05-19 16:28:00
 FilePath: /script-branch-json-file/src/env_util.py
 Description: 获取环境变量的值
 '''
@@ -12,8 +12,14 @@ import subprocess
 from path_util import joinFullPath
 
 # 定义颜色常量
-RED = "\033[31m"
-NC = "\033[0m"
+NC='\033[0m' # No Color
+RED='\033[31m'
+GREEN='\033[32m'
+YELLOW='\033[33m'
+BLUE='\033[34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+
 
 # 获取环境变量的值
 def getEnvValueByKey(key):
@@ -26,35 +32,15 @@ def getEnvValueByKey(key):
     print("envValue: \033[1;31m{}\033[0m".format(envValue))
     return envValue
 
-
-# 获取环境变量的值
-def getEnvValue_branch_json_file_git_home():
-    branch_json_file_git_home = os.getenv('QTOOL_DEAL_PROJECT_DIR_PATH')
-    if branch_json_file_git_home.startswith('~'):
-        branch_json_file_git_home = os.path.expanduser(branch_json_file_git_home) # 将~扩展为当前用户的home目录
-    return branch_json_file_git_home
-
-# 获取环境变量的值
-def getEnvValue_branch_json_file_dir_path():
-    branch_json_file_git_home = os.getenv('QTOOL_DEAL_PROJECT_DIR_PATH')
-    if branch_json_file_git_home.startswith('~'):
-        branch_json_file_git_home = os.path.expanduser(branch_json_file_git_home) # 将~扩展为当前用户的home目录
-
+def getEnvValue_params_file_path():
+    # return "/Users/qian/Project/CQCI/script-branch-json-file/test/tool_input.json"
     tool_params_file_path = os.getenv('QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH')
-    with open(tool_params_file_path) as f:
-        data = json.load(f)
+    if tool_params_file_path.startswith('~'):
+        tool_params_file_path = os.path.expanduser(tool_params_file_path) # 将~扩展为当前用户的home目录
+    return tool_params_file_path
 
-    branch_json_file_dir_relpath = data['branchJsonFile']['BRANCH_JSON_FILE_DIR_RELATIVE_PATH']
-    branch_json_file_dir_abspath = joinFullPath(branch_json_file_git_home, branch_json_file_dir_relpath)
-
-    print("branch_json_file_dir_abspath: \033[1;31m{}\033[0m".format(branch_json_file_dir_abspath))
-    return branch_json_file_dir_abspath
-
-
-
-# 获取工程的所在目录(①用户Jenkins打包机的 打包项目 选择；②要更新哪个打包的历史json文件选择)
-def getEnvValue_pack_workspace():
-    tool_params_file_path = os.getenv('QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH')
+def getEnvValue_params_file_data():
+    tool_params_file_path = getEnvValue_params_file_path()
     try:
         with open(tool_params_file_path) as f:
             data = json.load(f)
@@ -64,11 +50,38 @@ def getEnvValue_pack_workspace():
     except json.JSONDecodeError:
         print(f"{RED}Failed to load JSON data from file {tool_params_file_path} {NC}")
         return 1
+    return data
+
+
+# 获取环境变量的值-项目路径
+def getEnvValue_project_dir_path():
+    tool_params_file_path = getEnvValue_params_file_path()
+    tool_params_file_data = getEnvValue_params_file_data()
+    if tool_params_file_data == 1:
+        return 1
+    project_home_path_rel_this = tool_params_file_data['project_path']['home_path_rel_this']
+    project_dir_abspath = joinFullPath(tool_params_file_path, project_home_path_rel_this)
+    # print("project_dir_abspath: \033[1;31m{}\033[0m".format(project_dir_abspath))
+    return project_dir_abspath
     
 
-    project_dir_path = os.getenv('QTOOL_DEAL_PROJECT_DIR_PATH')
-    if project_dir_path.startswith('~'):
-        project_dir_path = os.path.expanduser(project_dir_path) # 将~扩展为当前用户的home目录
+# 获取环境变量的值-项目中分支信息文件的存放路径
+def getEnvValue_branch_json_file_dir_path():
+    branch_json_file_git_home = getEnvValue_project_dir_path()
+    
+    data = getEnvValue_params_file_data()
+    if data == 1:
+        return 1
+    branch_json_file_dir_relpath = data['branchJsonFile']['BRANCH_JSON_FILE_DIR_RELATIVE_PATH']
+    branch_json_file_dir_abspath = joinFullPath(branch_json_file_git_home, branch_json_file_dir_relpath)
+    print("branch_json_file_dir_abspath: \033[1;31m{}\033[0m".format(branch_json_file_dir_abspath))
+    return branch_json_file_dir_abspath
+
+
+
+# 获取工程的所在目录(①用户Jenkins打包机的 打包项目 选择；②要更新哪个打包的历史json文件选择)
+def getEnvValue_pack_workspace():
+    project_dir_path = getEnvValue_project_dir_path()
     return project_dir_path
 
     # jenkins_data=data['pack']
@@ -85,5 +98,6 @@ def getEnvValue_pack_workspace():
     
     # return jenkins_workspace
 
-# branch_json_file_git_home=getEnvValue_branch_json_file_git_home()
+# branch_json_file_git_home=getEnvValue_project_dir_path()
 # getEnvValue_branch_json_file_dir_path()
+getEnvValue_project_dir_path()

@@ -1,0 +1,14 @@
+{
+    "catalog": [
+        {
+            "category_id": "package-size",
+            "category_values": [
+                {
+                    "name": "unuse_images",
+                    "des": "无用资源检查",
+                    "action": "checkUnuseImages"
+                }
+            ]
+        }
+    ]
+}

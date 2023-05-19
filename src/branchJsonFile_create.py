@@ -14,7 +14,7 @@ from datetime import datetime
 import re
 
 from path_util import joinFullPath
-from env_util import getEnvValue_branch_json_file_git_home, getEnvValue_branch_json_file_dir_path
+from env_util import getEnvValue_project_dir_path, getEnvValue_branch_json_file_dir_path
 from git_util import get_currentBranchFullName
 from branchJsonFile_input import inputOutline, chooseAnswer, chooseTester
 
@@ -23,7 +23,7 @@ username = getpass.getuser()
 # print("当前登录用户的用户名是：{}\n".format(username))
 
 
-project_dir = getEnvValue_branch_json_file_git_home()
+project_dir = getEnvValue_project_dir_path()
 print("当前项目目录===========：", project_dir)
 
 

@@ -2,9 +2,9 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-04-13 17:03:32
-FilePath: /branchJsonFile_create/branchInfoManager.py
-Description: object的更新
+LastEditTime: 2023-05-19 16:35:51
+FilePath: file_util.py
+Description: 文件检查
 '''
 # -*- coding: utf-8 -*-
 
