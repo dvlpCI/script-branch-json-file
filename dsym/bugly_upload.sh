@@ -39,7 +39,7 @@ joinFullPath() {
     temp_result_path="$dir_path_this/$path_rel_this_dir"
     result_path=$(realpath "$temp_result_path") # shell 获取文件或文件夹的绝对路径，保存到临时变量中
     if [ ! -d "${result_path}" ] && [ ! -f "${result_path}" ]; then
-        if [ "${createIfNoExsit}" == "true" ]; then
+        if [ "${createIfNoExsit}" == true ]; then
             mkdir "${result_path}"
         else 
             printf "${RED}❌Error:路径不存在:%s${NC}\n" "${result_path}"
@@ -75,7 +75,11 @@ app_pack_params_map=$(cat ${app_info_abspath} | jq -r ".")
 
 # 获取dSYM文件
 get_xcarchive_output_dir() {
-    dSYM_file_path=$(echo ${app_pack_params_map} | jq -r ".package_url_result.package_local_dSYM_file_path")
+    dSYM_file_path_rel_home_dir=$(echo ${app_pack_params_map} | jq -r ".package_url_result.package_local_dSYM_file_path")
+    dSYM_file_path=$(joinFullPath "$home_abspath" $dSYM_file_path_rel_home_dir)
+    if [ $? != 0 ]; then
+        exit_script
+    fi
     if [ -z "${dSYM_file_path}" ] || [ "${dSYM_file_path}" == "null" ]; then
         echo "❌Error:获取打包输出目录参数失败：《 echo ${app_pack_params_map} | jq -r \".package_url_result.package_local_dSYM_file_path\"》，请检查补充"
         return 1
@@ -166,22 +170,20 @@ fi
 
 
 
-SYMBOL_OUTPUT_rel_this_dir_rel_home_dir=$(echo ${project_path_map}  | jq -r ".dsym_path_rel_home" | jq -r ".SYMBOL_OUTPUT_rel_this_dir")
+SYMBOL_OUTPUT_rel_home_dir=$(echo ${project_path_map}  | jq -r ".dsym_path_rel_home" | jq -r ".SYMBOL_OUTPUT_rel_this_dir")
+if [ -z "${SYMBOL_OUTPUT_rel_home_dir}" ] || [ "${SYMBOL_OUTPUT_rel_home_dir}" == "null" ]; then
+    echo "执行命令获取 SYMBOL_OUTPUT_rel_home_dir 属性失败：《 echo ${project_path_map} | jq -r \".dsym_path_rel_home\" | jq -r \".SYMBOL_OUTPUT_rel_this_dir\" 》，请检查"
+    exit_script
+fi
+
 createIfNoExsit=true
-SYMBOL_OUTPUT_rel_this_dir=$(joinFullPath "$home_abspath" $SYMBOL_OUTPUT_rel_this_dir_rel_home_dir "${createIfNoExsit}")
+# joinFullPath "$home_abspath" $SYMBOL_OUTPUT_rel_home_dir "${createIfNoExsit}"
+SYMBOL_OUTPUT_dir_abspath=$(joinFullPath "$home_abspath" $SYMBOL_OUTPUT_rel_home_dir "${createIfNoExsit}")
 if [ $? != 0 ]; then
-    echo "-------3.1-----${SYMBOL_OUTPUT_rel_this_dir}"
+    echo "-------3.1-----${SYMBOL_OUTPUT_dir_abspath}"
     exit_script
 fi
-if [ -z "${SYMBOL_OUTPUT_rel_this_dir}" ] || [ "${SYMBOL_OUTPUT_rel_this_dir}" == "null" ]; then
-    echo "执行命令获取 SYMBOL_OUTPUT_rel_this_dir 属性失败：《 echo ${project_path_map} | jq -r \".SYMBOL_OUTPUT_rel_this_dir\" 》，请检查"
-    exit_script
-fi
-SYMBOL_OUTPUT_PATH=$(joinFullPath "$(dirname $app_pack_params_file_path)" $SYMBOL_OUTPUT_rel_this_dir)
-if [ $? != 0 ]; then
-    exit_script
-fi
-printf "${BLUE}备注：dsym的输出路径将为：%s${NC}\n" "${SYMBOL_OUTPUT_PATH}"
+printf "${BLUE}备注：dsym的输出路径将为：%s${NC}\n" "${SYMBOL_OUTPUT_dir_abspath}"
 
 UPLOAD_DSYM_ONLY=ture
 
@@ -197,14 +199,14 @@ buglyqq_upload_symbol=$(joinFullPath "$home_abspath" $buglyqq_upload_symbol_rel_
 if [ $? != 0 ]; then
     exit_script
 fi
-# echo "开始执行以下dSYM命令为：《sh ${DSYMUPLOAD_sh_FILE_PATH} ${BUGLY_APP_ID} ${BUGLY_APP_KEY} ${APP_BUNDLE_IDENTIFIER} ${BUGLY_APP_VERSION} ${DWARF_DSYM_FOLDER_PATH} ${SYMBOL_OUTPUT_PATH} ${UPLOAD_DSYM_ONLY}》"
-# sh ${DSYMUPLOAD_sh_FILE_PATH} ${BUGLY_APP_ID} ${BUGLY_APP_KEY} ${APP_BUNDLE_IDENTIFIER} ${BUGLY_APP_VERSION} ${DWARF_DSYM_FOLDER_PATH} ${SYMBOL_OUTPUT_PATH} ${UPLOAD_DSYM_ONLY}
+# echo "开始执行以下dSYM命令为：《sh ${DSYMUPLOAD_sh_FILE_PATH} ${BUGLY_APP_ID} ${BUGLY_APP_KEY} ${APP_BUNDLE_IDENTIFIER} ${BUGLY_APP_VERSION} ${DWARF_DSYM_FOLDER_PATH} ${SYMBOL_OUTPUT_dir_abspath} ${UPLOAD_DSYM_ONLY}》"
+# sh ${DSYMUPLOAD_sh_FILE_PATH} ${BUGLY_APP_ID} ${BUGLY_APP_KEY} ${APP_BUNDLE_IDENTIFIER} ${BUGLY_APP_VERSION} ${DWARF_DSYM_FOLDER_PATH} ${SYMBOL_OUTPUT_dir_abspath} ${UPLOAD_DSYM_ONLY}
 echo "开始执行以下dSYM命令为：《java -jar ${buglyqq_upload_symbol} -appid ${BUGLY_APP_ID} -appkey ${BUGLY_APP_KEY} -bundleid ${APP_BUNDLE_IDENTIFIER} -version ${App_Version} -platform ${App_Platform} -inputSymbol ${DWARF_DSYM_FOLDER_PATH} 》"
-java -jar ${buglyqq_upload_symbol} -appid ${BUGLY_APP_ID}
-                                    -appkey ${BUGLY_APP_KEY}
-                                    -bundleid ${APP_BUNDLE_IDENTIFIER}
-                                    -version ${App_Version}
-                                    -platform ${App_Platform}
+java -jar ${buglyqq_upload_symbol} -appid ${BUGLY_APP_ID} \
+                                    -appkey ${BUGLY_APP_KEY} \
+                                    -bundleid ${APP_BUNDLE_IDENTIFIER} \
+                                    -version ${App_Version} \
+                                    -platform ${App_Platform} \
                                     -inputSymbol ${DWARF_DSYM_FOLDER_PATH}
                                     # -inputMapping <mapping file>
 if [ $? = 0 ]   # 上个命令的退出状态，或函数的返回值。
@@ -271,7 +273,7 @@ fi
 #     echo "-------- dSYM的符号表生成失败 --------"
 # fi
 
-echo ""
-echo "所有脚本执行结束！"
-echo ""
+# echo ""
+# echo "所有脚本执行结束！"
+# echo ""
 
