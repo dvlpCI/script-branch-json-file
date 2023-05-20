@@ -14,10 +14,6 @@
         },
         "dsym_path_rel_home": {
             "app_bugly_config_file": "./bulidScript/dsym/app_pack_info_bugly.json",
-            "BIN_buglySymboliOS_JAR_FILE_PATH": "./bulidScript/dsym/buglySymboliOS/buglySymboliOS.jar",
-            "BIN_buglySymboliOS_JAR_FILE_PATH2": "~/bin/buglySymboliOS.jar",
-            "dSYMUpload_script_file_path": "./bulidScript/dsym/buglySymboliOS/dSYMUpload.sh",
-            "dSYMUpload_script_file_path2": "$ROOT_DIR/buglySymboliOS/dSYMUpload.sh",
             "buglyqq_upload_symbol": "./bulidScript/dsym/buglyqq-upload-symbol/buglyqq-upload-symbol.jar",
             "SYMBOL_OUTPUT_rel_this_dir": "./bulidScript/dsym/output"
         }

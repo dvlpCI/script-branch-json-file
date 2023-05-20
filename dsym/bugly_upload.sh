@@ -37,14 +37,18 @@ joinFullPath() {
     # dir_path_this="/Users/qian/Project/CQCI/script-branch-json-file/test/"
     # path_rel_this_dir="../../"
     temp_result_path="$dir_path_this/$path_rel_this_dir"
-    result_path=$(realpath "$temp_result_path") # shell 获取文件或文件夹的绝对路径，保存到临时变量中
-    if [ ! -d "${result_path}" ] && [ ! -f "${result_path}" ]; then
+    if [ ! -d "${temp_result_path}" ] && [ ! -f "${temp_result_path}" ]; then
         if [ "${createIfNoExsit}" == true ]; then
-            mkdir "${result_path}"
+            mkdir "${temp_result_path}"
         else 
-            printf "${RED}❌Error:路径不存在:%s${NC}\n" "${result_path}"
+            printf "${RED}❌Error:路径不存在:%s${NC}\n" "${temp_result_path}"
             return 1
         fi
+    fi
+    
+    result_path=$(realpath "$temp_result_path") # shell 获取文件或文件夹的绝对路径，保存到临时变量中
+    if [ $? != 0 ]; then
+        return 1
     fi
     echo $result_path
 }
@@ -127,7 +131,7 @@ get_bugly_config() {
 
     APPTARGET_NAME=$(echo "${target_platom_network_bugly_config_map}" | jq -r ".app_TARGET_name")
     
-    printf "${BLUE}%s(%s):\napp_target:%s\nbugly_appid:%-15s\nbugly_appkey:%-15s ${NC}\n" "${target_platom_network_bugly_appDes}" "${APP_BUNDLE_IDENTIFIER}" "${APPTARGET_NAME}" "${BUGLY_APP_ID}" "${BUGLY_APP_KEY}" # 要拼接两个字符串，并在拼接的结果中，如果第一个字符串不够 15 位则自动补充空格到 15 位
+    printf "${BLUE}%s(%s):\napp_target_name:%s\nbugly_appid:%-15s\nbugly_appkey:%-15s ${NC}\n" "${target_platom_network_bugly_appDes}" "${APP_BUNDLE_IDENTIFIER}" "${APPTARGET_NAME}" "${BUGLY_APP_ID}" "${BUGLY_APP_KEY}" # 要拼接两个字符串，并在拼接的结果中，如果第一个字符串不够 15 位则自动补充空格到 15 位
 }
 
 
@@ -155,18 +159,18 @@ echo "------------------- 准备开始进行dsym符号表上传到'bugly'上 ---
 # BUGLY_APP_VERSION="${App_Version}(${App_BundleID})_${APPENVIRONMENT}"    # 生成形如 1.1.0(100)_Product 的bugly app 版本号
 
 
-# 检查执行命令时候需要的jar文件是否再bin中有存在
-BIN_buglySymboliOS_JAR_FILE_PATH_rel_home_dir=$(echo ${project_path_map} | jq -r ".dsym_path_rel_home.BIN_buglySymboliOS_JAR_FILE_PATH")
-# echo "-------1-----${BIN_buglySymboliOS_JAR_FILE_PATH_rel_home_dir}"
-BIN_buglySymboliOS_JAR_FILE_PATH=$(joinFullPath "$home_abspath" $BIN_buglySymboliOS_JAR_FILE_PATH_rel_home_dir)
-if [ $? != 0 ]; then
-    echo "-------2-----${BIN_buglySymboliOS_JAR_FILE_PATH}"
-    exit_script
-fi
-if [ ! -e ${BIN_buglySymboliOS_JAR_FILE_PATH} ];then
-    echo "Failure：bin下的buglySymboliOS.jar文件不存在，请检查。如果又没请手动添加复制一份过去即可。查找的~/bin/buglySymboliOS.jar路径为：${BIN_buglySymboliOS_JAR_FILE_PATH}"
-    exit_script
-fi
+# # 检查执行命令时候需要的jar文件是否再bin中有存在
+# BIN_buglySymboliOS_JAR_FILE_PATH_rel_home_dir=$(echo ${project_path_map} | jq -r ".dsym_path_rel_home.BIN_buglySymboliOS_JAR_FILE_PATH")
+# # echo "-------1-----${BIN_buglySymboliOS_JAR_FILE_PATH_rel_home_dir}"
+# BIN_buglySymboliOS_JAR_FILE_PATH=$(joinFullPath "$home_abspath" $BIN_buglySymboliOS_JAR_FILE_PATH_rel_home_dir)
+# if [ $? != 0 ]; then
+#     echo "-------2-----${BIN_buglySymboliOS_JAR_FILE_PATH}"
+#     exit_script
+# fi
+# if [ ! -e ${BIN_buglySymboliOS_JAR_FILE_PATH} ];then
+#     echo "Failure：bin下的buglySymboliOS.jar文件不存在，请检查。如果又没请手动添加复制一份过去即可。查找的~/bin/buglySymboliOS.jar路径为：${BIN_buglySymboliOS_JAR_FILE_PATH}"
+#     exit_script
+# fi
 
 
 
@@ -185,13 +189,13 @@ if [ $? != 0 ]; then
 fi
 printf "${BLUE}备注：dsym的输出路径将为：%s${NC}\n" "${SYMBOL_OUTPUT_dir_abspath}"
 
-UPLOAD_DSYM_ONLY=ture
+# UPLOAD_DSYM_ONLY=ture
 
-DSYMUPLOAD_sh_FILE_PATH_rel_home_dir=$(echo ${project_path_map} | jq -r ".dsym_path_rel_home.dSYMUpload_script_file_path")
-DSYMUPLOAD_sh_FILE_PATH=$(joinFullPath "$home_abspath" $DSYMUPLOAD_sh_FILE_PATH_rel_home_dir)
-if [ $? != 0 ]; then
-    exit_script
-fi
+# DSYMUPLOAD_sh_FILE_PATH_rel_home_dir=$(echo ${project_path_map} | jq -r ".dsym_path_rel_home.dSYMUpload_script_file_path")
+# DSYMUPLOAD_sh_FILE_PATH=$(joinFullPath "$home_abspath" $DSYMUPLOAD_sh_FILE_PATH_rel_home_dir)
+# if [ $? != 0 ]; then
+#     exit_script
+# fi
 
 
 buglyqq_upload_symbol_rel_home_dir=$(echo ${project_path_map} | jq -r ".dsym_path_rel_home.buglyqq_upload_symbol")
