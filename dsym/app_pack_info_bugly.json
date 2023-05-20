@@ -1,0 +1,71 @@
+{
+    "app_bundle_id": "com.test.app1Enterprise",
+    "app_bugly_config": [
+        {
+            "network": "product",
+            "des": "生产包的bugly配置",
+            "iOS": {
+                "app_TARGET_name": "app1",
+                "buglyAppDes": "App1_生产_iOS",
+                "buglyAppId": "75de59axxx",
+                "buglyAppKey": "291d6ebc-3eec-43de-afc1-8f08f2007xxx"
+            },
+            "Android": {
+                "app_TARGET_name": "app1",
+                "buglyAppDes": "App1_生产_Android",
+                "buglyAppId": "24c0921xxx",
+                "buglyAppKey": "a6547f54-e817-4621-b72f-8098d9cc7xxx"
+            }
+        },
+        {
+            "network": "preproduct",
+            "des": "预生产包的bugly配置",
+            "iOS": {
+                "app_TARGET_name": "app1",
+                "buglyAppDes": "App1_预生产_iOS",
+                "buglyAppId": "75de59axxx",
+                "buglyAppKey": "291d6ebc-3eec-43de-afc1-8f08f2007xxx"
+            },
+            "Android": {
+                "app_TARGET_name": "app1",
+                "buglyAppDes": "App1_预生产_Android",
+                "buglyAppId": "24c0921xxx",
+                "buglyAppKey": "a6547f54-e817-4621-b72f-8098d9cc7xxx"
+            }
+        },
+        {
+            "network": "test1",
+            "des": "测试包的bugly配置",
+            "iOS": {
+                "app_TARGET_name": "app1",
+                "buglyAppDes": "App1_测试_iOS",
+                "buglyAppId": "75de59axxx",
+                "buglyAppKey": "291d6ebc-3eec-43de-afc1-8f08f2007xxx"
+            },
+            "Android": {
+                "app_TARGET_name": "app1",
+                "buglyAppDes": "App1_测试_Android",
+                "buglyAppId": "24c0921xxx",
+                "buglyAppKey": "a6547f54-e817-4621-b72f-8098d9cc7xxx"
+            }
+        },
+        {
+            "network": "develop1",
+            "des": "开发1包的bugly配置",
+            "iOS": {
+                "app_TARGET_name": "app1",
+                "buglyAppDes": "App1_开发1_iOS",
+                "buglyAppId": "75de59axxx",
+                "buglyAppKey": "291d6ebc-3eec-43de-afc1-8f08f2007xxx"
+            },
+            "Android": {
+                "app_TARGET_name": "app1",
+                "buglyAppDes": "App1_开发1_Android",
+                "buglyAppId": "24c0921xxx",
+                "buglyAppKey": "a6547f54-e817-4621-b72f-8098d9cc7xxx"
+            }
+        }
+    ]    
+}
+
+

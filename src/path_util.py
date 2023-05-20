@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
 LastEditors: dvlproad
-LastEditTime: 2023-05-19 13:50:32
+LastEditTime: 2023-05-20 09:53:50
 FilePath: /path_util.py
 Description: 路径的计算方法
 '''
@@ -24,6 +24,7 @@ def joinFullPath(host_dir, rel_path):
 # a = '/Users/qian/Project/CQCI/script-branch-json-file/test/tool_input.json'
 # b = '../../'
 # c = os.path.abspath(os.path.join(os.path.dirname(a), b))
-# print("===1====envValue: \033[1;31m{}\033[0m".format(c))
-# print("===2====envValue: \033[1;31m{}\033[0m".format(joinFullPath(a, "../")))
-# print("===3====envValue: \033[1;31m{}\033[0m".format(joinFullPath(a, "../../")))
+# print("===0====envValue: \033[1;31m{}\033[0m".format(c))
+# print("===1====envValue: \033[1;31m{}\033[0m".format(joinFullPath(os.path.dirname(a), "./")))
+# print("===2====envValue: \033[1;31m{}\033[0m".format(joinFullPath(os.path.dirname(a), "../")))
+# print("===3====envValue: \033[1;31m{}\033[0m".format(joinFullPath(os.path.dirname(a), "../../")))

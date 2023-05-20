@@ -1,0 +1,31 @@
+{
+    "version": "package unknow version",
+    "buildNumber": "package unknow buildNumber",
+    "package_create_time": "package unknow time",
+    "package_from_brance": "package unknow brance",
+    "platform_type": "iOS",
+    "package_default_target": "formal",
+    "package_default_env": "preproduct",
+    "project_path": {
+        "home_path_rel_this_dir": "./",
+        "other_path_rel_home": {
+            "images": "/tsdemo/images/",
+            "code": "/tsdemo/lib/"
+        },
+        "dsym_path_rel_home": {
+            "app_bugly_config_file": "./bulidScript/dsym/app_pack_info_bugly.json",
+            "BIN_buglySymboliOS_JAR_FILE_PATH": "./bulidScript/dsym/buglySymboliOS/buglySymboliOS.jar",
+            "BIN_buglySymboliOS_JAR_FILE_PATH2": "~/bin/buglySymboliOS.jar",
+            "dSYMUpload_script_file_path": "./bulidScript/dsym/buglySymboliOS/dSYMUpload.sh",
+            "dSYMUpload_script_file_path2": "$ROOT_DIR/buglySymboliOS/dSYMUpload.sh",
+            "buglyqq_upload_symbol": "./bulidScript/dsym/buglyqq-upload-symbol/buglyqq-upload-symbol.jar",
+            "SYMBOL_OUTPUT_rel_this_dir": "./bulidScript/dsym/output"
+        }
+    },
+    "package_url_result": {
+        "package_local_url": "package local url",
+        "package_local_backup_dir": "package local backup dir",
+        "package_local_dSYM_file_path": "./wish/ios/outputs/Runner.xcarchive/dSYMs/Runner.app.dSYM",
+        "package_cos_url": "package cos url"
+    }
+}

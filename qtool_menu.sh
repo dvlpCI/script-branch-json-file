@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-19 17:55:58
+ # @LastEditTime: 2023-05-19 20:54:40
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -305,8 +305,13 @@ evalActionByInput() {
     done
 }
 
+uploadDSYMAction() {
+    sh ${qtoolScriptDir_Absolute}/dsym/bugly_upload.sh
+    checkResultCode $?
+}
+
 checkUnuseImages() {
-    python3 "$qtoolScriptDir_Absolute/package-size/unuse_images.py"
+    python3 "${qtoolScriptDir_Absolute}/package-size/unuse_images.py"
     checkResultCode $?
 }
 

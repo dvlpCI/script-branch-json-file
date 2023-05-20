@@ -87,6 +87,11 @@
                     "name": "goPP",
                     "des": "进入更新Apple设备的目录",
                     "action": "goPPDir"
+                },
+                {
+                    "name": "uploadDSYM",
+                    "des": "上传符号表",
+                    "action": "uploadDSYMAction"
                 }
             ]
         }
