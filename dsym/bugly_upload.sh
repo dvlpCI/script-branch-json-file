@@ -27,7 +27,7 @@ exit_script() { # 退出脚本的方法，省去当某个步骤失败后，还�
 }
 
 # project_tool_params_file_path=${qtoolScriptDir_Absolute}/dsym/app_pack_output_params.json
-project_tool_params_file_path=$QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH
+project_tool_params_file_path=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
 # printf "${YELLOW}你所有的配置来自文件:%s${NC}\n" "${project_tool_params_file_path}"
 project_path_map=$(cat ${project_tool_params_file_path} | jq -r ".project_path")
 joinFullPath() {
