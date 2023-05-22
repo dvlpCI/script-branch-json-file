@@ -59,8 +59,9 @@ def getEnvValue_project_dir_path():
     tool_params_file_data = getEnvValue_params_file_data()
     if tool_params_file_data == 1:
         return 1
-    project_home_path_rel_this = tool_params_file_data['project_path']['home_path_rel_this']
-    project_dir_abspath = joinFullPath(tool_params_file_path, project_home_path_rel_this)
+    project_home_path_rel_this = tool_params_file_data['project_path']['home_path_rel_this_dir']
+    tool_params_dir_path = os.path.dirname(tool_params_file_path)
+    project_dir_abspath = joinFullPath(tool_params_dir_path, project_home_path_rel_this)
     # print("project_dir_abspath: \033[1;31m{}\033[0m".format(project_dir_abspath))
     return project_dir_abspath
     
