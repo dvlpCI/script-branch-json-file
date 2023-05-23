@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-06 17:56:01
+ # @LastEditTime: 2023-05-23 20:41:43
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 分支JSON的创建-shell
 ###
@@ -78,6 +78,7 @@ done
 printf "①已选择您所要创建的分支类型${RED}%s${NC}\n\n" "$branchType"
 
 # 1.2、分支模块选择
+# 1.2.1、分支模块列表
 menu_module() {
     # 读取文件内容
     content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
@@ -96,57 +97,97 @@ menu_module() {
     #     return 1
     # fi
     echo "已知模块选项、已知基础选项："
-    echo "$content" | jq -r '.branch_belong2.strong_business, .branch_belong2.package | to_entries[] | "\(.key): \(.value)"'
+    echo "$content" | jq -r '.branch_belong2.strong_business, .branch_belong2.service, .branch_belong2.package, .branch_belong2.other | to_entries[] | "\(.key): \(.value)"'
     # 从 JSON 数据中获取 key 列表
-    moduleOptionKeys=($(echo "$content" | jq -r '.branch_belong2.strong_business, .branch_belong2.package | keys[]'))
+    moduleOptionKeys=($(echo "$content" | jq -r '.branch_belong2.strong_business, .branch_belong2.service, .branch_belong2.package, .branch_belong2.other | keys[]'))
 }
-menu_module
+# 1.2.2、选择分支所属模块，并完善分支名
+chooseAndCompleteBranchName() {
+    # 无限循环，监听用户输入
+    while true; do
+        read -r -p "②请输入您的模块/基础选项(自定义请填0,退出请输入Q|q) : " module_option_input
 
-# 无限循环，监听用户输入
-while true; do
-    read -r -p "②请输入您的模块/基础选项(若要退出请输入Q|q) : " module_option_input
+        if echo "${quitStrings[@]}" | grep -wq "${module_option_input}" &>/dev/null; then
+            echo "您已退出创建"
+            exit 1
+        fi
 
-    if echo "${quitStrings[@]}" | grep -wq "${module_option_input}" &>/dev/null; then
-        echo "您已退出创建"
-        exit 1
-    fi
+        if [ "${module_option_input}" == "0" ]; then
+            read -r -p "②请输入您自定义的分支所属模块(退出请输入Q|q) : " module_option_input
+            if echo "${quitStrings[@]}" | grep -wq "${module_option_input}" &>/dev/null; then
+                echo "您已退出创建"
+                exit 1
+            else
+                break
+            fi
+        fi
 
-    # 遍历 key 列表，判断输入是否匹配
-    match=false
-    for key in "${moduleOptionKeys[@]}"; do
-        if [ "$module_option_input" == "$key" ]; then
-            match=true
+        # 遍历 key 列表，判断输入是否匹配
+        match=false
+        for key in "${moduleOptionKeys[@]}"; do
+            if [ "$module_option_input" == "$key" ]; then
+                match=true
+                break
+            fi
+        done
+
+        # 如果没有匹配的 key，则遍历 JSON 数据中的最里层的所有 key 和 value 并将其打印出来
+        if [ "$match" == false ]; then
+            printf "${RED}输入的${module_option_input}不匹配${NC}\n"
+        else
             break
         fi
     done
+}
 
-    # 如果没有匹配的 key，则遍历 JSON 数据中的最里层的所有 key 和 value 并将其打印出来
-    if [ "$match" == false ]; then
-        printf "${RED}输入的${module_option_input}不匹配${NC}\n"
-    else
-        break
-    fi
-done
-
-
-# 1.3、分支名输入
-read -r -p "③请完善您的分支名(若要退出请输入Q|q) : ${module_option_input}_" branchName
-while [ "$branchName" != 'quit' ]; do
-    case $branchName in
-    Q | q) exit 2 ;;
-    *)
-        # echo "您输入的分支名为$branchName."
-        # 使用正则表达式判断字符串以字母开头且不小于4位，同时内容只能为字母和_和其他数字
-        if echo "$branchName" | grep -Eq '^[a-zA-Z][a-zA-Z0-9_.]{3,}$'; then
-            break
-        else
-            printf "字符串${RED}%s${NC}不符合要求，请重新输入(要求以字母开头，且不小于4位，支持字数、数字、下划线、小数点)\n\n" "$branchName"
-        fi
-        ;;
-    esac
+# 1.2.3、分支名输入
+perfectDevBranchName() {
     read -r -p "③请完善您的分支名(若要退出请输入Q|q) : ${module_option_input}_" branchName
-done
-newbranch=$branchType/${module_option_input}_$branchName
+    while [ "$branchName" != 'quit' ]; do
+        case $branchName in
+        Q | q) exit 2 ;;
+        *)
+            # echo "您输入的分支名为$branchName."
+            # 使用正则表达式判断字符串以字母开头且不小于4位，同时内容只能为字母和_和其他数字
+            if echo "$branchName" | grep -Eq '^[a-zA-Z][a-zA-Z0-9_.]{3,}$'; then
+                break
+            else
+                printf "字符串${RED}%s${NC}不符合要求，请重新输入(要求以字母开头，且不小于4位，支持字数、数字、下划线、小数点)\n\n" "$branchName"
+            fi
+            ;;
+        esac
+        read -r -p "③请完善您的分支名(若要退出请输入Q|q) : ${module_option_input}_" branchName
+    done
+    newbranch=$branchType/${module_option_input}_$branchName
+}
+perfectVersionBranchName() {
+    read -r -p "③请完善您的【版本分支名，参考v1.2.4_0527】(若要退出请输入Q|q) :" branchName
+    while [ "$branchName" != 'quit' ]; do
+        case $branchName in
+        Q | q) exit 2 ;;
+        *)
+            # echo "您输入的分支名为$branchName."
+            # 使用正则表达式判断字符串以字母开头且不小于4位，同时内容只能为字母和_和其他数字
+            if echo "$branchName" | grep -Eq '^[a-zA-Z][a-zA-Z0-9_.]{3,}$'; then
+                break
+            else
+                printf "字符串${RED}%s${NC}不符合要求，请重新输入(要求以字母开头，且不小于4位，支持字数、数字、下划线、小数点)\n\n" "$branchName"
+            fi
+            ;;
+        esac
+        read -r -p "③请完善您的【版本分支名，参考v1.2.4_0527】(若要退出请输入Q|q) :" branchName
+    done
+    newbranch=$branchType/$branchName
+}
+
+
+if [ "${branchType}" == "version" ]; then
+    perfectVersionBranchName   # 完善版本分支名
+else
+    menu_module # 罗列模块列表
+    chooseAndCompleteBranchName # 选择分支所属模块
+    perfectDevBranchName   # 完善开发分支名
+fi
 
 # 1.3、分支名确认
 # read -p "是否确定创建 $newbranch. [继续y/退出n] : " continueNewbranch

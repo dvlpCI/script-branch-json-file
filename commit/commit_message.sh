@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-10 10:17:49
+ # @LastEditTime: 2023-05-23 18:53:44
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 分支JSON的创建-shell
 ###
@@ -115,9 +115,9 @@ menu_module() {
     #     return 1
     # fi
     echo "参考的范围(见中文)："
-    echo "$content" | jq -r '.branch_belong2.strong_business, .branch_belong2.package | to_entries[] | "\(.key): \(.value)"'
+    echo "$content" | jq -r '.branch_belong2.strong_business, .branch_belong2.service, .branch_belong2.package, .branch_belong2.other, | to_entries[] | "\(.key): \(.value)"'
     # 从 JSON 数据中获取 key 列表
-    moduleOptionKeys=($(echo "$content" | jq -r '.branch_belong2.strong_business, .branch_belong2.package | keys[]'))
+    moduleOptionKeys=($(echo "$content" | jq -r '.branch_belong2.strong_business, .branch_belong2.service, .branch_belong2.package, .branch_belong2.other | keys[]'))
 }
 menu_module
 

@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-04-25 20:17:42
+LastEditTime: 2023-05-23 20:44:48
 FilePath: /bulidScript/branch_create/branchInfo_create.py
 Description: 分支JSON文件的创建-python
 '''
@@ -21,6 +21,16 @@ from branchJsonFile_input import inputOutline, chooseAnswer, chooseTester
 import getpass
 username = getpass.getuser()
 # print("当前登录用户的用户名是：{}\n".format(username))
+
+
+# 定义颜色常量
+NC='\033[0m' # No Color
+RED='\033[31m'
+GREEN='\033[32m'
+YELLOW='\033[33m'
+BLUE='\033[34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
 
 
 project_dir = getEnvValue_project_dir_path()
@@ -71,7 +81,7 @@ def create(branchType, branchShortName, file_path):
         print("当前开发者的用户名是：\033[1;31m{}\033[0m\n".format(developerName))
     except KeyError:
         developerName = "unknown"
-        print("无法找到开发者\033[1;31m{}\033[0m的映射，将其设置为未知开发者。\n".format(username))
+        print(f"无法找到开发者{YELLOW}{username}{NC}的映射，将其设置为未知开发者。{NC}")
 
     # 1、分支描述
     outlineMap = inputOutline()
