@@ -3,9 +3,18 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-22 13:05:14
+ # @LastEditTime: 2023-05-23 17:41:44
  # @Description: 
 ### 
+
+# 定义颜色常量
+NC='\033[0m' # No Color
+RED='\033[31m'
+GREEN='\033[32m'
+YELLOW='\033[33m'
+BLUE='\033[34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
 
 # 本地测试
 local_test() {
@@ -13,8 +22,9 @@ local_test() {
     qtoolScriptDir_Absolute=${CurrentDIR_Script_Absolute}
 }
 
+
 # 实际项目
-bjfVersion=0.3.7
+bjfVersion=0.4.0
 
 # 粗略计算，容易出现arm64芯片上的路径不对等问题
 # qtoolScriptDir_Absolute="/usr/local/Cellar/qtool/${bjfVersion}/lib"
@@ -48,9 +58,13 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
+printf "${GREEN}温馨提示:您当前操作的项目为${YELLOW}%s${GREEN}\n(如果需要变更，请输入${YELLOW}change${GREEN})${NC}\n" "$QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH"
+
 versionCmdStrings=("--version" "-version" "-v" "version")
 if [ -z "$1" ] || [ "$1" == "test" ]; then
     sh ${qtoolScriptDir_Absolute}/qtool_menu.sh "${qtoolScriptDir_Absolute}"
+# elif [ "$1" == "change" ]; then
+#     sh ${qtoolScriptDir_Absolute}/qtool_change.sh "${qtoolScriptDir_Absolute}"
 elif echo "${versionCmdStrings[@]}" | grep -wq "$1" &>/dev/null; then
     echo "${bjfVersion}"
 else

@@ -1,0 +1,11 @@
+{
+  "using_choice_id": "此字段暂时无用",
+  "choice": [
+    {
+      "id": "default",
+      "name": "默认的工程",
+      "project_tool_file_path": "/Users/qian/Project/ACompany/app1/bulidScript/tool_input.json",
+      "project_dir_path": "/Users/qian/Project/ACompany/app1/"
+    }
+  ]
+}

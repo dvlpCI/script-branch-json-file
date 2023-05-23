@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-10 09:54:08
+ # @LastEditTime: 2023-05-23 15:34:49
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 工具选项
 ###
@@ -162,6 +162,7 @@ initTool() {
     echo "✅恭喜:初始化成功"
 }
 
+
 updateTool() {
     brew update
     if [ $? != 0 ]; then
@@ -222,6 +223,11 @@ fi
 
 if [ -z "$1" ]; then
     qtool
+elif [ "$1" == "test" ]; then
+    # 本地测试
+    CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
+    qtoolScriptDir_Absolute=${CurrentDIR_Script_Absolute%/*} # 使用此方法可以避免路径上有..
+    sh ${qtoolScriptDir_Absolute}/qtool.sh test
 elif [ "$1" == "init" ]; then
     initTool
 elif [ "$1" == "update" ]; then

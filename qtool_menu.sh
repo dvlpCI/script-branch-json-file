@@ -4,14 +4,14 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-19 20:54:40
+ # @LastEditTime: 2023-05-23 17:21:49
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
 
 qtoolScriptDir_Absolute=$1
 if [ -z "${qtoolScriptDir_Absolute}" ]; then
-    echo "请传参"
+    echo "请传参 qtoolScriptDir_Absolute"
     exit 1
 elif [ ! -d "${qtoolScriptDir_Absolute}" ]; then
     echo "qtoolScriptDir_Absolute=${qtoolScriptDir_Absolute}路径不存在，请检查"
@@ -255,10 +255,15 @@ evalActionByInput() {
     valid_option=false
     moreActionStrings=("qian" "chaoqian" "lichaoqian") # 输入哪些字符串算是想要退出
     while [ "$valid_option" = false ]; do
-        read -r -p "请选择您想要执行的操作编号或id(若要退出请输入Q|q) : " option
+        read -r -p "请选择您想要执行的操作编号或id(若要退出请输入Q|q，变更项目输入change) : " option
 
         if [ "${option}" == q ] || [ "${option}" == "Q" ]; then
             exit 2
+        fi
+
+        if [ "${option}" == "change" ]; then
+            sh "${qtoolScriptDir_Absolute}/qtool_change.sh" "${qtoolScriptDir_Absolute}"
+            break
         fi
 
 
