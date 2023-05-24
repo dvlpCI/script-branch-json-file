@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-14 14:09:09
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-24 19:27:44
+ # @LastEditTime: 2023-05-24 19:32:44
  # @Description: 
 ### 
 
@@ -40,13 +40,13 @@ fi
 # if [ ! -d "$../.git/hooks/pre-push" ]; then
 source ${qtoolScriptDir_Absolute}/base/join_full_path.sh
 
-project_hook_dir_abspath=$(joinFullPath "$project_dir/" ".git/hooks/pre-push")
+project_hook_dir_abspath=$(joinFullPath_noCheck "$project_dir/" ".git/hooks/pre-push")
 if [ $? != 0 ]; then
     exit_script
 fi
 
 # printf "${BLUE}正在执行命令：《${YELLOW} cp \"${pre_push_binary_script_file}\" \"${project_hook_dir_abspath}\" ${BLUE}》${NC}\n"
-cp "${pre_push_binary_script_file}" "${project_dir}/.git/hooks/pre-push"
+cp "${pre_push_binary_script_file}" "${project_hook_dir_abspath}"
 if [ $? != 0 ]; then 
     printf "${RED} pre-push 的 hook 拷贝操作失败${NC}\n"
     exit 1
