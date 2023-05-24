@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-23 18:53:44
+ # @LastEditTime: 2023-05-24 19:02:53
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 分支JSON的创建-shell
 ###
@@ -115,7 +115,7 @@ menu_module() {
     #     return 1
     # fi
     echo "参考的范围(见中文)："
-    echo "$content" | jq -r '.branch_belong2.strong_business, .branch_belong2.service, .branch_belong2.package, .branch_belong2.other, | to_entries[] | "\(.key): \(.value)"'
+    echo "$content" | jq -r '.branch_belong2.strong_business, .branch_belong2.service, .branch_belong2.package, .branch_belong2.other | to_entries[] | "\(.key): \(.value)"'
     # 从 JSON 数据中获取 key 列表
     moduleOptionKeys=($(echo "$content" | jq -r '.branch_belong2.strong_business, .branch_belong2.service, .branch_belong2.package, .branch_belong2.other | keys[]'))
 }
@@ -125,7 +125,7 @@ menu_module
 
 # 无限循环，监听用户输入
 while true; do
-    read -r -p "②请输入您改动的影响范围，以上中文是一些参考(若要退出请输入Q|q) : 【${branchTypeUpperFirst}】" scope_input
+    read -r -p "②请输入您改动的影响范围，以上中文是一些参考(若要退出请输入Q|q，若要跳过范围输入回车) : 【${branchTypeUpperFirst}】" scope_input
 
     if echo "${quitStrings[@]}" | grep -wq "${scope_input}" &>/dev/null; then
         echo "您已退出创建"
@@ -134,10 +134,16 @@ while true; do
 
     break
 done
-printf "②已输入的改动范围${BLUE}%s${NC}\n" "$scope_input"
+if [ -n "$scope_input" ]; then
+    printf "②已输入的改动范围${BLUE}%s${NC}\n" "$scope_input"
+fi
 
 # 1.3、分支名输入
-read -r -p "③请完善您的改动信息(若要退出请输入Q|q) : 【${branchTypeUpperFirst}】（${scope_input}）" change_log_input
+if [ -n "$scope_input" ]; then
+    read -r -p "③请完善您的改动信息(若要退出请输入Q|q) : 【${branchTypeUpperFirst}】（${scope_input}）" change_log_input
+else
+    read -r -p "③请完善您的改动信息(若要退出请输入Q|q) : 【${branchTypeUpperFirst}】" change_log_input
+fi
 while [ "$change_log_input" != 'quit' ]; do
     case $change_log_input in
     Q | q) exit 2 ;;
@@ -151,9 +157,17 @@ while [ "$change_log_input" != 'quit' ]; do
         fi
         ;;
     esac
-    read -r -p "③请完善您的分支名(若要退出请输入Q|q) : 【${branchTypeUpperFirst}】（${scope_input}）" change_log_input
+    if [ -n "$scope_input" ]; then
+        read -r -p "③请完善您的改动信息(若要退出请输入Q|q) : 【${branchTypeUpperFirst}】（${scope_input}）" change_log_input
+    else
+        read -r -p "③请完善您的改动信息(若要退出请输入Q|q) : 【${branchTypeUpperFirst}】" change_log_input
+    fi
 done
-commitMsg="【${branchTypeUpperFirst}】（${scope_input}）${change_log_input}"
+if [ -n "$scope_input" ]; then
+    commitMsg="【${branchTypeUpperFirst}】（${scope_input}）${change_log_input}"
+else
+    commitMsg="【${branchTypeUpperFirst}】${change_log_input}"
+fi
 
 # 1.3、分支名确认
 while true; do
