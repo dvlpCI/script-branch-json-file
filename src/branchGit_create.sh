@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-23 20:41:43
+ # @LastEditTime: 2023-05-24 19:12:34
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 分支JSON的创建-shell
 ###
@@ -161,7 +161,7 @@ perfectDevBranchName() {
     newbranch=$branchType/${module_option_input}_$branchName
 }
 perfectVersionBranchName() {
-    read -r -p "③请完善您的【版本分支名，参考v1.2.4_0527】(若要退出请输入Q|q) :" branchName
+    read -r -p "③请完善您的【版本分支名，参考v1.2.4_0527、version_next、version_far】(若要退出请输入Q|q) :" branchName
     while [ "$branchName" != 'quit' ]; do
         case $branchName in
         Q | q) exit 2 ;;
@@ -175,7 +175,7 @@ perfectVersionBranchName() {
             fi
             ;;
         esac
-        read -r -p "③请完善您的【版本分支名，参考v1.2.4_0527】(若要退出请输入Q|q) :" branchName
+        read -r -p "③请完善您的【版本分支名，参考v1.2.4_0527、version_next、version_far】(若要退出请输入Q|q) :" branchName
     done
     newbranch=$branchType/$branchName
 }

@@ -58,8 +58,12 @@
   ],
   "branch_belong1": [
     {
-      "key": "version",
-      "des": "版本分支"
+      "key": "version_next",
+      "des": "版本分支:下个版本"
+    },
+    {
+      "key": "version_far",
+      "des": "版本分支:下下个版本"
     },
     {
       "key": "hotfix",
