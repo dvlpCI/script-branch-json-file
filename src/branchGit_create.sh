@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-24 19:12:34
+ # @LastEditTime: 2023-05-24 20:04:24
 # @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
 # @Description: 分支JSON的创建-shell
 ###
@@ -26,7 +26,7 @@ quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退�
 branch_type_menu() {
     # 读取文件内容
     content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
-    branchBelongKey1="branch_belong1"
+    branchBelongKey1="branch_categorys"
     branchBelongMaps1=$(echo "$content" | jq -r ".${branchBelongKey1}")
     if [ -z "${branchBelongMaps1}" ] || [ "${branchBelongMaps1}" == "null" ]; then
         rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .${branchBelongKey1} "
@@ -54,8 +54,13 @@ branch_type_menu() {
     done
 }
 
-chooseBranchType() {
-    branchType=$1
+chooseBranchTypeMap() {
+    tBranchBelongMap=$1
+
+    branchType=$(echo "$tBranchBelongMap" | jq -r ".key")
+    branchTypeCodeEnable=$(echo "$tBranchBelongMap" | jq -r ".codeEnable")
+    tBranchBelongDes=$(echo "$tBranchBelongMap" | jq -r ".des")
+
     valid_option=true
 }
 
@@ -67,9 +72,7 @@ while [ "$valid_option" = false ]; do
         exit 2
     elif [ ${option} -le ${branchBelongMapCount} ]; then
         tBranchBelongMap=$(echo "$content" | jq ".${branchBelongKey1}" | jq -r ".[$((option - 1))]") # 添加 jq -r 的-r以去掉双引号
-        tBranchBelongName=$(echo "$tBranchBelongMap" | jq -r ".key")
-        tBranchBelongDes=$(echo "$tBranchBelongMap" | jq -r ".des")
-        chooseBranchType "${tBranchBelongName}"
+        chooseBranchTypeMap "${tBranchBelongMap}"
         break
     else
         valid_option=false echo "无此选项，请重新输入。"
@@ -161,7 +164,7 @@ perfectDevBranchName() {
     newbranch=$branchType/${module_option_input}_$branchName
 }
 perfectVersionBranchName() {
-    read -r -p "③请完善您的【版本分支名，参考v1.2.4_0527、version_next、version_far】(若要退出请输入Q|q) :" branchName
+    read -r -p "③请完善您的【版本分支名，参考 v1.2.4_0527 、 version_next 、 version_far 】(若要退出请输入Q|q) :" branchName
     while [ "$branchName" != 'quit' ]; do
         case $branchName in
         Q | q) exit 2 ;;
@@ -175,13 +178,17 @@ perfectVersionBranchName() {
             fi
             ;;
         esac
-        read -r -p "③请完善您的【版本分支名，参考v1.2.4_0527、version_next、version_far】(若要退出请输入Q|q) :" branchName
+        read -r -p "③请完善您的【版本分支名，参考 v1.2.4_0527 、 version_next 、 version_far 】(若要退出请输入Q|q) :" branchName
     done
     newbranch=$branchType/$branchName
 }
 
+onlyInput=false #是否直接输入用户名，而没有选择操作了
+if [ -n "${branchTypeCodeEnable}" ] && [ "${branchTypeCodeEnable}" == "false" ]; then
+    onlyInput=true
+fi
 
-if [ "${branchType}" == "version" ]; then
+if [ "${onlyInput}" == true ]; then
     perfectVersionBranchName   # 完善版本分支名
 else
     menu_module # 罗列模块列表

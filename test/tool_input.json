@@ -56,7 +56,34 @@
       "des": "其他"
     }
   ],
-  "branch_belong1": [
+  "branch_categorys": [
+    {
+      "codeEnable": false,
+      "key": "version",
+      "des": "版本分支"
+    },
+    {
+      "codeEnable": true,
+      "key": "hotfix",
+      "des": "线上修复"
+    },
+    {
+      "codeEnable": true,
+      "key": "feature",
+      "des": "产品需求"
+    },
+    {
+      "codeEnable": true,
+      "key": "optimize",
+      "des": "技术优化"
+    },
+    {
+      "codeEnable": true,
+      "key": "other",
+      "des": "其他"
+    }
+  ],
+  "branch_version_choice": [
     {
       "key": "version_next",
       "des": "版本分支:下个版本"
@@ -64,22 +91,6 @@
     {
       "key": "version_far",
       "des": "版本分支:下下个版本"
-    },
-    {
-      "key": "hotfix",
-      "des": "线上修复"
-    },
-    {
-      "key": "feature",
-      "des": "产品需求"
-    },
-    {
-      "key": "optimize",
-      "des": "技术优化"
-    },
-    {
-      "key": "other",
-      "des": "其他"
     }
   ],
   "branch_belong2": {
