@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-23 17:21:49
+ # @LastEditTime: 2023-06-01 10:37:09
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -184,6 +184,14 @@ updateMonitorPageKey() {
 # 按规范提交当前所有代码
 pushGitCommitMessage() {
     sh $qtoolScriptDir_Absolute/commit/commit_message.sh
+    checkResultCode $?
+}
+
+# 三、打包
+# 3.1、更改环境
+pack_updateEnv_action() {
+    # echo "正在执行命令(更改环境):《 python3 \"${qtoolScriptDir_Absolute}/pack/pack_input.py\" 》"
+    python3 "${qtoolScriptDir_Absolute}/pack/pack_input.py"
     checkResultCode $?
 }
 

@@ -79,18 +79,23 @@
             "category_id": "pack",
             "category_values": [
                 {
+                    "name": "get_pack_param",
+                    "des": "打包相关(参数):本地打包参数的快捷获取",
+                    "action": "pack_updateEnv_action"
+                },
+                {
                     "name": "jenkins",
-                    "des": "执行Jenkins打包任务",
+                    "des": "打包相关(Jenkins):执行Jenkins打包任务",
                     "action": "buildJenkinsJob"
                 },
                 {
                     "name": "goPP",
-                    "des": "进入更新Apple设备的目录",
+                    "des": "打包相关(安装设备):进入更新Apple设备的目录",
                     "action": "goPPDir"
                 },
                 {
                     "name": "uploadDSYM",
-                    "des": "上传符号表(需要jdk8支持)",
+                    "des": "打包相关(符号表):上传符号表(需要jdk8支持)",
                     "action": "uploadDSYMAction"
                 }
             ]
