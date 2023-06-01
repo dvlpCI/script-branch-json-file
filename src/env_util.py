@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
 LastEditors: dvlproad
-LastEditTime: 2023-05-19 16:28:00
+LastEditTime: 2023-06-01 12:44:22
 FilePath: /script-branch-json-file/src/env_util.py
 Description: 获取环境变量的值
 '''
@@ -62,7 +62,7 @@ def getEnvValue_project_dir_path():
     project_home_path_rel_this = tool_params_file_data['project_path']['home_path_rel_this_dir']
     tool_params_dir_path = os.path.dirname(tool_params_file_path)
     project_dir_abspath = joinFullPath(tool_params_dir_path, project_home_path_rel_this)
-    # print("project_dir_abspath: \033[1;31m{}\033[0m".format(project_dir_abspath))
+    # print(f"project_dir_abspath:{RED}{project_dir_abspath} {NC}")
     return project_dir_abspath
     
 
@@ -75,8 +75,21 @@ def getEnvValue_branch_json_file_dir_path():
         return 1
     branch_json_file_dir_relpath = data['branchJsonFile']['BRANCH_JSON_FILE_DIR_RELATIVE_PATH']
     branch_json_file_dir_abspath = joinFullPath(branch_json_file_git_home, branch_json_file_dir_relpath)
-    print("branch_json_file_dir_abspath: \033[1;31m{}\033[0m".format(branch_json_file_dir_abspath))
+    # print(f"branch_json_file_dir_abspath:{RED}{branch_json_file_dir_abspath} {NC}")
     return branch_json_file_dir_abspath
+
+# 获取环境变量的值-打包参数信息文件的存放路径
+def getEnvValue_pack_input_params_file_path():
+    project_home_dir_path = getEnvValue_project_dir_path()
+    
+    data = getEnvValue_params_file_data()
+    if data == 1:
+        return 1
+    
+    pack_input_params_file_path_relhome = data['project_path']['pack_path_rel_home']['pack_input_params_file_RELATIVE_HOME']
+    pack_input_params_file_abspath = joinFullPath(project_home_dir_path, pack_input_params_file_path_relhome)
+    print(f"pack_input_params_file_abspath:{RED}{pack_input_params_file_abspath} {NC}")
+    return pack_input_params_file_abspath
 
 
 

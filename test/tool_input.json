@@ -7,12 +7,15 @@
     "doc_work_plan": "https://www.sina.com"
   },
   "project_path": {
-    "home_path_rel_this_dir" : "../../",
+    "home_path_rel_this_dir": "../../",
     "other_path_rel_home": {
       "code_home": "./beyond/",
       "app_info_file": "./bulidScript/app_info.json",
       "images": "/tsdemo/images/",
       "code": "/tsdemo/lib/"
+    },
+    "pack_path_rel_home": {
+      "pack_input_params_file_RELATIVE_HOME": "./bulidScript/pack_input.json"
     }
   },
   "unuse_output": {

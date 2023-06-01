@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-01 10:37:38
+LastEditTime: 2023-06-01 13:36:43
 FilePath: pack_input.py
 Description: 打包-输入
 '''
@@ -15,6 +15,8 @@ import os
 import json
 
 import re
+from env_util import getEnvValue_pack_input_params_file_path
+
 
 # 定义颜色常量
 NC='\033[0m' # No Color
@@ -54,9 +56,8 @@ def getChooseValueById(values, valueId):
     return person
 
 def dealActions():
-    tool_params_file_path="/Users/qian/Project/CQCI/script-branch-json-file/pack/pack_input.json"
-    # tool_params_file_path = os.getenv('QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH')
-    with open(tool_params_file_path) as f:
+    pack_input_params_file_path=getEnvValue_pack_input_params_file_path()
+    with open(pack_input_params_file_path) as f:
         data = json.load(f)
 
     # 1、选择环境

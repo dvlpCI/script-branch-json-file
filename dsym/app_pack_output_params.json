@@ -12,6 +12,9 @@
             "images": "/tsdemo/images/",
             "code": "/tsdemo/lib/"
         },
+        "pack_path_rel_home": {
+            "pack_input_params_file_RELATIVE_HOME": "./bulidScript/pack_input.json"
+        },
         "dsym_path_rel_home": {
             "app_bugly_config_file": "./bulidScript/dsym/app_pack_info_bugly.json",
             "buglyqq_upload_symbol": "./bulidScript/dsym/buglyqq-upload-symbol/buglyqq-upload-symbol.jar",
@@ -21,7 +24,7 @@
     "package_url_result": {
         "package_local_url": "package local url",
         "package_local_backup_dir": "package local backup dir",
-        "package_local_dSYM_file_path": "./wish/ios/outputs/Runner.xcarchive/dSYMs/Runner.app.dSYM",
+        "package_local_dSYM_file_path": "./tsdemo/ios/outputs/Runner.xcarchive/dSYMs/Runner.app.dSYM",
         "package_cos_url": "package cos url"
     }
 }
