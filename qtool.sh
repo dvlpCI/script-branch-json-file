@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-24 20:06:05
+ # @LastEditTime: 2023-06-01 10:29:42
  # @Description: 
 ### 
 
@@ -16,6 +16,8 @@ BLUE='\033[34m'
 PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 
+qtoolQuickCmdStrings=("cz") # qtool 支持的快捷命令
+
 # 本地测试
 local_test() {
     CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
@@ -24,7 +26,7 @@ local_test() {
 
 
 # 实际项目
-bjfVersion=0.4.4
+bjfVersion=0.4.5
 
 # 粗略计算，容易出现arm64芯片上的路径不对等问题
 # qtoolScriptDir_Absolute="/usr/local/Cellar/qtool/${bjfVersion}/lib"
@@ -67,6 +69,12 @@ if [ -z "$1" ] || [ "$1" == "test" ]; then
 #     sh ${qtoolScriptDir_Absolute}/qtool_change.sh "${qtoolScriptDir_Absolute}"
 elif echo "${versionCmdStrings[@]}" | grep -wq "$1" &>/dev/null; then
     echo "${bjfVersion}"
+elif echo "${qtoolQuickCmdStrings[@]}" | grep -wq "$1" &>/dev/null; then
+    if [ "$1" == "cz" ]; then
+        sh $qtoolScriptDir_Absolute/commit/commit_message.sh
+    else
+        printf "${YELLOW}温馨提示:无法执行未知命令《 qtool \"$1\" 》，请检查"
+    fi
 else
     sh ${qtoolScriptDir_Absolute}/qtool_help.sh
 fi

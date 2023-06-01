@@ -4,8 +4,8 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-23 15:34:49
-# @FilePath: /Git-Commit-Standardization/Users/lichaoqian/Project/Bojue/branch_create.sh
+ # @LastEditTime: 2023-06-01 10:25:13
+# @FilePath: project_tool.sh
 # @Description: 工具选项
 ###
 
@@ -20,6 +20,7 @@ CYAN="\033[0;36m"
 
 quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退出
 versionCmdStrings=("--version" "-version" "-v" "version")
+qtoolQuickCmdStrings=("cz") # qtool 支持的快捷命令
 
 # cd "$BJProject_WISHHOME"
 
@@ -40,22 +41,214 @@ versionCmdStrings=("--version" "-version" "-v" "version")
 # echo "branchJsonFileScriptDir_Absolute=${branchJsonFileScriptDir_Absolute}"
 
 # 工具选项
-tool_menu() {
-    # 定义菜单选项
-    options=(
-        "1|init     初始化"
-        "2|update   更新"
-        "3|more     更多操作"
-    )
+# tool_menu() {
 
-    # 遍历数组并输出带颜色的文本
-    for i in "${!options[@]}"; do
-        if [ "$i" -eq 0 ]; then
-            printf "\033[34m%s\033[0m\n" "${options[$i]}"
+#     # 定义菜单选项
+#     options=(
+#         "1|init     初始化"
+#         "2|update   更新"
+#         "3|more     更多操作"
+#     )
+
+#     # 遍历数组并输出带颜色的文本
+#     for i in "${!options[@]}"; do
+#         if [ "$i" -eq 0 ]; then
+#             printf "\033[34m%s\033[0m\n" "${options[$i]}"
+#         else
+#             printf "\033[33m%s\033[0m\n" "${options[$i]}"
+#         fi
+#     done
+# }
+# chooseMenuOption() {
+#     # 读取用户输入的选项，并根据选项执行相应操作
+#     read -r -p "请选择您想要执行的操作(若要退出请输入Q|q) : " option
+#     while [ "$option" != 'Q' ] && [ "$option" != 'q' ]; do
+#         case $option in
+#         1 | init) initTool break ;;
+#         2 | update) updateTool break ;;
+#         3 | more) qtool break ;;
+#         *) echo "无此选项..." ;;
+#         esac
+
+#         if [ $? = 0 ]; then
+#             printf "${GREEN}恭喜💐:您选择${YELLOW}%s${GREEN}操作已执行完成${NC}\n" "${option}"
+#         elif [ $? = 300 ]; then
+#             printf "${BLUE}温馨提示🤝:您选择${YELLOW}%s${BLUE}操作已退出${NC}\n" "${option}"
+#         else
+#             printf "${RED}很遗憾😭:您选择${YELLOW}%s${RED}操作执行未执行/失败${NC}\n" "${option}"
+#         fi
+#         break
+#     done
+# }
+
+getMenuJson() {
+    # 构建 JSON
+    menuJson='{
+    "catalog": [
+        {
+            "category_id": "init",
+            "category_values": [
+                {
+                    "name": "init",
+                    "des": "初始化",
+                    "action": "initAction"
+                }
+            ]
+        },
+        {
+            "category_id": "update",
+            "category_values": [
+                {
+                    "name": "update",
+                    "des": "更新",
+                    "action": "updateAction"
+                }
+            ]
+        },
+        {
+            "category_id": "more",
+            "category_values": [
+                {
+                    "name": "more",
+                    "des": "更多操作",
+                    "action": "moreAction"
+                }
+            ]
+        }
+    ]
+}'
+    echo "$menuJson"
+}
+
+# 工具选项
+tool_menu() {
+    menuJson=$1
+
+    # 使用 jq 命令解析 JSON 数据并遍历
+    catalogCount=$(echo "$menuJson" | jq '.catalog|length')
+    # echo "catalogCount=${catalogCount}"
+    for ((i = 0; i < ${catalogCount}; i++)); do
+        iCatalogMap=$(echo "$menuJson" | jq ".catalog" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
+        iCatalogOutlineMaps=$(echo "$iCatalogMap" | jq -r ".category_values")
+        iCatalogOutlineCount=$(echo "$iCatalogOutlineMaps" | jq '.|length')
+        if [ $i = 0 ]; then
+            iCatalogColor=${BLUE}
+        elif [ $i = 1 ]; then
+            iCatalogColor=${PURPLE}
+        elif [ $i = 2 ]; then
+            iCatalogColor=${GREEN}
+        elif [ $i = 3 ]; then
+            iCatalogColor=${CYAN}
         else
-            printf "\033[33m%s\033[0m\n" "${options[$i]}"
+            iCatalogColor=${YELLOW}
+        fi
+        for ((j = 0; j < ${iCatalogOutlineCount}; j++)); do
+            iCatalogOutlineMap=$(echo "$iCatalogOutlineMaps" | jq -r ".[${j}]") # 添加 jq -r 的-r以去掉双引号
+            iCatalogOutlineName=$(echo "$iCatalogOutlineMap" | jq -r ".name")
+            iCatalogOutlineDes=$(echo "$iCatalogOutlineMap" | jq -r ".des")
+
+            iBranchOption="$((i + 1)).$((j + 1))|${iCatalogOutlineName}"
+            printf "${iCatalogColor}%-25s%s${NC}\n" "${iBranchOption}" "$iCatalogOutlineDes" # 要拼接两个字符串，并在拼接的结果中，如果第一个字符串不够 15 位则自动补充空格到 15 位
+        done
+    done
+}
+
+chooseMenuOption() {
+    # 显示工具选项
+    menuJsonString=$(getMenuJson)
+    tool_menu "${menuJsonString}"
+    evalActionByInput "${menuJsonString}"
+}
+
+evalActionByInput() {
+    menuJson=$1
+
+    # 读取用户输入的选项，并根据选项执行相应操作
+    valid_option=false
+    moreActionStrings=("qian" "chaoqian" "lichaoqian") # 输入哪些字符串算是想要退出
+    while [ "$valid_option" = false ]; do
+        read -r -p "请选择您想要执行的操作编号或id(若要退出请输入Q|q，变更项目输入change) : " option
+
+        if [ "${option}" == q ] || [ "${option}" == "Q" ]; then
+            exit 2
+        fi
+
+        if [ "${option}" == "change" ]; then
+            sh "${qtoolScriptDir_Absolute}/qtool_change.sh" "${qtoolScriptDir_Absolute}"
+            break
+        fi
+
+        if echo "${moreActionStrings[@]}" | grep -wq "${option}" &>/dev/null; then
+            showMenu "${qtoolScriptDir_Absolute}/qtool_menu_private.json"
+            break
+        fi
+
+        # 定义菜单选项
+        catalogCount=$(echo "$menuJson" | jq '.catalog|length')
+        tCatalogOutlineMap=""
+        for ((i = 0; i < ${catalogCount}; i++)); do
+            iCatalogMap=$(echo "$menuJson" | jq ".catalog" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
+            iCatalogOutlineMaps=$(echo "$iCatalogMap" | jq -r ".category_values")
+            iCatalogOutlineCount=$(echo "$iCatalogOutlineMaps" | jq '.|length')
+            hasFound=false
+            for ((j = 0; j < ${iCatalogOutlineCount}; j++)); do
+                iCatalogOutlineMap=$(echo "$iCatalogOutlineMaps" | jq -r ".[${j}]") # 添加 jq -r 的-r以去掉双引号
+                iCatalogOutlineName=$(echo "$iCatalogOutlineMap" | jq -r ".name")
+
+                iBranchOptionId="$((i + 1)).$((j + 1))"
+                iBranchOptionName="${iCatalogOutlineName}"
+
+                if [ "${option}" = ${iBranchOptionId} ] || [ "${option}" == ${iBranchOptionName} ]; then
+                    tCatalogOutlineMap=$iCatalogOutlineMap
+                    hasFound=true
+                    break
+                # else
+                #     printf "${RED}%-4s%-25s${NC}不是想要找的%s\n" "${iBranchOptionId}" "$iBranchOptionName" "${option}"
+                fi
+            done
+            if [ ${hasFound} == true ]; then
+                break
+            fi
+        done
+
+        if [ -n "${tCatalogOutlineMap}" ]; then
+            tCatalogOutlineAction=$(echo "$tCatalogOutlineMap" | jq -r ".action")
+            # printf "正在执行命令：${BLUE}%s${NC}\n" "${tCatalogOutlineAction}"
+            eval "$tCatalogOutlineAction"
+        else
+            echo "无此选项，请重新输入。"
         fi
     done
+}
+
+checkResultCode() {
+    tCatalogOutlineName=$(echo "$tCatalogOutlineMap" | jq -r ".name")
+    tCatalogOutlineDes=$(echo "$tCatalogOutlineMap" | jq -r ".des")
+
+    resultCode=$1
+    if [ $resultCode = 0 ]; then
+        printf "${GREEN}恭喜💐:您选择${YELLOW}%s${GREEN}操作已执行完成${NC}\n" "$option|$tCatalogOutlineName $tCatalogOutlineDes"
+    elif [ $resultCode = 300 ]; then
+        printf "${BLUE}温馨提示🤝:您选择${YELLOW}%s${RED}操作已退出${NC}\n" "$option|$tCatalogOutlineName $tCatalogOutlineDes"
+    else
+        printf "${RED}很遗憾😭:您选择${YELLOW}%s${RED}操作执行未执行/失败${NC}\n" "$option|$tCatalogOutlineName $tCatalogOutlineDes"
+    fi
+    valid_option=ture
+}
+
+initAction() {
+    initTool
+    checkResultCode $?
+}
+
+updateAction() {
+    updateTool
+    checkResultCode $?
+}
+
+moreAction() {
+    qtool
+    checkResultCode $?
 }
 
 checkDirPath() {
@@ -162,7 +355,6 @@ initTool() {
     echo "✅恭喜:初始化成功"
 }
 
-
 updateTool() {
     brew update
     if [ $? != 0 ]; then
@@ -175,29 +367,6 @@ updateTool() {
         echo "❌Error:分支信息文件工具初始化失败，请重新执行"
         exit 1
     fi
-}
-
-chooseMenuOption() {
-    # 显示工具选项
-    tool_menu
-
-    # 读取用户输入的选项，并根据选项执行相应操作
-    read -r -p "请选择您想要执行的操作(若要退出请输入Q|q) : " option
-    while [ "$option" != 'Q' ] && [ "$option" != 'q' ]; do
-        case $option in
-        1 | init) initTool break ;;
-        2 | update) updateTool break ;;
-        3 | more) qtool break ;;
-        *) echo "无此选项..." ;;
-        esac
-
-        if [ $? = 0 ]; then
-            printf "恭喜💐:您选择%s操作已执行完成\n" "${options[$option - 1]}"
-        else
-            printf "很遗憾😭:您选择%s操作执行失败\n" "${options[$option - 1]}"
-        fi
-        break
-    done
 }
 
 checkRunEnv() {
@@ -234,6 +403,9 @@ elif [ "$1" == "update" ]; then
     updateTool
 elif echo "${versionCmdStrings[@]}" | grep -wq "$1" &>/dev/null; then
     qtool --version
+elif echo "${qtoolQuickCmdStrings[@]}" | grep -wq "$1" &>/dev/null; then
+    # echo "正在执行命令(qtool 的快捷命令):《 qtool \"$1\" 》"
+    qtool "$1"
 else
     chooseMenuOption
 fi
