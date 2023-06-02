@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-02 15:29:47
+LastEditTime: 2023-06-02 15:41:14
 FilePath: path_choose_util.py
 Description: 指定文件夹下的 文件 或 文件夹 的选择
 '''
@@ -73,11 +73,11 @@ def show_and_choose_file_in_dir(searchInDir, fileExtension, GiveupChoose=False):
         return True
 
     while True:
-        user_input = input("请输入想要操作的文件名(支持字母数字下滑线中划线)（输入Q或q退出）：")
+        user_input = input("请输入想要操作的文件名（输入Q或q退出）：")
         if user_input.lower() == 'q':
             exit(2)
             break
-        elif not re.match(r'^[a-zA-Z0-9_-]+\.[jJ][sS][oO][nN]$', user_input):
+        elif not re.match(r'\.[jJ][sS][oO][nN]$', user_input):
             print(f"{RED}输入的{user_input}不是{fileExtension}格式的文件名，请重新输入{NC}")
             continue
         elif user_input not in [os.path.basename(file) for file in lastBranchsInfo_files]:

@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-02 15:29:33
+LastEditTime: 2023-06-02 16:05:29
 FilePath: pack_input.py
 Description: 打包-输入
 '''
@@ -168,63 +168,10 @@ def dealDataOperate(data, operate):
 
 
 
-def inputBranchName():
-    while True:
-        branchName = input("②请输入您的分支名(支持字母数字下滑线中划线)(若要退出请输入Q|q) : ")
-        if branchName.lower() == 'q':
-            exit(2)
-        else:
-            # 使用正则表达式判断字符串以字母开头且不小于4位，同时内容只能为字母和_和其他数字
-            if re.match(r'^[a-zA-Z][a-zA-Z0-9_-]{3,}$', branchName):
-                break
-            else:
-                print(f"字符串{RED}{branchName}{NC}不符合要求，请重新输入(要求以字母开头，且不小于4位)\n")
-    return branchName
 
-
-
-
-def inputOutline():
-    # 1、分支描述
-    while True:
-        try:
-            # 尝试使用 UTF-8 编码解码用户输入
-            branchDes = input("请输入分支描述：") or "null"
-            break  # 如果解码成功，则跳出循环
-        except UnicodeDecodeError:
-            print("输入的编码不是 UTF-8，请重新输入。")
-    print("输入的分支描述：\033[1;31m{}\033[0m\n".format(branchDes))
-
-    # branchDes = "【【线上问题】复制口令，并且杀掉app重新打开，进入游戏会卡再初始图界面3s并且没有加载条】https://www.tapd.cn/69657441/bugtrace/bugs/view?bug_id=1169657442001003014"
-    outlineMap = getOutline(branchDes)
-    return outlineMap
-
-def getOutline(text):
-    result = {}
-    
-    # 使用正则表达式提取标题和URL
-    title_pattern = r"(.+)"
-    title_match = re.search(title_pattern, text)
-    title = title_match.group(1)
-    
-    
-    
-    url_pattern = r"(https?://\S+)"
-    url_match = re.search(url_pattern, text)
-    if url_match:
-        url = url_match.group(1)
-        title = title.replace(url, "") # 将title中的url移除
-        result["url"] = url
-    else:
-        url = None
-    
-    result["title"] = title
-
-    return result
 
 
 # chooseAnswer()
 # chooseTester()
-# inputOutline()
 dealActions()
 # choosePlatform()
