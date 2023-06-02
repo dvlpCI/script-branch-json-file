@@ -89,6 +89,11 @@
                     "action": "buildJenkinsJob"
                 },
                 {
+                    "name": "signApk",
+                    "des": "打包相关(签名):为加固后的apk签名",
+                    "action": "signApkAction"
+                },
+                {
                     "name": "goPP",
                     "des": "打包相关(安装设备):进入更新Apple设备的目录",
                     "action": "goPPDir"

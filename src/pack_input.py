@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-01 13:36:43
+LastEditTime: 2023-06-02 15:29:33
 FilePath: pack_input.py
 Description: 打包-输入
 '''
@@ -170,12 +170,12 @@ def dealDataOperate(data, operate):
 
 def inputBranchName():
     while True:
-        branchName = input("②请输入您的分支名(若要退出请输入Q|q) : ")
+        branchName = input("②请输入您的分支名(支持字母数字下滑线中划线)(若要退出请输入Q|q) : ")
         if branchName.lower() == 'q':
             exit(2)
         else:
             # 使用正则表达式判断字符串以字母开头且不小于4位，同时内容只能为字母和_和其他数字
-            if re.match(r'^[a-zA-Z][a-zA-Z0-9_]{3,}$', branchName):
+            if re.match(r'^[a-zA-Z][a-zA-Z0-9_-]{3,}$', branchName):
                 break
             else:
                 print(f"字符串{RED}{branchName}{NC}不符合要求，请重新输入(要求以字母开头，且不小于4位)\n")

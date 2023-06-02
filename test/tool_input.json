@@ -6,6 +6,10 @@
     "doc_version_plan": "https://www.baidu.com",
     "doc_work_plan": "https://www.sina.com"
   },
+  "local_website_service": {
+    "local_dir_path": "/Library/WebServer/Documents/",
+    "local_ip_address": "http://192.168.72.202/"
+  },
   "project_path": {
     "home_path_rel_this_dir": "../../",
     "other_path_rel_home": {
@@ -15,7 +19,21 @@
       "code": "/tsdemo/lib/"
     },
     "pack_path_rel_home": {
-      "pack_input_params_file_RELATIVE_HOME": "./bulidScript/pack_input.json"
+      "pack_input_params_file_RELATIVE_HOME": "./bulidScript/pack_input.json",
+      "android_waitSignApk": {
+        "android_waitSignApkVersions_dir_RELATIVE_HOME": "../all_ipa_output/channel/",
+        "android_waitSignApkVersion_dir_RELATIVE_SELECTED_VERSION_DIR": "./jiagu/",
+        "android_resultSignApkVersion_dir_RELATIVE_SELECTED_VERSION_DIR": "./jiagu/signed",
+        "android_resultSignApkVersion_dir_backup_ABSOLUTE_PATH": "/Library/WebServer/Documents/channelApk/",
+        "android_resultSignApkVersionBackup_website_home": "http://192.168.72.202/channelApk/"
+      },
+      "android_sign_script": {
+        "android_sign_script_file_RELATIVE_HOME": "./bulidScript/sign_apk.sh",
+        "keystore_file_RELATIVE_HOME": "./wish/android/bojue.jks",
+        "keystore_password": "bojue123456",
+        "key_alias": "key0",
+        "key_password": "bojue123456"
+      }
     }
   },
   "unuse_output": {
