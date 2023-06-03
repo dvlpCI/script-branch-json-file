@@ -2,19 +2,14 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-02 15:23:19
-FilePath: pack_input.py
-Description: 打包-输入
+LastEditTime: 2023-06-02 19:22:13
+FilePath: sign_apk_tool.py
+Description: apk签名
 '''
 # -*- coding: utf-8 -*-
-import json
-import os
-import re
-import shutil
 import subprocess
 
-from path_util import joinFullPath
-from env_util import getEnvValue_android_waitSignApkVersions_dir_path, getEnvValue_android_waitSignApkDirPath_forVersion, getEnvValue_android_resultSignApkDirPath_forVersion, getEnvValue_android_sign_script_file_path, getEnvValue_android_resultSignApkDirPath_backup_forVersion, getEnvValue_android_resultSignApkWebsite_backup_forVersion, getEnvValue_android_sign_script_params_file_path
+from env_pack_util import getEnvValue_android_waitSignApkVersions_dir_path, getEnvValue_android_waitSignApkDirPath_forVersion, getEnvValue_android_resultSignApkDirPath_forVersion, getEnvValue_android_sign_script_file_path, getEnvValue_android_resultSignApkDirPath_backup_forVersion, getEnvValue_android_resultSignApkWebsite_backup_forVersion, getEnvValue_android_sign_script_params_file_path
 from path_choose_util import show_and_choose_folder_in_dir, show_and_choose_file_in_dir, copy_special_file_inDir_toDir
 
 

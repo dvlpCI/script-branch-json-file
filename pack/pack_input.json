@@ -1,9 +1,13 @@
 {
+    "action_sript_file_rel_this_dir": "./pack/all01_update_env.sh",
     "actions_envs": [
         {
             "env_id": "pack_test",
             "env_name": "打测试包",
             "env_action_ids": [
+                "projectScriptDir",
+                "commonScriptDir",
+                "saveToF",
                 "platform",
                 "network",
                 "target"
@@ -11,6 +15,30 @@
         }
     ],
     "actions": [
+        {
+            "id": "projectScriptDir",
+            "des": "项目脚本的根目录(内含更新iOS、Android项目代码环境的脚本)",
+            "actionType": "fixed",
+            "resultForParam": "projectScriptAbsDir",
+            "fixedType": "dir-path-rel-this-dir",
+            "fixedValue": "../"
+        },
+        {
+            "id": "commonScriptDir",
+            "des": "公共脚本的根目录(内含更新 json文件中环境的 脚本)",
+            "actionType": "fixed",
+            "resultForParam": "commonScriptAbsDir",
+            "fixedType": "dir-path-rel-this-dir",
+            "fixedValue": "../"
+        },
+        {
+            "id": "saveToF",
+            "des": "脚本执行结果保存到的文件",
+            "actionType": "fixed",
+            "resultForParam": "saveToF",
+            "fixedType": "file-path-rel-this-dir",
+            "fixedValue": "../app-info.json"
+        },
         {
             "id": "platform",
             "des": "平台类型",
