@@ -3,8 +3,8 @@
 ###
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
- # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-01 16:47:52
+ # @LastEditors: dvlproad dvlproad@163.com
+ # @LastEditTime: 2023-06-04 01:39:45
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -39,14 +39,19 @@ CYAN='\033[0;36m'
 
 quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退出
 
+source ${qtoolScriptDir_Absolute}/base/get_system_env.sh
+
 # 环境变量检查--TOOL_PATH（才能保证可以正确创建分支）
 checkEnvValue_TOOL_PARAMS_FILE_PATH() {
+    
     if [ "${#QTOOL_DEAL_PROJECT_DIR_PATH}" -eq 0 ]; then
-        printf "${RED}您还未设置【要处理的项目路径】的环境变量，请open ~/.bash_profile 或 open ~/.zshrc后,将${BLUE}export QTOOL_DEAL_PROJECT_DIR_PATH=your_project_dir ${RED}添加到环境变量中(其中${YELLOW}your_project_dir${RED}需替换成自己的项目实际绝对路径)%s${NC}\n"
-        return 1
+        sh "${qtoolScriptDir_Absolute}/qtool_change.sh" "${qtoolScriptDir_Absolute}"
+        if [ $? != 0 ]; then
+            return 1
+        fi
     fi
     if [ ! -d "${QTOOL_DEAL_PROJECT_DIR_PATH}" ]; then
-        printf "${RED}您设置的环境变量 QTOOL_DEAL_PROJECT_DIR_PATH=${QTOOL_DEAL_PROJECT_DIR_PATH} 目录不存在，请检查%s${NC}\n"
+        printf "${RED}您设置的环境变量 QTOOL_DEAL_PROJECT_DIR_PATH=${QTOOL_DEAL_PROJECT_DIR_PATH} 目录不存在，请检查并修改%s${NC}\n"
         return 1
     fi
 

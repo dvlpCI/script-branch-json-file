@@ -60,6 +60,16 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
+
+
+
+# 引入公共方法
+source ${qtoolScriptDir_Absolute}/base/get_system_env.sh # 为了使用 check_sysenv_project_params_file 方法
+
+check_sysenv_project_params_file
+if [ $? != 0 ]; then
+    exit 1
+fi
 printf "${GREEN}温馨提示:您当前操作的项目为${YELLOW}%s${GREEN}\n(如果需要变更，请输入${YELLOW}change${GREEN})${NC}\n" "$QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH"
 
 versionCmdStrings=("--version" "-version" "-v" "version")

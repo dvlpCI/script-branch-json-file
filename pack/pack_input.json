@@ -1,5 +1,5 @@
 {
-    "action_sript_file_rel_this_dir": "./pack/all01_update_env.sh",
+    "action_sript_file_rel_this_dir": "./all01_update_env.sh",
     "actions_envs": [
         {
             "env_id": "pack_test",
@@ -37,7 +37,7 @@
             "actionType": "fixed",
             "resultForParam": "saveToF",
             "fixedType": "file-path-rel-this-dir",
-            "fixedValue": "../app-info.json"
+            "fixedValue": "../app_pack_output_params.json"
         },
         {
             "id": "platform",

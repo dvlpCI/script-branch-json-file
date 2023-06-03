@@ -5,7 +5,7 @@
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
  # @LastEditTime: 2023-05-23 16:20:15
-# @FilePath: 
+# @FilePath: project_tool/add_or_update_env_var.sh
 # @Description: 更新环境变量的值
 ###
 
@@ -63,7 +63,7 @@ updateEnvValueWithKey() {
         sed -i '' "s#${ReplaceText}#${ToText//\\n/\\\n}#g" ${envFile} # 摘自之前已实现的 sed_text.sh
     else
         # 如果变量不存在，则添加新的环境变量
-        echo "正在执行命令(添加环境变量值):《 echo \"export $var_name=\"$var_value\"\" >> \"$envFile\" 》"
+        # echo "正在执行命令(添加环境变量值):《 echo \"export $var_name=\"$var_value\"\" >> \"$envFile\" 》"
         echo "export $var_name=\"$var_value\"" >> "$envFile"
     fi
 

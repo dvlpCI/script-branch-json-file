@@ -15,8 +15,10 @@ import os
 import json
 
 import subprocess
+from base_util import openFile
 from env_pack_util import getEnvValue_pack_input_params_file_path
 from path_util import joinFullPath
+from env_util import get_json_file_data
 
 
 # 定义颜色常量
@@ -57,9 +59,13 @@ def getChooseValueById(values, valueId):
     return person
 
 def dealActions():
-    pack_input_params_file_path=getEnvValue_pack_input_params_file_path()
-    with open(pack_input_params_file_path) as f:
-        data = json.load(f)
+    pack_input_params_file_path=getEnvValue_pack_input_params_file_path(shouldCheckExist=True)
+    if pack_input_params_file_path == None:
+        return False
+    data=get_json_file_data(pack_input_params_file_path)
+    if data == None:
+        print(f"{RED}发生错误:从{YELLOW}{pack_input_params_file_path}{RED} 文件获取数据失败，请检查{NC}")
+        return False
 
     # 1、选择环境
     chooseEnvMap=chooseFullActionMapByInputFromData(data)
@@ -76,8 +82,8 @@ def dealActions():
     # 获取脚本的实际绝对路径
     action_sript_file_absPath=joinFullPath(current_pack_input_json_dir_path, action_sript_file_rel_this_dir)
     if not os.path.isfile(action_sript_file_absPath):
-        print(f"{RED}发生错误:脚本文件不存在 {action_sript_file_absPath} ，请检查{NC}")
-        print(f"{RED}可能原因:该的脚本文件不在 {pack_input_params_file_path} 的父目录{current_pack_input_json_dir_path} 的 {action_sript_file_rel_this_dir} 相对路径下 ，请检查{NC}")
+        print(f"{RED}发生错误:脚本文件不存在，原因为计算出来的相对目录不存在。请检查您的 {YELLOW}{pack_input_params_file_path}{NC} 中的 {BLUE}action_sript_file_rel_this_dir{RED} 属性值 {BLUE}{action_sript_file_rel_this_dir}{RED} 是否正确。（其会导致计算相对于 {YELLOW}{pack_input_params_file_path}{RED} 的父目录 {BLUE}${current_pack_input_json_dir_path}{RED} 该属性值路径 {YELLOW}{action_sript_file_absPath}{RED} 不存在)。{NC}")
+        openFile(pack_input_params_file_path)
         return False
 
     # 4、使用获得的脚本文件和参数，执行脚本命令
@@ -210,6 +216,7 @@ def _getScriptParamFromFileDataByOperate(data, operate, pack_input_params_file_p
         return __getInputParamMapFromFile(operateHomeMap)
 
 
+# showFixedFileParamErrorBy
 
 # ①从 jsonFile 中获取脚本的指定固定参数
 def __getFixParamMapFromFile(operateHomeMap, pack_input_params_file_path):
@@ -222,7 +229,9 @@ def __getFixParamMapFromFile(operateHomeMap, pack_input_params_file_path):
         param_value = operateHomeMap['fixedValue']
         dir_path=joinFullPath(pack_input_params_file_path, param_value)
         if not os.path.exists(dir_path):
-            print(f"计算出来的相对目录:{RED}{dir_path}{NC}不存在，请检查")
+            print(f"{RED}参数指向的文件获取失败，原因为计算出来的相对目录不存在。请检查您的 {YELLOW}{pack_input_params_file_path}{NC} 中选中的 {BLUE}{operateHomeMap}{NC} 里的 {BLUE}fixedValue{RED} 属性值 {BLUE}{param_value}{RED} 是否正确。（其会导致计算相对于 {YELLOW}{pack_input_params_file_path}{RED} 的该属性值路径 {YELLOW}{dir_path}{RED} 不存在)。{NC}")
+            openFile(pack_input_params_file_path)
+            
             return None
         else:
             param_key = operateHomeMap['resultForParam']

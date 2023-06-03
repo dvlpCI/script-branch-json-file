@@ -9,8 +9,9 @@ Description: 获取环境变量的值
 import os
 import json
 import subprocess
+from base_util import openFile
 from path_util import joinFullPath, joinFullUrl
-from env_util import getEnvValue_params_file_data, getEnvValue_project_dir_path
+from env_util import getEnvValue_params_file_data, getEnvValue_project_dir_path, getEnvValue_params_file_path
 
 # 定义颜色常量
 NC='\033[0m' # No Color
@@ -53,7 +54,7 @@ def getEnvValue_android_waitSignApk_map():
         return android_waitSignApk_map  
 
 # 获取环境变量的值-打包参数信息文件的存放路径
-def getEnvValue_pack_input_params_file_path():
+def getEnvValue_pack_input_params_file_path(shouldCheckExist=False):
     project_home_dir_path = getEnvValue_project_dir_path()
     
     pack_path_rel_home_map = getEnvValue_pack_path_rel_home_map()
@@ -62,8 +63,17 @@ def getEnvValue_pack_input_params_file_path():
     
     pack_input_params_file_path_relhome = pack_path_rel_home_map['pack_input_params_file_RELATIVE_HOME']
     pack_input_params_file_abspath = joinFullPath(project_home_dir_path, pack_input_params_file_path_relhome)
-    print(f"pack_input_params_file_abspath:{RED}{pack_input_params_file_abspath} {NC}")
-    return pack_input_params_file_abspath
+    # print(f"pack_input_params_file_abspath:{RED}{pack_input_params_file_abspath} {NC}")
+    if shouldCheckExist==False:
+        return pack_input_params_file_abspath
+    else:
+        if not os.path.exists(pack_input_params_file_abspath):
+            print(f"{RED}打包参数信息文件获取失败，原因为计算出来的相对目录不存在。请检查您的 {YELLOW}{getEnvValue_params_file_path()}{NC} 的 {BLUE}pack_input_params_file_RELATIVE_HOME{RED} 属性值 {BLUE}{pack_input_params_file_path_relhome}{RED} 是否正确。（其会导致计算相对于 {YELLOW}{project_home_dir_path}{RED} 的该属性值路径 {YELLOW}{pack_input_params_file_abspath}{RED} 不存在)。{NC}")
+            openFile(getEnvValue_params_file_path())
+            return None
+        else:
+            # print(f"恭喜：打包参数信息文件:{RED}{pack_input_params_file_abspath}{NC}存在")
+            return pack_input_params_file_abspath
 
 # 获取环境变量的值-android等待签名的版本文件夹
 def getEnvValue_android_waitSignApkVersions_dir_path(shouldCheckExist=False):

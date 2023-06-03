@@ -41,14 +41,18 @@ def getEnvValue_params_file_path():
 
 def getEnvValue_params_file_data():
     tool_params_file_path = getEnvValue_params_file_path()
+    return get_json_file_data(tool_params_file_path)
+
+
+def get_json_file_data(json_file_path):
     try:
-        with open(tool_params_file_path) as f:
+        with open(json_file_path) as f:
             data = json.load(f)
     except FileNotFoundError:
-        print(f"{RED}File {tool_params_file_path} not found. {NC}")
+        print(f"{RED}Error: File {YELLOW}{json_file_path}{RED} not found. {NC}")
         return None
     except json.JSONDecodeError:
-        print(f"{RED}Failed to load JSON data from file {tool_params_file_path} {NC}")
+        print(f"{RED}Error: Failed to load JSON data from file {YELLOW}{json_file_path}{RED} {NC}")
         return None
     return data
 
