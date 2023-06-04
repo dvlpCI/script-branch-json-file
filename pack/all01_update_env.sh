@@ -15,14 +15,15 @@ exit
 
 
 # shell 参数具名化
-show_usage="args: [-commonScriptAbsDir, -projectScriptAbsDir, -pl , -pt , -pn, -saveToF]\
-                                  [--commonScript_dir_Absolute=, --projectScript_dir_Absolute=, --platformType=, --package_target_type=, --package_network_type=, --save_to_file=]"
+show_usage="args: [-updateJsonEnvScriptFile, -updateIOSCodeEnvScriptFile, -updateAndroidCodeEnvScriptFile, -pl , -pt , -pn, -saveToF]\
+                                  [--updateJsonEnv_scriptFile_Absolute=, --updateIOSCodeEnv_scriptFile_Absolute=, --updateAndroidCodeEnv_scriptFile_Absolute=, --platformType=, --package_target_type=, --package_network_type=, --save_to_file=]"
 
 while [ -n "$1" ]
 do
         case "$1" in
-                -commonScriptAbsDir|--commonScript_dir_Absolute) bulidScriptCommon_dir_Absolute=$2; shift 2;;
-                -projectScriptAbsDir|--projectScript_dir_Absolute) bulidScriptProject_dir_Absolute=$2; shift 2;;
+                -updateJsonEnvScriptFile|--updateJsonEnv_scriptFile_Absolute) updateJsonEnv_scriptFile_Absolute=$2; shift 2;;
+                -updateIOSCodeEnvScriptFile|--updateIOSCodeEnv_scriptFile_Absolute) updateIOSCodeEnv_scriptFile_Absolute=$2; shift 2;;
+                -updateAndroidCodeEnvScriptFile|--updateAndroidCodeEnv_scriptFile_Absolute) updateAndroidCodeEnv_scriptFile_Absolute=$2; shift 2;;
                 -pl|--platformType) PlatformType=$2; shift 2;;
                 -pt|--package_target_type) PackageTargetType=$2; shift 2;;
                 -pn|--package_network_type) PackageNetworkType=$2; shift 2;;
@@ -37,15 +38,22 @@ exit_script() { # 退出脚本的方法，省去当某个步骤失败后，还�
     exit 1
 }
 
-echo "bulidScriptCommon_dir_Absolute=$bulidScriptCommon_dir_Absolute"
-echo "bulidScriptProject_dir_Absolute=$bulidScriptProject_dir_Absolute"
+# 定义颜色常量
+NC='\033[0m' # No Color
+RED='\033[31m'
+GREEN='\033[32m'
+YELLOW='\033[33m'
+BLUE='\033[34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+
 echo "APPEVN_SAVE_TO_FILE=$APPEVN_SAVE_TO_FILE"
 echo "PlatformType=$PlatformType"
 echo "PackageTargetType=$PackageTargetType"
 echo "PackageNetworkType=$PackageNetworkType"
 
 
-if [ "${PackageNetworkType}" == "开发" ] ; then
+if [ "${PackageNetworkType}" == "开发" ] || [ "${PackageNetworkType}" == "开发环境1" ]; then
     echo "这个是【开发】包"
     PackageNetworkType='develop1'
 elif [ "${PackageNetworkType}" == "测试" ] ; then
@@ -58,7 +66,7 @@ elif [ "${PackageNetworkType}" == "生产" ] ; then
     echo "这个是【生产】包"
     PackageNetworkType='product'
 else
-    echo "发布环境未正确配置，请检查自动化配置及其脚本"
+    printf "${RED}发生错误，不支持环境${YELLOW}${PackageNetworkType}${RED}，请先检查！${NC}\n"
     exit_script
 fi
 
@@ -79,7 +87,7 @@ elif [ "${PackageTargetType}" == "生成最后只发布到TestFlight的包" ] ; 
 elif [ "${PackageTargetType}" == "生成最后只发布到蒲公英的包" ] ; then
     PackageTargetType="dev"
 else
-    echo "发布平台未正确配置，请检查自动化配置及其脚本"
+    printf "${RED}发生错误，不支持发布平台${YELLOW}${PackageTargetType}${RED}，请先检查！${NC}\n"
     exit_script
 fi
 
@@ -88,7 +96,6 @@ echo "PlatformType=$PlatformType"
 echo "PackageTargetType=$PackageTargetType"
 echo "PackageNetworkType=$PackageNetworkType"
 
-exit
 
 
 # 更改app信息，并返回 VERSION 和 BUILD
@@ -128,8 +135,12 @@ BUILD=$(echo $BUILD | sed -r 's/0*([0-9])/\1/') # 去除字符串前所有的0
 echo "BUILD=${BUILD}"
 
 
-echo "正在执行命令(更新打包参数保存到${APPEVN_SAVE_TO_FILE}文件中)《sh ${bulidScriptCommon_dir_Absolute}/app_info_out_update.sh -appInfoF ${APPEVN_SAVE_TO_FILE} -p \"${PlatformType}\" -pt \"${PackageTargetType}\" -pn \"${PackageNetworkType}\" -v $VERSION -bd $BUILD 》"
-sh ${bulidScriptCommon_dir_Absolute}/app_info_out_update.sh -appInfoF ${APPEVN_SAVE_TO_FILE} -p "${PlatformType}" -pt "${PackageTargetType}" -pn "${PackageNetworkType}" -v $VERSION -bd $BUILD
+printf "正在执行命令(更新打包参数保存到${APPEVN_SAVE_TO_FILE}文件中)《 ${YELLOW}sh ${bulidScriptCommon_dir_Absolute}/app_info_out_update.sh -appInfoF ${APPEVN_SAVE_TO_FILE} -p \"${PlatformType}\" -pt \"${PackageTargetType}\" -pn \"${PackageNetworkType}\" -v $VERSION -bd $BUILD ${NC} 》\n"
+if [ ! -f "${updateJsonEnv_scriptFile_Absolute}" ]; then
+    printf "${RED}发生错误，用来更新项目【JSON信息环境】的文件不存在，请先检查 ${YELLOW}${updateJsonEnv_scriptFile_Absolute}${RED} ${NC}\n"
+    exit_script
+fi
+sh ${updateJsonEnv_scriptFile_Absolute} -appInfoF ${APPEVN_SAVE_TO_FILE} -p "${PlatformType}" -pt "${PackageTargetType}" -pn "${PackageNetworkType}" -v $VERSION -bd $BUILD
 if [ $? != 0 ]; then
     sh ${bulidScriptCommon_dir_Absolute}/noti_new_package.sh -appInfoF ${APPEVN_SAVE_TO_FILE} --log-robottype "error"
     exit_script
@@ -138,14 +149,22 @@ fi
 
 # 更新app项目信息
 if [ "${PlatformType}" == "iOS" ] ; then
-    sh $WORKSPACE/bulidScript/update_app_info_ios.sh -pt "${PackageTargetType}" -pn "${PackageNetworkType}" -v $VERSION -bd $BUILD
+    if [ ! -f "${updateIOSCodeEnv_scriptFile_Absolute}" ]; then
+        printf "${RED}发生错误，用来更新【iOS项目代码环境】的文件不存在，请先检查 ${YELLOW}${updateIOSCodeEnv_scriptFile_Absolute}${RED} ${NC}\n"
+        exit_script
+    fi
+    sh ${updateIOSCodeEnv_scriptFile_Absolute} -pt "${PackageTargetType}" -pn "${PackageNetworkType}" -v $VERSION -bd $BUILD
 elif [ "${PlatformType}" == "Android" ] ; then
-    sh $WORKSPACE/bulidScript/update_app_info_android.sh -pt "${PackageTargetType}" -pn "${PackageNetworkType}" -v $VERSION -bd $BUILD
+    if [ ! -f "${updateAndroidCodeEnv_scriptFile_Absolute}" ]; then
+        printf "${RED}发生错误，用来更新【Android项目代码环境】的文件不存在，请先检查 ${YELLOW}${updateAndroidCodeEnv_scriptFile_Absolute}${RED} ${NC}\n"
+        exit_script
+    fi
+    sh ${updateAndroidCodeEnv_scriptFile_Absolute} -pt "${PackageTargetType}" -pn "${PackageNetworkType}" -v $VERSION -bd $BUILD
 else
     exit_script
 fi
 if [ $? != 0 ]; then
-    echo "❌Error:环境切换错误，终止打包"
+    printf "${RED}❌Error:环境切换错误，终止打包！${NC}\n"
     exit_script
 fi
 

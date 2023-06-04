@@ -2,8 +2,8 @@
 ###
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
- # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-02 16:06:41
+ # @LastEditors: dvlproad dvlproad@163.com
+ # @LastEditTime: 2022-01-01 08:17:24
  # @Description: 
 ### 
 
@@ -26,7 +26,7 @@ local_test() {
 
 
 # 实际项目
-bjfVersion=0.4.6
+bjfVersion=0.4.7
 
 # 粗略计算，容易出现arm64芯片上的路径不对等问题
 # qtoolScriptDir_Absolute="/usr/local/Cellar/qtool/${bjfVersion}/lib"

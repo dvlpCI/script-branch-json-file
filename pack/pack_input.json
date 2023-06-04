@@ -5,8 +5,9 @@
             "env_id": "pack_test",
             "env_name": "打测试包",
             "env_action_ids": [
-                "projectScriptDir",
-                "commonScriptDir",
+                "updateIOSCodeEnvScriptFile",
+                "updateAndroidCodeEnvScriptFile",
+                "updateJsonEnvScriptFile",
                 "saveToF",
                 "platform",
                 "network",
@@ -16,34 +17,42 @@
     ],
     "actions": [
         {
-            "id": "projectScriptDir",
-            "des": "项目脚本的根目录(内含更新iOS、Android项目代码环境的脚本)",
+            "id": "updateIOSCodeEnvScriptFile",
+            "des": "用来更新【iOS项目代码环境】的文件",
             "actionType": "fixed",
-            "resultForParam": "projectScriptAbsDir",
-            "fixedType": "dir-path-rel-this-dir",
-            "fixedValue": "../"
+            "resultForParam": "-updateIOSCodeEnvScriptFile",
+            "fixedType": "dir-path-rel-this-file",
+            "fixedValue": "../update_app_info_ios.sh"
         },
         {
-            "id": "commonScriptDir",
-            "des": "公共脚本的根目录(内含更新 json文件中环境的 脚本)",
+            "id": "updateAndroidCodeEnvScriptFile",
+            "des": "用来更新【Android项目代码环境】的文件",
             "actionType": "fixed",
-            "resultForParam": "commonScriptAbsDir",
-            "fixedType": "dir-path-rel-this-dir",
-            "fixedValue": "../"
+            "resultForParam": "-updateAndroidCodeEnvScriptFile",
+            "fixedType": "dir-path-rel-this-file",
+            "fixedValue": "../update_app_info_android.sh"
+        },   
+        {
+            "id": "updateJsonEnvScriptFile",
+            "des": "更新 json文件中环境的 脚本文件",
+            "actionType": "fixed",
+            "resultForParam": "-updateJsonEnvScriptFile",
+            "fixedType": "dir-path-rel-this-file",
+            "fixedValue": "../app_info_out_update.sh"
         },
         {
             "id": "saveToF",
             "des": "脚本执行结果保存到的文件",
             "actionType": "fixed",
-            "resultForParam": "saveToF",
-            "fixedType": "file-path-rel-this-dir",
+            "resultForParam": "-saveToF",
+            "fixedType": "file-path-rel-this-file",
             "fixedValue": "../app_pack_output_params.json"
         },
         {
             "id": "platform",
             "des": "平台类型",
             "actionType": "choose",
-            "resultForParam": "pl",
+            "resultForParam": "-pl",
             "chooseValues": [
                 {
                     "id": "iOS",
@@ -59,7 +68,7 @@
             "id": "network",
             "des": "网络环境",
             "actionType": "choose",
-            "resultForParam": "pn",
+            "resultForParam": "-pn",
             "chooseValues": [
                 {
                     "id": "dev1",
@@ -91,7 +100,7 @@
             "id": "target",
             "des": "上线位置",
             "actionType": "choose",
-            "resultForParam": "pt",
+            "resultForParam": "-pt",
             "chooseValues": [
                 {
                     "id": "dev",

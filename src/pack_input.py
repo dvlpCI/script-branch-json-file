@@ -1,8 +1,8 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
-LastEditors: dvlproad
-LastEditTime: 2023-06-03 19:06:20
+LastEditors: dvlproad dvlproad@163.com
+LastEditTime: 2023-06-04 18:39:31
 FilePath: pack_input.py
 Description: 打包-输入
 '''
@@ -15,9 +15,9 @@ import os
 import json
 
 import subprocess
-from base_util import openFile
+from base_util import openFile, callShellCommond
 from env_pack_util import getEnvValue_pack_input_params_file_path
-from path_util import joinFullPath
+from path_util import getAbsPathByFileRelativePath
 from env_util import get_json_file_data
 
 
@@ -31,6 +31,10 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 
 
+pack_input_params_file_path=getEnvValue_pack_input_params_file_path(shouldCheckExist=True)
+if pack_input_params_file_path == None:
+    exit(1)
+    
 
 def getActionById(actions, actionId):
     # for iPerson in persons:
@@ -40,119 +44,56 @@ def getActionById(actions, actionId):
     # return person
 
     matchPersons = list(filter(lambda x: x['id'] == actionId, actions))
+
     if matchPersons:
         person = matchPersons[0]
+    else:
+        # 对匹配的元素进行操作
+        print(f"{RED}发生错误：在{json.dumps(actions, indent=2)}中没有id为{YELLOW}{actionId}{RED}的操作项，请检查 {YELLOW}{pack_input_params_file_path}{RED} 文件！{NC}")
+        openFile(pack_input_params_file_path)
+        return None
 
     return person
 
-def getChooseValueById(values, valueId):
-    # for iPerson in persons:
-    #     if iPerson['id'] == personId:
-    #         person=iPerson
-    #         break
-    # return person
-
-    matchPersons = list(filter(lambda x: x['id'] == valueId, values))
-    if matchPersons:
-        person = matchPersons[0]
-
-    return person
 
 def dealActions():
-    pack_input_params_file_path=getEnvValue_pack_input_params_file_path(shouldCheckExist=True)
-    if pack_input_params_file_path == None:
-        return False
     data=get_json_file_data(pack_input_params_file_path)
     if data == None:
         print(f"{RED}发生错误:从{YELLOW}{pack_input_params_file_path}{RED} 文件获取数据失败，请检查{NC}")
         return False
-
-    # 1、选择环境
-    chooseEnvMap=chooseFullActionMapByInputFromData(data)
-    scriptParamMaps=getScriptChangeParamsFromFileData(data, chooseEnvMap, pack_input_params_file_path)
     
-    
-    # 3、获取脚本文件
+    # 1、获取脚本文件
     if 'action_sript_file_rel_this_dir' not in data:
         print(f"{RED}发生错误:{pack_input_params_file_path} 文件中不存在'action_sript_file_rel_this_dir'键，请检查{NC}")
         return False
     action_sript_file_rel_this_dir=data['action_sript_file_rel_this_dir']
-    # 获取当前执行的Python脚本所在的目录
-    current_pack_input_json_dir_path = os.path.dirname(pack_input_params_file_path)
     # 获取脚本的实际绝对路径
-    action_sript_file_absPath=joinFullPath(current_pack_input_json_dir_path, action_sript_file_rel_this_dir)
+    action_sript_file_absPath=getAbsPathByFileRelativePath(pack_input_params_file_path, action_sript_file_rel_this_dir)
     if not os.path.isfile(action_sript_file_absPath):
-        print(f"{RED}发生错误:脚本文件不存在，原因为计算出来的相对目录不存在。请检查您的 {YELLOW}{pack_input_params_file_path}{NC} 中的 {BLUE}action_sript_file_rel_this_dir{RED} 属性值 {BLUE}{action_sript_file_rel_this_dir}{RED} 是否正确。（其会导致计算相对于 {YELLOW}{pack_input_params_file_path}{RED} 的父目录 {BLUE}${current_pack_input_json_dir_path}{RED} 该属性值路径 {YELLOW}{action_sript_file_absPath}{RED} 不存在)。{NC}")
+        print(f"{RED}发生错误:脚本文件不存在，原因为计算出来的相对目录不存在。请检查您的 {YELLOW}{pack_input_params_file_path}{NC} 中的 {BLUE}action_sript_file_rel_this_dir{RED} 属性值 {BLUE}{action_sript_file_rel_this_dir}{RED} 是否正确。（其会导致计算相对于 {YELLOW}{pack_input_params_file_path}{RED} 的该属性值路径 {YELLOW}{action_sript_file_absPath}{RED} 不存在)。{NC}")
         openFile(pack_input_params_file_path)
         return False
 
-    # 4、使用获得的脚本文件和参数，执行脚本命令
+    # 2、选择环境
+    chooseEnvMap=chooseFullActionMapByInputFromData(data)
+    scriptParamMaps=getScriptChangeParamsFromFileData(data, chooseEnvMap, pack_input_params_file_path)
+    
+    # 3、使用获得的脚本文件和参数，执行脚本命令
     # 调用脚本
     command = ["sh", action_sript_file_absPath]
-    for scriptParamMap in scriptParamMaps:
-        param = scriptParamMap["resultForParam"]
+    for i, scriptParamMap in enumerate(scriptParamMaps):
+        # print(f"{i+1}.========参数如下：{json.dumps(scriptParamMap, indent=2)}{NC}")
+        try:
+            param = scriptParamMap["resultForParam"]
+        except KeyError:
+            raise KeyError(f"resultForParam 参数未设置，请检查配置文件！")
         value = scriptParamMap["resultValue"]
-        command += [f"-{param}", value]
+        command += [f"{param}", value]
 
-    # 调用 subprocess.run() 函数执行 shell 命令
-    print(f"{BLUE}正在执行命令:《 {YELLOW}{' '.join(command)}{NC} 》")
-    try:
-        # 尝试执行脚本
-        # subprocess.run(["bash", action_sript_file_absPath], check=True)
-        result = subprocess.run(command, capture_output=True, text=True)
-    except PermissionError:
-        # 如果没有执行权限，添加执行权限并重试
-        os.chmod(action_sript_file_absPath, 0o755)
-        # subprocess.run(["bash", action_sript_file_absPath], check=True)
-        result = subprocess.run(command, capture_output=True, text=True)
-    except subprocess.CalledProcessError as e:
-        # 如果脚本执行失败，输出错误信息
-        print(f"脚本执行失败：{e}")
-        return False
-
-    
-    # 判断 shell 命令的返回值，并输出结果
-    if result.returncode != 0:
-        print(f"{RED}抱歉:命令执行失败，请检查{NC}")
-        print(f"{RED}Failed with exit code {result.returncode}{NC}")
-        print(f"{RED}Error message: {result.stderr.strip()}{NC}")
-        print(f"{RED}Error message: {result}{NC}")
-        exit(1)
-    elif "exit 1" in result.stdout:
-        print("脚本执行失败")
-        print(result.stdout)
-    else:
-        print(f"{BLUE}命令执行成功,结果如下:\n {result.stdout.strip()}")
-
-
+    callShellCommond(command, action_sript_file_absPath)
     
 
-
-# # 1、从 jsonFile 中获取脚本的所有固定参数
-# def getScriptFixParamsFromFile(data, pack_input_params_file_path):
-#     # 1、选择环境
-#     if 'fixed_params' not in data:
-#         print(f"{RED}发生错误:{data} 文件中不存在'fixed_params'键，请检查{NC}")
-#         return False
-    
-#     fixedParamMaps=data['fixed_params']
-    
-#     print(f"")
-#     resultMaps=[]
-#     for i, fixedParamMap in enumerate(fixedParamMaps):
-#         resultMap=getFixParamMapFromFile(fixedParamMap, pack_input_params_file_path)
-#         resultMaps.append(resultMap)
-#         print(f"")
-
-#     print(f"您脚本的固定参数如下：{NC}")
-#     for i, resultMap in enumerate(resultMaps):
-#         print(f"{i+1}. {resultMap['resultForParam']} ({resultMap['resultValue']})")
-    
-#     return resultMap
-
-
-
-# 2、从 fileData 中获取脚本的所有变化参数
+# 1、从 fileData 中获取展示可选择的操作，并进行选择输出
 def chooseFullActionMapByInputFromData(data):
     actions_envs=data['actions_envs']
     for i, actions_env in enumerate(actions_envs):
@@ -181,8 +122,6 @@ def chooseFullActionMapByInputFromData(data):
 
 # 2、根据所选择的操作的所需的所有参数，遍历获取每个【参数】的内容
 def getScriptChangeParamsFromFileData(data, chooseEnvMap, pack_input_params_file_path):
-    print(f"")
-
     # 2、针对选择的环境，执行所需的操作
     env_action_ids=chooseEnvMap['env_action_ids']
     # print(f"所选择操作所需要的所有参数为:{YELLOW}{env_action_ids}的用户{NC}")
@@ -190,29 +129,32 @@ def getScriptChangeParamsFromFileData(data, chooseEnvMap, pack_input_params_file
     for i, env_action_id in enumerate(env_action_ids):
         resultMap=_getScriptParamFromFileDataByOperate(data, env_action_id, pack_input_params_file_path)
         if resultMap == None:
-            print(f"{RED}获取 {env_action_id} 的参数过程失败：{NC}")
             exit(1)
         resultMaps.append(resultMap)
-        print(f"")
 
-    print(f"您所有参数的结果如下：{NC}")
-    for i, resultMap in enumerate(resultMaps):
-        # print(f"{i+1}.========参数如下：{resultMaps}{NC}")
-        print(f"{i+1}. {resultMap['resultForParam']} : {resultMap['resultValue']}")
+    # print(f"您所有参数的结果如下：{NC}")
+    # print(f"{RED}温馨提示：所有脚本的参数如下：\n{json.dumps(resultMaps, indent=4)}{NC}")
+    # for i, resultMap in enumerate(resultMaps):
+        # print(f"{i+1}.========参数如下：{resultMap}{NC}")
+        # print(f"{YELLOW}{i+1}. {resultMap['resultForParam']} : {resultMap['resultValue']}{NC}")
 
-    return resultMap
+    return resultMaps
 
 
 def _getScriptParamFromFileDataByOperate(data, operate, pack_input_params_file_path):
     operateHomeMap=getActionById(data['actions'],operate)
+    if operateHomeMap == None:
+        return None
 
     # 对 homeMap 进行处理，判断 "固定值"、"选择" 还是 "输入"
     operateActionType = operateHomeMap['actionType']
     if operateActionType == "fixed": # 固定值
         return __getFixParamMapFromFile(operateHomeMap, pack_input_params_file_path)
     elif operateActionType == "choose": # 选择值
+        print(f"")
         return __getChooseParamMapFromFile(operateHomeMap)
     else: # 输入值
+        print(f"")
         return __getInputParamMapFromFile(operateHomeMap)
 
 
@@ -224,12 +166,12 @@ def __getFixParamMapFromFile(operateHomeMap, pack_input_params_file_path):
     operateDes = operateHomeMap['des']
 
     param_type = operateHomeMap['fixedType']
-    if param_type == "dir-path-rel-this-dir" or param_type == "file-path-rel-this-dir":
+    if param_type == "dir-path-rel-this-file" or param_type == "file-path-rel-this-file":
         # 如果是相对目录
         param_value = operateHomeMap['fixedValue']
-        dir_path=joinFullPath(pack_input_params_file_path, param_value)
+        dir_path=getAbsPathByFileRelativePath(pack_input_params_file_path, param_value)
         if not os.path.exists(dir_path):
-            print(f"{RED}参数指向的文件获取失败，原因为计算出来的相对目录不存在。请检查您的 {YELLOW}{pack_input_params_file_path}{NC} 中选中的 {BLUE}{operateHomeMap}{NC} 里的 {BLUE}fixedValue{RED} 属性值 {BLUE}{param_value}{RED} 是否正确。（其会导致计算相对于 {YELLOW}{pack_input_params_file_path}{RED} 的该属性值路径 {YELLOW}{dir_path}{RED} 不存在)。{NC}")
+            print(f"{RED}参数指向的文件获取失败，原因为计算出来的相对目录不存在。请检查您的 {YELLOW}{pack_input_params_file_path}{NC} 中选中的 {BLUE}{json.dumps(operateHomeMap, indent=2)}{NC} 里的 {BLUE}fixedValue{RED} 属性值 {BLUE}{param_value}{RED} 是否正确。（其会导致计算相对于 {YELLOW}{pack_input_params_file_path}{RED} 的该属性值路径 {YELLOW}{dir_path}{RED} 不存在)。{NC}")
             openFile(pack_input_params_file_path)
             
             return None

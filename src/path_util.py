@@ -1,8 +1,8 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
-LastEditors: dvlproad
-LastEditTime: 2023-06-02 09:53:46
+LastEditors: dvlproad dvlproad@163.com
+LastEditTime: 2023-06-04 18:41:39
 FilePath: /path_util.py
 Description: 路径的计算方法
 '''
@@ -16,6 +16,15 @@ YELLOW='\033[33m'
 BLUE='\033[34m'
 PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
+
+# 获取相对于指定文件的相对目录的绝对路径
+def getAbsPathByFileRelativePath(file_path, rel_path):
+    file_dir_abspath=os.path.abspath(file_path)
+    # 获取当前文件的所在目录
+    file_parent_dir_path = os.path.dirname(file_dir_abspath)
+    
+    return joinFullPath(file_parent_dir_path, rel_path)
+
 
 # 路径拼接(①支持尾部及头部斜杠的处理;②支持尾部拼接../)
 def joinFullPath(host_dir, rel_path):
