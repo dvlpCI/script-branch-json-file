@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-05-06 14:57:41
  # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2023-06-04 02:57:46
+ # @LastEditTime: 2023-06-04 23:13:57
  # @Description: 
 ### 
 
@@ -18,6 +18,17 @@ exit_script() { # 退出脚本的方法，省去当某个步骤失败后，还�
     exit 1
 }
 
+# 获取相对于指定文件的相对目录的绝对路径
+function getAbsPathByFileRelativePath() {
+    file_path=$1
+    rel_path=$2
+
+    file_parent_dir_path="$(dirname $file_path)"
+    
+    joinFullPath "${file_parent_dir_path}" "${rel_path}"
+}
+
+# 路径拼接(①支持尾部及头部斜杠的处理;②支持尾部拼接../)
 joinFullPath() {
     dir_path_this=$1
     path_rel_this_dir=$2
@@ -25,6 +36,8 @@ joinFullPath() {
     # dir_path_this="/Users/qian/Project/CQCI/script-branch-json-file/test/"
     # path_rel_this_dir="../../"
     temp_result_path="$dir_path_this/$path_rel_this_dir"
+
+    check_command realpath # 要使用 realpath ，需要安装 brew install coreutiles
     result_path=$(realpath "$temp_result_path") # shell 获取文件或文件夹的绝对路径，保存到临时变量中
     if [ ! -d "${result_path}" ] && [ ! -f "${result_path}" ]; then
         if [ "${createIfNoExsit}" == true ]; then
@@ -36,6 +49,39 @@ joinFullPath() {
     fi
     echo $result_path
 }
+
+# Checks if the specified command is available
+# If the command is not available, it will be installed
+function check_command() {
+    local cmd=$1
+    if ! command -v $cmd &> /dev/null; then
+        echo "$cmd command not found, installing..."
+        if [ "$cmd" == "realpath" ]; then
+            cmd=coreutiles
+        fi
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            echo "正在执行安装命令：《 brew install $cmd 》"
+            brew install $cmd
+        elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            if [[ -n $(command -v apt-get) ]]; then
+                sudo apt-get update
+                sudo apt-get install -y $cmd
+            elif [[ -n $(command -v yum) ]]; then
+                sudo yum install -y $cmd
+            elif [[ -n $(command -v dnf) ]]; then
+                sudo dnf install -y $cmd
+            else
+                echo "Unable to install $cmd, please install it manually."
+                exit 1
+            fi
+        else
+            echo "Unsupported operating system, please install $cmd manually."
+            exit 1
+        fi
+    fi
+}
+
+
 
 open_sysenv_file() {
     SHELL_TYPE=$(basename $SHELL)

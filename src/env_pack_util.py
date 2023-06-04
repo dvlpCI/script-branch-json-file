@@ -68,7 +68,7 @@ def getEnvValue_pack_input_params_file_path(shouldCheckExist=False):
         return pack_input_params_file_abspath
     else:
         if not os.path.exists(pack_input_params_file_abspath):
-            print(f"{RED}打包参数信息文件获取失败，原因为计算出来的相对目录不存在。请检查您的 {YELLOW}{getEnvValue_params_file_path()}{NC} 的 {BLUE}pack_input_params_file_RELATIVE_HOME{RED} 属性值 {BLUE}{pack_input_params_file_path_relhome}{RED} 是否正确。（其会导致计算相对于 {YELLOW}{project_home_dir_path}{RED} 的该属性值路径 {YELLOW}{pack_input_params_file_abspath}{RED} 不存在)。{NC}")
+            print(f"{RED}打包参数信息文件获取失败，原因为计算出来的相对目录不存在。请检查您的 {YELLOW}{getEnvValue_params_file_path()}{NC} 的 {BLUE}pack_input_params_file_RELATIVE_HOME{RED} 属性值 {BLUE}{pack_input_params_file_path_relhome}{RED} 是否正确。（其会导致计算相对于 {YELLOW}{project_home_dir_path}{RED} 的该属性值路径 {BLUE}{pack_input_params_file_abspath}{RED} 不存在)。{NC}")
             openFile(getEnvValue_params_file_path())
             return None
         else:

@@ -1,6 +1,8 @@
 {
     "action_sript_file_rel_this_dir": "./all01_update_env.sh",
-    "actions_envs": [
+    "action_sript_file_des": "更新项目环境",
+    "actions_envs_des": "要操作的环境",
+    "actions_envs_values": [
         {
             "env_id": "pack_test",
             "env_name": "打测试包",

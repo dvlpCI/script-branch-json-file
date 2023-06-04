@@ -79,9 +79,11 @@
             "category_id": "pack",
             "category_values": [
                 {
-                    "name": "get_pack_param",
-                    "des": "打包相关(参数):本地打包参数的快捷获取",
-                    "action": "pack_updateEnv_action"
+                    "name": "update_projectEnv",
+                    "des": "打包相关(参数):更新项目的①code环境和②json环境",
+                    "action_type": "deal_script_by_config_待定使用",
+                    "action_script_config_file_rel_this_file": "./pack/pack_input.json",
+                    "action": "update_project_jsonEnv_and_codeEnv_action"
                 },
                 {
                     "name": "jenkins",

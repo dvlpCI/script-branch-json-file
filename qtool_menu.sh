@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2023-06-04 01:39:45
+ # @LastEditTime: 2023-06-04 23:36:00
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -51,7 +51,7 @@ checkEnvValue_TOOL_PARAMS_FILE_PATH() {
         fi
     fi
     if [ ! -d "${QTOOL_DEAL_PROJECT_DIR_PATH}" ]; then
-        printf "${RED}您设置的环境变量 QTOOL_DEAL_PROJECT_DIR_PATH=${QTOOL_DEAL_PROJECT_DIR_PATH} 目录不存在，请检查并修改%s${NC}\n"
+        printf "${RED}您设置的环境变量 QTOOL_DEAL_PROJECT_DIR_PATH=${QTOOL_DEAL_PROJECT_DIR_PATH} 目录不存在，请检查并修改${NC}\n"
         return 1
     fi
 
@@ -60,7 +60,7 @@ checkEnvValue_TOOL_PARAMS_FILE_PATH() {
         return 1
     fi
     if [ ! -f "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" ]; then
-        printf "${RED}您设置的环境变量 QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH} 目录不存在，请检查%s${NC}\n"
+        printf "${RED}您设置的环境变量 QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH} 目录不存在，请检查${NC}\n"
         return 1
     fi
 
@@ -194,7 +194,7 @@ pushGitCommitMessage() {
 
 # 三、打包
 # 3.1、更改环境
-pack_updateEnv_action() {
+update_project_jsonEnv_and_codeEnv_action() {
     # echo "正在执行命令(更改环境):《 python3 \"${qtoolScriptDir_Absolute}/src/pack_input.py\" 》"
     python3 "${qtoolScriptDir_Absolute}/src/pack_input.py"
     checkResultCode $?
@@ -314,9 +314,19 @@ evalActionByInput() {
         done
 
         if [ -n "${tCatalogOutlineMap}" ]; then
-            tCatalogOutlineAction=$(echo "$tCatalogOutlineMap" | jq -r ".action")
-            # printf "正在执行命令：${BLUE}%s${NC}\n" "${tCatalogOutlineAction}"
-            eval "$tCatalogOutlineAction"
+            tCatalogOutlineActionType=$(echo "$tCatalogOutlineMap" | jq -r ".action_type")
+            if [ "${tCatalogOutlineActionType}" == "deal_script_by_config" ]; then
+                tAction_script_config_file_rel_this_file=$(echo "$tCatalogOutlineMap" | jq -r ".action_script_config_file_rel_this_file")
+                scriptFeatureConfigFilePath=$(getAbsPathByFileRelativePath "${qtool_menu_json_file_path}" "${tAction_script_config_file_rel_this_file}")
+
+                # printf "正在执行执行描述脚本功能的配置信息的文件的命令:《 ${YELLOW}python3 \"${qtoolScriptDir_Absolute}/src/dealScript_by_scriptConfig.py\" \"${scriptFeatureConfigFilePath}\" ${NC}》\n"
+                python3 "${qtoolScriptDir_Absolute}/src/dealScript_by_scriptConfig.py" "${scriptFeatureConfigFilePath}"
+                checkResultCode $?
+            else
+                tCatalogOutlineAction=$(echo "$tCatalogOutlineMap" | jq -r ".action")
+                # printf "正在执行命令：${BLUE}%s${NC}\n" "${tCatalogOutlineAction}"
+                eval "$tCatalogOutlineAction"
+            fi
         else
             echo "无此选项，请重新输入。"
         fi
