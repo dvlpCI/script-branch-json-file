@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-05 10:41:44
+ # @LastEditTime: 2023-06-05 13:39:39
 # @FilePath: commit/commit_message.sh
 # @Description: 分支JSON的创建-shell
 ###
@@ -77,12 +77,17 @@ while [ "$valid_option" = false ]; do
     read -r -p "①请选择您改动的类型的编号(若要退出请输入Q|q) : " option
     if [ ${option} == "q" ] || [ ${option} == "Q" ]; then
         exit 2
-    elif [ ${option} -le ${branchBelongMapCount} ]; then
-        tBranchBelongMap=$(echo "$content" | jq ".${branchBelongKey1}" | jq -r ".[$((option - 1))]") # 添加 jq -r 的-r以去掉双引号
-        tBranchBelongName=$(echo "$tBranchBelongMap" | jq -r ".key")
-        tBranchBelongDes=$(echo "$tBranchBelongMap" | jq -r ".des")
-        chooseBranchType "${tBranchBelongName}"
-        break
+    elif [[ "$option" =~ ^[0-9]+$ ]]; then
+        # 输入的是数字
+        if [ ${option} -gt 0 ] && [ ${option} -le ${branchBelongMapCount} ]; then
+            tBranchBelongMap=$(echo "$content" | jq ".${branchBelongKey1}" | jq -r ".[$((option - 1))]") # 添加 jq -r 的-r以去掉双引号
+            tBranchBelongName=$(echo "$tBranchBelongMap" | jq -r ".key")
+            tBranchBelongDes=$(echo "$tBranchBelongMap" | jq -r ".des")
+            chooseBranchType "${tBranchBelongName}"
+            break
+        else
+            valid_option=false echo "无此选项，请重新输入。"
+        fi
     else
         valid_option=false echo "无此选项，请重新输入。"
     fi
