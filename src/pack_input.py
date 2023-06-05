@@ -13,7 +13,7 @@ Description: 打包-输入
 
 import subprocess
 from env_pack_util import getEnvValue_pack_input_params_file_path
-from base_util import callShellCommond
+from base_util import callScriptCommond
 from path_util import getAbsPathByFileRelativePath
 from dealScript_by_scriptConfig_util import dealScriptByScriptConfig
 
@@ -47,5 +47,5 @@ import os
 current_file_path = os.path.realpath(__file__)
 sript_file_absPath=getAbsPathByFileRelativePath(current_file_path, "./dealScript_by_scriptConfig.py")
 command=["python3", sript_file_absPath, pack_input_params_file_path]
-callShellCommond(command, sript_file_absPath)
+callScriptCommond(command, sript_file_absPath)
 

@@ -1,8 +1,8 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
-LastEditors: dvlproad dvlproad@163.com
-LastEditTime: 2023-06-04 17:47:07
+LastEditors: dvlproad
+LastEditTime: 2023-06-05 10:32:34
 FilePath: src/base_util.py
 Description: 获取环境变量的值
 '''
@@ -26,7 +26,7 @@ def openFile(file_path):
     
        
         
-def callShellCommond(command, sript_file_absPath):
+def callScriptCommond(command, sript_file_absPath):
     print(f"\n{BLUE}开始执行脚本，执行过程中输出内容如下：{NC}")
     # 调用 subprocess.run() 函数执行 shell 命令
     # print(f"{BLUE}正在执行命令:《 {YELLOW}{' '.join(command)}{NC} 》")
@@ -77,4 +77,4 @@ def callShellCommond(command, sript_file_absPath):
 #     value = scriptParamMap["value"]
 #     command += [f"{param}", value]
     
-# callShellCommond(command, sript_file_absPath)
+# callScriptCommond(command, sript_file_absPath)

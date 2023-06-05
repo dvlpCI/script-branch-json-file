@@ -1,8 +1,8 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
-LastEditors: dvlproad dvlproad@163.com
-LastEditTime: 2023-06-04 23:55:28
+LastEditors: dvlproad
+LastEditTime: 2023-06-05 10:15:56
 FilePath: src/dealScript_by_scriptConfig_util.py
 Description: 打包-输入
 '''
@@ -14,7 +14,7 @@ Description: 打包-输入
 import os
 import json
 
-from base_util import openFile, callShellCommond
+from base_util import openFile, callScriptCommond
 from path_util import getAbsPathByFileRelativePath
 from env_util import get_json_file_data
 
@@ -72,7 +72,9 @@ def dealScriptByScriptConfig(pack_input_params_file_path):
         return False
 
     # 2、选择环境
-    chooseEnvMap=chooseFullActionMapByInputFromData(data)
+    chooseEnvMap=chooseFullActionMapByInputFromData(data, pack_input_params_file_path)
+    if chooseEnvMap == None:
+        return False
     scriptParamMaps=getScriptChangeParamsFromFileData(data, chooseEnvMap, pack_input_params_file_path)
     
     # 3、使用获得的脚本文件和参数，执行脚本命令
@@ -87,17 +89,26 @@ def dealScriptByScriptConfig(pack_input_params_file_path):
         value = scriptParamMap["resultValue"]
         command += [f"{param}", value]
 
-    callShellCommond(command, action_sript_file_absPath)
+    callScriptCommond(command, action_sript_file_absPath)
     
 
 # 1、从 fileData 中获取展示可选择的操作，并进行选择输出
-def chooseFullActionMapByInputFromData(data):
+def chooseFullActionMapByInputFromData(data, pack_input_params_file_path):
+    if 'actions_envs_values' not in data:
+        print(f"{RED}发生错误:{pack_input_params_file_path} 文件中不存在'actions_envs_values'键，请检查{NC}")
+        openFile(pack_input_params_file_path)
+        return None
     actions_envs=data['actions_envs_values']
+    
     print(f"")
     for i, actions_env in enumerate(actions_envs):
         print(f"{i+1}. {actions_env['env_id']} ({actions_env['env_name']})")
 
     envDes=data['actions_envs_des']
+    if 'actions_envs_des' not in data:
+        print(f"{RED}发生错误:{pack_input_params_file_path} 文件中不存在'actions_envs_des'键，请检查{NC}")
+        openFile(pack_input_params_file_path)
+        return None
     while True:
         env_input = input("请选择%s编号（退出q/Q）：" % (envDes))
         if env_input == "q" or env_input == "Q":
