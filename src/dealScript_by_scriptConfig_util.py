@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-05 10:15:56
+LastEditTime: 2023-06-05 11:53:00
 FilePath: src/dealScript_by_scriptConfig_util.py
 Description: 打包-输入
 '''
@@ -69,8 +69,10 @@ def dealScriptByScriptConfig(pack_input_params_file_path):
     if not os.path.isfile(action_sript_file_absPath):
         print(f"{RED}发生错误:脚本文件不存在，原因为计算出来的相对目录不存在。请检查您的 {YELLOW}{pack_input_params_file_path}{NC} 中的 {BLUE}action_sript_file_rel_this_dir{RED} 属性值 {BLUE}{action_sript_file_rel_this_dir}{RED} 是否正确。（其会导致计算相对于 {YELLOW}{pack_input_params_file_path}{RED} 的该属性值路径 {BLUE}{action_sript_file_absPath}{RED} 不存在)。{NC}")
         openFile(pack_input_params_file_path)
+        # print(f"{RED}=======这里报错了，应该要退出方法{NC}")
         return False
 
+    # print(f"{YELLOW}=======上面如果报错了，这里不应该继续执行{NC}")
     # 2、选择环境
     chooseEnvMap=chooseFullActionMapByInputFromData(data, pack_input_params_file_path)
     if chooseEnvMap == None:
@@ -89,7 +91,11 @@ def dealScriptByScriptConfig(pack_input_params_file_path):
         value = scriptParamMap["resultValue"]
         command += [f"{param}", value]
 
-    callScriptCommond(command, action_sript_file_absPath)
+    resultCode=callScriptCommond(command, action_sript_file_absPath, verbose=True)
+    if resultCode==False:
+        return False
+    else:
+        return True
     
 
 # 1、从 fileData 中获取展示可选择的操作，并进行选择输出

@@ -1,15 +1,16 @@
 #!/bin/bash
 :<<!
-更新环境
+更新项目的①code环境；②json环境
 
-bulidScriptProject_dir_Absolute="/Users/qian/Project/Bojue/mobile_flutter_wish/bulidScript"
-bulidScriptCommon_dir_Absolute="/Users/qian/Project/Bojue/mobile_flutter_wish/buildScriptSource/bulidScriptCommon/"
+updateJsonEnv_scriptFile_Absolute="/Users/qian/Project/AppProject/appdemo/bulidScriptCommon/app_info_out_update"
+updateIOSCodeEnv_scriptFile_Absolute="/Users/qian/Project/AppProject/appdemo/buildScriptSource/bulidScript/update_app_info_ios.sh"
+updateAndroidCodeEnv_scriptFile_Absolute="/Users/qian/Project/AppProject/appdemo/buildScriptSource/bulidScript/update_app_info_android.sh"
 PlatformType="Android"
 PackageTargetType="生成最后只发布到蒲公英的包"
 PackageNetworkType="测试"
-APPEVN_SAVE_TO_FILE="/Users/qian/Project/Bojue/mobile_flutter_wish/bulidScript/app_info.json"
-echo "正在执行《sh all01_update_env.sh -projectScriptAbsDir \"${bulidScriptProject_dir_Absolute}\" -commonScriptAbsDir \"${bulidScriptCommon_dir_Absolute}\" -pl ${PlatformType} -pt $PackageTargetType -pn $PackageNetworkType -saveToF \"${APPEVN_SAVE_TO_FILE}\" 》"
-sh all01_update_env.sh -projectScriptAbsDir "${bulidScriptProject_dir_Absolute}" -commonScriptAbsDir "${bulidScriptCommon_dir_Absolute}" -pl ${PlatformType} -pt $PackageTargetType -pn $PackageNetworkType -saveToF "${APPEVN_SAVE_TO_FILE}"
+APPEVN_SAVE_TO_FILE="/Users/qian/Project/AppProject/appdemo/bulidScript/app_info.json"
+echo "正在执行《sh all01_update_env.sh -updateJsonEnvScriptFile \"${updateJsonEnv_scriptFile_Absolute}\" -updateIOSCodeEnvScriptFile \"${updateIOSCodeEnv_scriptFile_Absolute}\" -updateAndroidCodeEnvScriptFile \"${updateAndroidCodeEnv_scriptFile_Absolute}\" -pl ${PlatformType} -pt $PackageTargetType -pn $PackageNetworkType -saveToF \"${APPEVN_SAVE_TO_FILE}\" 》"
+sh all01_update_env.sh -updateJsonEnvScriptFile "${updateJsonEnv_scriptFile_Absolute}" -updateIOSCodeEnvScriptFile "${updateIOSCodeEnv_scriptFile_Absolute}" -updateAndroidCodeEnvScriptFile "${updateAndroidCodeEnv_scriptFile_Absolute}" -pl ${PlatformType} -pt $PackageTargetType -pn $PackageNetworkType -saveToF "${APPEVN_SAVE_TO_FILE}"
 exit
 !
 

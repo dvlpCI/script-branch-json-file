@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
 LastEditors: dvlproad
-LastEditTime: 2023-06-05 10:32:34
+LastEditTime: 2023-06-05 11:59:32
 FilePath: src/base_util.py
 Description: 获取环境变量的值
 '''
@@ -26,10 +26,11 @@ def openFile(file_path):
     
        
         
-def callScriptCommond(command, sript_file_absPath):
+def callScriptCommond(command, sript_file_absPath, verbose=False):
     print(f"\n{BLUE}开始执行脚本，执行过程中输出内容如下：{NC}")
     # 调用 subprocess.run() 函数执行 shell 命令
-    # print(f"{BLUE}正在执行命令:《 {YELLOW}{' '.join(command)}{NC} 》")
+    if verbose==True:
+        print(f"{BLUE}正在执行命令:《 {YELLOW}{' '.join(command)}{NC} 》")
 
     # try:
     #     subprocess.check_call(command)
@@ -40,7 +41,7 @@ def callScriptCommond(command, sript_file_absPath):
         # 设置了 check=True 参数，这可以使函数在命令执行失败时抛出一个 CalledProcessError 异常。
         # capture_output=True 参数可以捕获命令的标准输出和标准错误输出。
         # text=True 参数可以将输出解码为字符串。如果省略 capture_output=True 参数，则无法在 except 块中访问命令的输出
-        result = subprocess.run(command)
+        result = subprocess.run(command) # 为了避免执行过程中，有键盘输入的需求，所以不使用 capture_output 属性
     except PermissionError:
         # 如果没有执行权限，添加执行权限并重试
         os.chmod(sript_file_absPath, 0o755)
@@ -52,16 +53,21 @@ def callScriptCommond(command, sript_file_absPath):
         # print(f"{RED}脚本调用失败：{error}{NC}")
         return False
 
-    print(f"\n{BLUE}脚本执行结束，执行结果如下：{NC}")
+    print(f"\n{BLUE}脚本执行结束，执行结果如下(returncode={result.returncode})：{NC}")
     # 判断 shell 命令的返回值，并输出结果
     if result.returncode != 0:
-        print(f"{RED}抱歉:命令执行失败，请检查，returncode={result.returncode}。所执行的命令如下：《 {YELLOW}{' '.join(command)}{RED} 》{NC}")
+        print(f"{RED}抱歉:命令执行失败，请检查，returncode={result.returncode}。{NC}")
+        if verbose==True:
+            print(f"{RED}所执行的命令如下：《 {YELLOW}{' '.join(command)}{RED} 》{NC}")
         exit(1)
-    elif "exit 1" in result.stdout:
-        print("脚本执行失败")
-        print(result.stdout)
+    # elif result is not None and "exit 1" in result.stdout:
+    #     print(f"{YELLOW}{sript_file_absPath}{RED} 脚本执行失败")
+    #     # print(result.stdout) # 因为没有 capture_output 所以没有 stdout
+    #     return False
     else:
-        print(f"{BLUE}命令执行成功,结果如下:\n {result.stdout.strip()}")
+        print(f"{BLUE}命令执行成功,结果如下:\n")
+        # print(f"{result.stdout.strip()}") # 因为没有 capture_output 所以没有 stdout
+        return True
 
 
 # sript_file_absPath = "/Users/lichaoqian/Project/CQCI/script-branch-json-file/test/test_shell.sh"
