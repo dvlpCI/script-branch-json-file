@@ -2,8 +2,8 @@
 ###
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
- # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2022-01-01 08:17:24
+ # @LastEditors: dvlproad
+ # @LastEditTime: 2023-06-06 17:56:55
  # @Description: 
 ### 
 
@@ -26,7 +26,7 @@ local_test() {
 
 
 # 实际项目
-bjfVersion=0.4.7
+bjfVersion=0.4.8
 
 # 粗略计算，容易出现arm64芯片上的路径不对等问题
 # qtoolScriptDir_Absolute="/usr/local/Cellar/qtool/${bjfVersion}/lib"
@@ -64,13 +64,20 @@ fi
 
 
 # 引入公共方法
-source ${qtoolScriptDir_Absolute}/base/get_system_env.sh # 为了使用 check_sysenv_project_params_file 方法
+source ${qtoolScriptDir_Absolute}/base/get_system_env.sh # 为了使用 project_tool_params_file_path 方法
 
-check_sysenv_project_params_file
+project_tool_params_file_path=$(get_sysenv_project_params_file)
 if [ $? != 0 ]; then
-    exit 1
+    # printf "${RED}project_tool_params_file_path=${project_tool_params_file_path}${NC}\n"
+    sh "${qtoolScriptDir_Absolute}/qtool_change.sh" "${qtoolScriptDir_Absolute}"
+    if [ $? != 0 ]; then
+        exit 1
+    else
+        effectiveEnvironmentVariables # 避免环境变量没有生效
+        project_tool_params_file_path=$(get_sysenv_project_params_file) # 设置完重新获取
+    fi
 fi
-printf "${GREEN}温馨提示:您当前操作的项目为${YELLOW}%s${GREEN}\n(如果需要变更，请输入${YELLOW}change${GREEN})${NC}\n" "$QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH"
+printf "${GREEN}温馨提示:您当前操作的项目为${YELLOW}${project_tool_params_file_path}${GREEN}\n(如果需要变更，请输入${YELLOW}change${GREEN})${NC}\n"
 
 versionCmdStrings=("--version" "-version" "-v" "version")
 if [ -z "$1" ] || [ "$1" == "test" ]; then

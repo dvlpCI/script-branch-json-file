@@ -2,17 +2,11 @@
 ###
  # @Author: dvlproad
  # @Date: 2023-05-06 14:57:41
- # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2023-06-04 23:13:57
+ # @LastEditors: dvlproad
+ # @LastEditTime: 2023-06-06 17:42:37
  # @Description: 
 ### 
 
-# project_dir=${QTOOL_DEAL_PROJECT_DIR_PATH}
-# if [[ $project_dir =~ ^~.* ]]; then
-#     # 如果 $project_dir 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
-#     project_dir="${HOME}${project_dir:1}"
-# fi
-# cd "$project_dir" || exit # 切换到工作目录后，才能争取创建git分支。"exit" 命令用于确保如果更改目录时出现错误，则脚本将退出。
 
 exit_script() { # 退出脚本的方法，省去当某个步骤失败后，还去继续多余的执行其他操作
     exit 1
@@ -48,6 +42,20 @@ joinFullPath() {
         fi
     fi
     echo $result_path
+}
+
+# 生效环境变量
+effectiveEnvironmentVariables() {
+    SHELL_TYPE=$(basename $SHELL)
+
+    if [ "$SHELL_TYPE" = "bash" ]; then
+        source ~/.bash_profile
+    elif [ "$SHELL_TYPE" = "zsh" ]; then
+        source ~/.zshrc
+    else
+        echo "Unknown shell type: $SHELL_TYPE"
+        return 1
+    fi
 }
 
 # Checks if the specified command is available
@@ -97,12 +105,9 @@ open_sysenv_file() {
     open "${envFile}"
 }
 
-check_sysenv_project_params_file() {
+get_sysenv_project_params_file() {
     if [ "${#QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" -eq 0 ]; then
-        sh "${qtoolScriptDir_Absolute}/qtool_change.sh" "${qtoolScriptDir_Absolute}"
-        if [ $? != 0 ]; then
-            return 1
-        fi
+        return 1
     fi
 
     project_tool_params_file_path=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
@@ -115,24 +120,29 @@ check_sysenv_project_params_file() {
         open_sysenv_file
         return 1
     fi
+
+    echo "${project_tool_params_file_path}" # 此输出需要作为返回值,所以不能添加其他东西
 }
 
+# 获取所有的配置来自的文件
 get_sysenv_project_dir() {
-    check_sysenv_project_params_file
+    project_tool_params_file_path=$(get_sysenv_project_params_file)
     if [ $? != 0 ]; then
         return 1
     fi
 
-    project_tool_params_file_path=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
-    # printf "${YELLOW}你所有的配置来自文件:%s${NC}\n" "${project_tool_params_file_path}"
     project_path_map=$(cat ${project_tool_params_file_path} | jq -r ".project_path")
     home_path_rel_tool_dir=$(echo ${project_path_map} | jq -r ".home_path_rel_this_dir")
-    # home_abspath=$(cd "$(dirname "$project_tool_params_file_path")/$home_path_rel_this_dir"; pwd)
-    home_abspath=$(joinFullPath "$(dirname $project_tool_params_file_path)" $home_path_rel_tool_dir)
+    project_dir=$(getAbsPathByFileRelativePath "$project_tool_params_file_path" $home_path_rel_tool_dir)
     if [ $? != 0 ]; then
         exit_script
     fi
-    printf "${BLUE}你要操作的项目的路径为：%s${NC}\n" "${home_abspath}"
+
+    if [[ $project_dir =~ ^~.* ]]; then
+        # 如果 $project_dir 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
+        project_dir="${HOME}${project_dir:1}"
+    fi
+    printf "${project_dir}" # 此输出需要作为返回值,所以不能添加其他东西
 }
 
 

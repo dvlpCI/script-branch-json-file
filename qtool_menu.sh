@@ -3,8 +3,8 @@
 ###
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
- # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2023-06-04 23:36:00
+ # @LastEditors: dvlproad
+ # @LastEditTime: 2023-06-06 18:00:24
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -43,39 +43,20 @@ source ${qtoolScriptDir_Absolute}/base/get_system_env.sh
 
 # 环境变量检查--TOOL_PATH（才能保证可以正确创建分支）
 checkEnvValue_TOOL_PARAMS_FILE_PATH() {
-    
-    if [ "${#QTOOL_DEAL_PROJECT_DIR_PATH}" -eq 0 ]; then
+    if [ "${#QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" -eq 0 ]; then
         sh "${qtoolScriptDir_Absolute}/qtool_change.sh" "${qtoolScriptDir_Absolute}"
         if [ $? != 0 ]; then
             return 1
         fi
     fi
-    if [ ! -d "${QTOOL_DEAL_PROJECT_DIR_PATH}" ]; then
-        printf "${RED}您设置的环境变量 QTOOL_DEAL_PROJECT_DIR_PATH=${QTOOL_DEAL_PROJECT_DIR_PATH} 目录不存在，请检查并修改${NC}\n"
-        return 1
-    fi
-
-    if [ "${#QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" -eq 0 ]; then
-        printf "${RED}您还未设置【要处理的项目的配置信息】的环境变量，请open ~/.bash_profile 或 open ~/.zshrc后,将${BLUE}export QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH=yourToolParamsFileAbsolutePath ${RED}添加到环境变量中(其中${YELLOW}yourToolParamsFileAbsolutePath${RED}需替换成自己的项目实际绝对路径)%s${NC}\n"
-        return 1
-    fi
-    if [ ! -f "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" ]; then
-        printf "${RED}您设置的环境变量 QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH} 目录不存在，请检查${NC}\n"
-        return 1
-    fi
-
 }
 
 checkEnvValue_TOOL_PARAMS_FILE_PATH
 if [ $? != 0 ]; then
-    exit
+    exit 1
 fi
 
-project_dir=${QTOOL_DEAL_PROJECT_DIR_PATH}
-if [[ $project_dir =~ ^~.* ]]; then
-    # 如果 $project_dir 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
-    project_dir="${HOME}${project_dir:1}"
-fi
+project_dir=$(get_sysenv_project_dir)
 cd "$project_dir" || exit # 切换到工作目录后，才能争取创建git分支。"exit" 命令用于确保如果更改目录时出现错误，则脚本将退出。
 
 gitHome() {

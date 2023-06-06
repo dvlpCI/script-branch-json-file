@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-14 14:09:09
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-24 19:32:44
+ # @LastEditTime: 2023-06-06 12:48:48
  # @Description: 
 ### 
 
@@ -27,12 +27,8 @@ if [ ! -d "${qtoolScriptDir_Absolute}" ]; then
 fi
 pre_push_binary_script_file=${qtoolScriptDir_Absolute}/rebase/pre-push
 
-
-project_dir=${QTOOL_DEAL_PROJECT_DIR_PATH}
-if [[ $project_dir =~ ^~.* ]]; then
-    # 如果 $project_dir 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
-    project_dir="${HOME}${project_dir:1}"
-fi
+source ${qtoolScriptDir_Absolute}/base/get_system_env.sh
+project_dir=$(get_sysenv_project_dir)
 # cd "$project_dir" || exit # 切换到工作目录后，才能争取创建git分支。"exit" 命令用于确保如果更改目录时出现错误，则脚本将退出。
 
 

@@ -3,16 +3,9 @@
  # @Author: dvlproad
  # @Date: 2023-05-06 14:57:41
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-20 15:13:47
+ # @LastEditTime: 2023-06-06 12:47:52
  # @Description: 
 ### 
-
-# project_dir=${QTOOL_DEAL_PROJECT_DIR_PATH}
-# if [[ $project_dir =~ ^~.* ]]; then
-#     # 如果 $project_dir 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
-#     project_dir="${HOME}${project_dir:1}"
-# fi
-# cd "$project_dir" || exit # 切换到工作目录后，才能争取创建git分支。"exit" 命令用于确保如果更改目录时出现错误，则脚本将退出。
 
 exit_script() { # 退出脚本的方法，省去当某个步骤失败后，还去继续多余的执行其他操作
     exit 1
