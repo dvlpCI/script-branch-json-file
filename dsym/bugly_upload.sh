@@ -101,7 +101,34 @@ get_xcarchive_output_dir() {
     DWARF_DSYM_FOLDER_PATH=$dSYM_file_path
     printf "${BLUE}符号表dSYM文件为:%s${NC}\n" "${DWARF_DSYM_FOLDER_PATH}"
 }
+
+
+
+checkShouldContinue() {
+    shouldContinue=false
+    while [ "$shouldContinue" = false ]; do
+        read -r -p "请确认所要上传的符号表dSYM文件是否正确(正确并进行上传请输入y，若要退出请输入Q|q) : " option
+
+        if [ "${option}" == q ] || [ "${option}" == "Q" ]; then
+            printf "${BLUE}放弃上传${NC}"
+            return 1
+        elif [[ "$option" == [yY] ]]; then
+            shouldContinue=true
+            break
+        else
+            echo "无此选项，请重新输入。"
+        fi
+    done
+}
+
 get_xcarchive_output_dir
+
+checkShouldContinue
+if [ $? != 0 ]; then
+    exit 1
+fi
+
+
 
 
 
