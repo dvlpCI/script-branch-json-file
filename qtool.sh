@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-06 17:56:55
+ # @LastEditTime: 2023-06-06 19:18:56
  # @Description: 
 ### 
 
@@ -26,7 +26,7 @@ local_test() {
 
 
 # 实际项目
-bjfVersion=0.4.8
+bjfVersion=0.5.0
 
 # 粗略计算，容易出现arm64芯片上的路径不对等问题
 # qtoolScriptDir_Absolute="/usr/local/Cellar/qtool/${bjfVersion}/lib"
@@ -77,7 +77,7 @@ if [ $? != 0 ]; then
         project_tool_params_file_path=$(get_sysenv_project_params_file) # 设置完重新获取
     fi
 fi
-printf "${GREEN}温馨提示:您当前操作的项目为${YELLOW}${project_tool_params_file_path}${GREEN}\n(如果需要变更，请输入${YELLOW}change${GREEN})${NC}\n"
+printf "${GREEN}温馨提示:您当前操作的项目为 ${YELLOW}${project_tool_params_file_path}${GREEN}\n(如果需要变更，请输入${YELLOW}change${GREEN})${NC}\n"
 
 versionCmdStrings=("--version" "-version" "-v" "version")
 if [ -z "$1" ] || [ "$1" == "test" ]; then

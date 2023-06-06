@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-06 12:33:43
+ # @LastEditTime: 2023-06-06 19:18:03
  # @Description: 
 ### 
 
@@ -32,18 +32,22 @@ showProjectList() {
     tool_choice_file_path=$1
 
     #
-    printf "支持的项目列表：\n"
+    printf "支持的项目列表： (详见: ${YELLOW}${tool_choice_file_path}${NC})\n"
     choiceCount=$(cat "$tool_choice_file_path" | jq '.choice|length')
     for ((i = 0; i < ${choiceCount}; i++)); do
         iChoiceMap=$(cat "$tool_choice_file_path" | jq ".choice" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
 
         iChoiceOptionId="$((i + 1))"
         iChoiceName=$(echo "$iChoiceMap" | jq -r ".name")
-        iChoiceProjectDirPath=$(echo "$iChoiceMap" | jq -r ".project_dir_path")
 
+        
+        iChoiceProjectToolFilePath=$(echo "$iChoiceMap" | jq -r ".project_tool_file_path")
+        iChoiceProjectDirPath_rel_toolFile_dir=$(cat "${iChoiceProjectToolFilePath}" | jq -r ".project_path.home_path_rel_this_dir")
+        iChoiceProjectDirPath=$(getAbsPathByFileRelativePath "${iChoiceProjectToolFilePath}" "${iChoiceProjectDirPath_rel_toolFile_dir}")
+        
         # echo "正在执行命令:《echo \"$iChoiceMap\" | jq -r \".name\"》"
 
-        printf "${GREEN}%-2s%-20s(路径为${YELLOW}%s)${NC}\n" "${iChoiceOptionId}" "${iChoiceName}" "${iChoiceProjectDirPath}"
+        printf "${GREEN}%-2s%-20s(路径为 ${YELLOW}%s)${NC}\n" "${iChoiceOptionId}" "${iChoiceName}" "${iChoiceProjectDirPath}"
     done
 }
 
