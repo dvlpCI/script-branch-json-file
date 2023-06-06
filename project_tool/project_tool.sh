@@ -265,13 +265,13 @@ checkDirPath() {
 addEnvPathByProjectDir() {
     project_dir=$1
     addedEnvPath="${project_dir}/bulidScript/tool_input.json"
+    QTOOL_DEAL_PROJECT_DIR_PATH=${project_dir} # tool 的 bin 目录
 
     SHELL_TYPE=$(basename $SHELL)
 
     if [ "$SHELL_TYPE" = "bash" ]; then
         # echo "Adding TOOL_PATH to .bash_profile"
         echo "# 添加工具" >>~/.bash_profile
-        echo "export QTOOL_DEAL_PROJECT_DIR_PATH=${project_dir}" >>~/.bash_profile
         echo "export QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH=${addedEnvPath}" >>~/.bash_profile
         echo "export PATH=\${PATH}:\${QTOOL_DEAL_PROJECT_DIR_PATH}/bin" >>~/.bash_profile # 此行是为了使用tool，且${PATH} 前添加斜杠来转义，避免去取值了
         source ~/.bash_profile
@@ -279,7 +279,6 @@ addEnvPathByProjectDir() {
     elif [ "$SHELL_TYPE" = "zsh" ]; then
         # echo "Adding TOOL_PATH to .zshrc"
         echo "# 添加工具" >>~/.zshrc
-        echo "export QTOOL_DEAL_PROJECT_DIR_PATH=${project_dir}" >>~/.zshrc
         echo "export QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH=${addedEnvPath}" >>~/.zshrc
         echo "export PATH=\${PATH}:\${QTOOL_DEAL_PROJECT_DIR_PATH}/bin" >>~/.zshrc # 此行是为了使用tool，且${PATH} 前添加斜杠来转义，避免去取值了
         source ~/.zshrc

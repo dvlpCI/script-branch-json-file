@@ -37,7 +37,7 @@ joinFullPath() {
         if [ "${createIfNoExsit}" == true ]; then
             mkdir "${result_path}"
         else 
-            printf "${RED}❌Error:路径不存在:%s${NC}\n" "${result_path}"
+            printf "${RED}❌Error:路径不存在:${result_path}${NC}\n"
             return 1
         fi
     fi
