@@ -3,8 +3,8 @@
  # @Author: dvlproad
  # @Date: 2022-02-23 17:13:13
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-05-22 02:52:55
- # @Description: 
+ # @LastEditTime: 2023-06-07 10:58:29
+ # @Description: bugly符号表的上传脚本(根据bugly参数)
 ### 
 # 有可能需要修改的变量
 # 
@@ -197,12 +197,11 @@ java -jar ${buglyqq_upload_symbol} -appid ${BUGLY_APP_ID} \
                                     -platform ${App_Platform} \
                                     -inputSymbol ${DWARF_DSYM_FOLDER_PATH}
                                     # -inputMapping <mapping file>
-if [ $? = 0 ]   # 上个命令的退出状态，或函数的返回值。
-then
-    echo "-------- 上传dsym上传到bugly成功 --------"
-else
+if [ $? != 0 ]; then   # 上个命令的退出状态，或函数的返回值。
     echo "-------- Failure：上传dsym上传到bugly --------"
+    exit_script
 fi
+echo "-------- 上传dsym上传到bugly成功 --------"
 
 
 # # dSYM上传方法二(要先生成zip，再自己讲zip上传)：

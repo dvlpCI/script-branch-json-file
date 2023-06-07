@@ -138,5 +138,8 @@ if [ $? != 0 ]; then
     exit_script
 fi
 
-echo "正在执行命令:《 sh ${CurrentDIR_Script_Absolute}/base_bugly_upload.sh -appBuglyConfigF \"${bugly_config_file_path}\" appBuglyScriptF \"${buglyqq_upload_symbol}\" -appVersionInfoF \"${app_info_abspath}\" -appDSYMF \"${DWARF_DSYM_FOLDER_PATH}\" 》"
+verbose=false
+if [ "$verbose" = true ]; then
+  printf "正在执行命令(获取bugly配置，并进行上传):《 sh ${CurrentDIR_Script_Absolute}/base_bugly_upload.sh -appBuglyConfigF \"${bugly_config_file_path}\" appBuglyScriptF \"${buglyqq_upload_symbol}\" -appVersionInfoF \"${app_info_abspath}\" -appDSYMF \"${DWARF_DSYM_FOLDER_PATH}\" \n》"
+fi
 sh ${CurrentDIR_Script_Absolute}/base_bugly_upload.sh -appBuglyConfigF "${bugly_config_file_path}" -appBuglyScriptF "${buglyqq_upload_symbol}" -appVersionInfoF "${app_info_abspath}" -appDSYMF "${DWARF_DSYM_FOLDER_PATH}"
