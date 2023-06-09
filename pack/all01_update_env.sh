@@ -25,6 +25,7 @@ do
                 -updateJsonEnvScriptFile|--updateJsonEnv_scriptFile_Absolute) updateJsonEnv_scriptFile_Absolute=$2; shift 2;;
                 -updateIOSCodeEnvScriptFile|--updateIOSCodeEnv_scriptFile_Absolute) updateIOSCodeEnv_scriptFile_Absolute=$2; shift 2;;
                 -updateAndroidCodeEnvScriptFile|--updateAndroidCodeEnv_scriptFile_Absolute) updateAndroidCodeEnv_scriptFile_Absolute=$2; shift 2;;
+                -b|--feature-branch) BRANCH=$2; shift 2;;
                 -pl|--platformType) PlatformType=$2; shift 2;;
                 -pt|--package_target_type) PackageTargetType=$2; shift 2;;
                 -pn|--package_network_type) PackageNetworkType=$2; shift 2;;
@@ -54,20 +55,26 @@ echo "PackageTargetType=$PackageTargetType"
 echo "PackageNetworkType=$PackageNetworkType"
 
 
-if [ "${PackageNetworkType}" == "开发" ] || [ "${PackageNetworkType}" == "开发环境1" ]; then
-    echo "这个是【开发】包"
+if [ "${PackageNetworkType}" == "开发环境1" ]; then
+    echo "这个是【开发1】包"
     PackageNetworkType='develop1'
-elif [ "${PackageNetworkType}" == "测试" ] ; then
-    echo "这个是【测试】包"
+elif [ "${PackageNetworkType}" == "开发环境2" ]; then
+    echo "这个是【开发2】包"
+    PackageNetworkType='develop2'
+elif [ "${PackageNetworkType}" == "测试环境1" ]; then
+    echo "这个是【测试1】包"
     PackageNetworkType='test1'
-elif [ "${PackageNetworkType}" == "预生产" ] ; then
+elif [ "${PackageNetworkType}" == "测试环境2" ]; then
+    echo "这个是【测试2】包"
+    PackageNetworkType='test2'
+elif [ "${PackageNetworkType}" == "预生产环境" ]; then
     echo "这个是【预生产】包"
     PackageNetworkType='preproduct'
-elif [ "${PackageNetworkType}" == "生产" ] ; then
+elif [ "${PackageNetworkType}" == "生产环境" ]; then
     echo "这个是【生产】包"
     PackageNetworkType='product'
 else
-    printf "${RED}发生错误，不支持环境${YELLOW}${PackageNetworkType}${RED}，请先检查！${NC}\n"
+    printf "${RED}发生错误，脚本中未处理输入源为 ${YELLOW}${PackageNetworkType}${RED} 时候，应该映射到的【网络环境】，请先调整你的输入源！${NC}\n"
     exit_script
 fi
 
@@ -88,7 +95,7 @@ elif [ "${PackageTargetType}" == "生成最后只发布到TestFlight的包" ] ; 
 elif [ "${PackageTargetType}" == "生成最后只发布到蒲公英的包" ] ; then
     PackageTargetType="dev"
 else
-    printf "${RED}发生错误，不支持发布平台${YELLOW}${PackageTargetType}${RED}，请先检查！${NC}\n"
+    printf "${RED}发生错误，脚本中未处理输入源为 ${YELLOW}${PackageTargetType}${RED} 时候，应该映射到的【发布平台】，请先调整你的输入源！${NC}\n"
     exit_script
 fi
 
@@ -136,12 +143,12 @@ BUILD=$(echo $BUILD | sed -r 's/0*([0-9])/\1/') # 去除字符串前所有的0
 echo "BUILD=${BUILD}"
 
 
-printf "正在执行命令(更新打包参数保存到${APPEVN_SAVE_TO_FILE}文件中)《 ${YELLOW}sh ${bulidScriptCommon_dir_Absolute}/app_info_out_update.sh -appInfoF ${APPEVN_SAVE_TO_FILE} -p \"${PlatformType}\" -pt \"${PackageTargetType}\" -pn \"${PackageNetworkType}\" -v $VERSION -bd $BUILD ${NC} 》\n"
+printf "${BLUE}正在执行命令(更新打包参数保存到 ${APPEVN_SAVE_TO_FILE} 文件中)《 ${YELLOW}sh ${bulidScriptCommon_dir_Absolute}/app_info_out_update.sh -appInfoF ${APPEVN_SAVE_TO_FILE} -p \"${PlatformType}\" -pt \"${PackageTargetType}\" -pn \"${PackageNetworkType}\" -v $VERSION -bd $BUILD ${BLUE}》${NC}\n"
 if [ ! -f "${updateJsonEnv_scriptFile_Absolute}" ]; then
     printf "${RED}发生错误，用来更新项目【JSON信息环境】的文件不存在，请先检查 ${YELLOW}${updateJsonEnv_scriptFile_Absolute}${RED} ${NC}\n"
     exit_script
 fi
-sh ${updateJsonEnv_scriptFile_Absolute} -appInfoF ${APPEVN_SAVE_TO_FILE} -p "${PlatformType}" -pt "${PackageTargetType}" -pn "${PackageNetworkType}" -v $VERSION -bd $BUILD
+sh ${updateJsonEnv_scriptFile_Absolute} -appInfoF ${APPEVN_SAVE_TO_FILE} -b "${BRANCH}" -p "${PlatformType}" -pt "${PackageTargetType}" -pn "${PackageNetworkType}" -v $VERSION -bd $BUILD
 if [ $? != 0 ]; then
     sh ${bulidScriptCommon_dir_Absolute}/noti_new_package.sh -appInfoF ${APPEVN_SAVE_TO_FILE} --log-robottype "error"
     exit_script
