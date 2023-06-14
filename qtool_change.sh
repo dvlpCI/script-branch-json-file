@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-06 19:18:03
+ # @LastEditTime: 2023-06-14 10:45:11
  # @Description: 
 ### 
 
@@ -16,7 +16,7 @@ elif [ ! -d "${qtoolScriptDir_Absolute}" ]; then
     exit 1
 fi
 
-source ${qtoolScriptDir_Absolute}/base/get_system_env.sh # 为了引入 open_sysenv_file 方法
+source ${qtoolScriptDir_Absolute}/base/get_system_env.sh # 为了引入 open_sysenv_file getAbsPathByFileRelativePath 方法
 
 # 定义颜色常量
 NC='\033[0m' # No Color

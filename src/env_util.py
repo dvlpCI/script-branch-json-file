@@ -2,14 +2,14 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
 LastEditors: dvlproad
-LastEditTime: 2023-06-02 19:18:35
+LastEditTime: 2023-06-13 21:03:05
 FilePath: /script-branch-json-file/src/env_util.py
 Description: 获取环境变量的值
 '''
 import os
 import json
 import subprocess
-from path_util import joinFullPath, joinFullUrl
+from path_util import joinFullPath_checkExsit, joinFullUrl
 
 # 定义颜色常量
 NC='\033[0m' # No Color
@@ -19,6 +19,34 @@ YELLOW='\033[33m'
 BLUE='\033[34m'
 PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
+
+def check_command(cmd): # TODO计算不准，如求 coscmd 时候
+    try:
+        subprocess.run([cmd], check=True)
+    except subprocess.CalledProcessError:
+        print(f"{cmd} command not found, installing...")
+        if cmd == "realpath":
+            cmd = "coreutils"
+        elif cmd == "coscmd":
+            os.system("pip install coscmd")
+            return
+        if "darwin" in os.uname().sysname.lower():
+            print(f"正在执行安装命令：《 brew install {cmd} 》")
+            os.system(f"brew install {cmd}")
+        elif "linux" in os.uname().sysname.lower():
+            if os.path.exists("/etc/debian_version"):
+                os.system("sudo apt-get update")
+                os.system(f"sudo apt-get install -y {cmd}")
+            elif os.path.exists("/etc/redhat-release"):
+                os.system(f"sudo yum install -y {cmd}")
+            elif os.path.exists("/etc/fedora-release"):
+                os.system(f"sudo dnf install -y {cmd}")
+            else:
+                print(f"Unable to install {cmd}, please install it manually.")
+                exit(1)
+        else:
+            print(f"Unsupported operating system, please install {cmd} manually.")
+            exit(1)
 
 
 # 获取环境变量的值
@@ -65,7 +93,7 @@ def getEnvValue_project_dir_path():
         return None
     project_home_path_rel_this = tool_params_file_data['project_path']['home_path_rel_this_dir']
     tool_params_dir_path = os.path.dirname(tool_params_file_path)
-    project_dir_abspath = joinFullPath(tool_params_dir_path, project_home_path_rel_this)
+    project_dir_abspath = joinFullPath_checkExsit(tool_params_dir_path, project_home_path_rel_this)
     # print(f"project_dir_abspath:{RED}{project_dir_abspath} {NC}")
     return project_dir_abspath
 
@@ -93,7 +121,7 @@ def getEnvValue_branch_json_file_dir_path(shouldCheckExist=False):
     if data == None:
         return None
     branch_json_file_dir_relpath = data['branchJsonFile']['BRANCH_JSON_FILE_DIR_RELATIVE_PATH']
-    branch_json_file_dir_abspath = joinFullPath(branch_json_file_git_home, branch_json_file_dir_relpath)
+    branch_json_file_dir_abspath = joinFullPath_checkExsit(branch_json_file_git_home, branch_json_file_dir_relpath)
     # print(f"branch_json_file_dir_abspath:{RED}{branch_json_file_dir_abspath} {NC}")
     if shouldCheckExist==False:
         return branch_json_file_dir_abspath

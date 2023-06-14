@@ -10,7 +10,7 @@ Description: git工具
 
 import subprocess
 import os
-from path_util import joinFullPath
+from path_util import joinFullPath_checkExsit
 from env_util import getEnvValue_project_dir_path, getEnvValue_branch_json_file_dir_path
 
 def get_gitHomeDir():
@@ -60,7 +60,7 @@ def get_branch_json_file_path():
     # print("分支类型 = {}, 分支简名 = {}".format(branchType, branchShortName))
     jsonFileName = f"{branchType}_{branchShortName}.json"
 
-    file_path = joinFullPath(branch_json_file_dir_path, jsonFileName)
+    file_path = joinFullPath_checkExsit(branch_json_file_dir_path, jsonFileName)
     print("要更新的json文件：\033[1;31m{}\033[0m\n".format(file_path))
     if not os.path.exists(file_path):
         print("Error❌:在\033[1;31m{}\033[0m分支中不存在\033[1;31m{}\033[0m文件，请检查！\n".format(currentBranchFullName, file_path))

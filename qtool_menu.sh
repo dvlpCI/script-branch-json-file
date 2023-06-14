@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-06 18:00:24
+ # @LastEditTime: 2023-06-14 10:45:34
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -17,6 +17,9 @@ elif [ ! -d "${qtoolScriptDir_Absolute}" ]; then
     echo "qtoolScriptDir_Absolute=${qtoolScriptDir_Absolute}路径不存在，请检查"
     exit 1
 fi
+source ${qtoolScriptDir_Absolute}/base/get_system_env.sh
+
+
 branchJsonFileScriptDir_Absolute=$qtoolScriptDir_Absolute/src
 
 rebaseScriptDir_Absolute=$qtoolScriptDir_Absolute/rebase
@@ -39,7 +42,6 @@ CYAN='\033[0;36m'
 
 quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退出
 
-source ${qtoolScriptDir_Absolute}/base/get_system_env.sh
 
 # 环境变量检查--TOOL_PATH（才能保证可以正确创建分支）
 checkEnvValue_TOOL_PARAMS_FILE_PATH() {
@@ -86,6 +88,8 @@ tool_menu() {
             iCatalogColor=${GREEN}
         elif [ $i = 3 ]; then
             iCatalogColor=${CYAN}
+        elif [ $i = 4 ]; then
+            iCatalogColor=${PURPLE}
         else
             iCatalogColor=${YELLOW}
         fi

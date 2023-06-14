@@ -3,14 +3,18 @@
  # @Author: dvlproad
  # @Date: 2023-05-06 14:57:41
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-06 17:42:37
- # @Description: 
+ # @LastEditTime: 2023-06-14 10:44:48
+ # @Description: 含路径相关和获取环境变量中的相对路径（因为需要引用路径，所以路径不抽离出去）
 ### 
 
 
 exit_script() { # 退出脚本的方法，省去当某个步骤失败后，还去继续多余的执行其他操作
     exit 1
 }
+
+
+# 路径相关
+
 
 # 获取相对于指定文件的相对目录的绝对路径
 function getAbsPathByFileRelativePath() {
@@ -19,44 +23,54 @@ function getAbsPathByFileRelativePath() {
 
     file_parent_dir_path="$(dirname $file_path)"
     
-    joinFullPath "${file_parent_dir_path}" "${rel_path}"
+    joinFullPath_checkExsit "${file_parent_dir_path}" "${rel_path}"
+}
+
+joinFullPath_noCheck() {
+    dir_path_this=$1
+    path_rel_this_dir=$2
+    # dir_path_this="/Users/qian/Project/CQCI/script-branch-json-file/test/"
+    # path_rel_this_dir="../../"
+    temp_result_path="$dir_path_this/$path_rel_this_dir"
+    result_path=$(realpath "$temp_result_path") # shell 获取文件或文件夹的绝对路径，保存到临时变量中，TODO 如果 $temp_result_path 指向的路径不存在，那么 $result_path 变量将会是空字符串。
+    
+    echo "$result_path"
 }
 
 # 路径拼接(①支持尾部及头部斜杠的处理;②支持尾部拼接../)
-joinFullPath() {
+joinFullPath_checkExsit() {
+    createIfNoExsit=$3
+    
     dir_path_this=$1
     path_rel_this_dir=$2
-    createIfNoExsit=$3
     # dir_path_this="/Users/qian/Project/CQCI/script-branch-json-file/test/"
     # path_rel_this_dir="../../"
     temp_result_path="$dir_path_this/$path_rel_this_dir"
 
     check_command realpath # 要使用 realpath ，需要安装 brew install coreutiles
-    result_path=$(realpath "$temp_result_path") # shell 获取文件或文件夹的绝对路径，保存到临时变量中
+    result_path=$(realpath "$temp_result_path") # shell 获取文件或文件夹的绝对路径，保存到临时变量中，TODO 如果 $temp_result_path 指向的路径不存在，那么 $result_path 变量将会是空字符串。
+    if [ $? != 0 ]; then
+        echo $temp_result_path
+        return 1
+    fi
+    
     if [ ! -d "${result_path}" ] && [ ! -f "${result_path}" ]; then
         if [ "${createIfNoExsit}" == true ]; then
             mkdir "${result_path}"
-        else 
-            printf "${RED}❌Error:路径不存在:${result_path}${NC}\n"
+            echo $result_path
+            return 0
+        else
+            echo $result_path # 不对输出的内容进行加工，放在自身里面，通过返回值告知结果
             return 1
         fi
-    fi
-    echo $result_path
-}
-
-# 生效环境变量
-effectiveEnvironmentVariables() {
-    SHELL_TYPE=$(basename $SHELL)
-
-    if [ "$SHELL_TYPE" = "bash" ]; then
-        source ~/.bash_profile
-    elif [ "$SHELL_TYPE" = "zsh" ]; then
-        source ~/.zshrc
     else
-        echo "Unknown shell type: $SHELL_TYPE"
-        return 1
+        echo $result_path
+        return 0
     fi
+    
 }
+
+
 
 # Checks if the specified command is available
 # If the command is not available, it will be installed
@@ -66,6 +80,10 @@ function check_command() {
         echo "$cmd command not found, installing..."
         if [ "$cmd" == "realpath" ]; then
             cmd=coreutiles
+        fi
+        if [ "$cmd" == "coscmd" ]; then
+            pip install coscmd
+            return
         fi
         if [[ "$OSTYPE" == "darwin"* ]]; then
             echo "正在执行安装命令：《 brew install $cmd 》"
@@ -90,6 +108,22 @@ function check_command() {
 }
 
 
+
+
+
+# 生效环境变量
+effectiveEnvironmentVariables() {
+    SHELL_TYPE=$(basename $SHELL)
+
+    if [ "$SHELL_TYPE" = "bash" ]; then
+        source ~/.bash_profile
+    elif [ "$SHELL_TYPE" = "zsh" ]; then
+        source ~/.zshrc
+    else
+        echo "Unknown shell type: $SHELL_TYPE"
+        return 1
+    fi
+}
 
 open_sysenv_file() {
     SHELL_TYPE=$(basename $SHELL)
@@ -148,7 +182,7 @@ get_sysenv_project_dir() {
 
 goCodeHome() {
     code_dir_rel_home_dir=$(echo ${project_path_map} | jq -r ".other_path_rel_home.code_home")
-    code_dir_abspath=$(joinFullPath "$home_abspath" $code_dir_rel_home_dir)
+    code_dir_abspath=$(joinFullPath_checkExsit "$home_abspath" $code_dir_rel_home_dir)
     if [ $? != 0 ]; then
         exit_script
     fi

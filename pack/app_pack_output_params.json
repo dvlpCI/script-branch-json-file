@@ -13,7 +13,11 @@
             "code": "/tsdemo/lib/"
         },
         "pack_path_rel_home": {
-            "pack_input_params_file_RELATIVE_HOME": "./bulidScript/pack_input.json"
+            "custom_script_files_RELATIVE_HOME": [
+                "./pack/pack_input.json",
+                "./json/sign_apk.json",
+                "./json/upload_cos.json"
+              ]
         },
         "dsym_path_rel_home": {
             "app_bugly_config_file": "./bulidScript/dsym/app_pack_info_bugly.json",

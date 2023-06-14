@@ -12,7 +12,7 @@ import os
 import re
 
 from branchJsonFile_input import inputBranchName
-from path_util import joinFullPath
+from path_util import joinFullPath_checkExsit
 from env_util import getEnvValue_project_parent_dir_path
 from path_choose_util import show_and_choose_file_in_dir
 

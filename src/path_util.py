@@ -23,11 +23,11 @@ def getAbsPathByFileRelativePath(file_path, rel_path):
     # 获取当前文件的所在目录
     file_parent_dir_path = os.path.dirname(file_dir_abspath)
     
-    return joinFullPath(file_parent_dir_path, rel_path)
+    return joinFullPath_checkExsit(file_parent_dir_path, rel_path)
 
 
 # 路径拼接(①支持尾部及头部斜杠的处理;②支持尾部拼接../)
-def joinFullPath(host_dir, rel_path):
+def joinFullPath_checkExsit(host_dir, rel_path):
     # 在 Unix 和 Linux 系统中，以斜杠开头的路径被视为绝对路径。所以需要去掉头部结尾的斜杠或者尾部开头的斜杠
     if host_dir.endswith("/"):
         host_dir = host_dir[:-1]
@@ -53,9 +53,9 @@ def joinFullUrl(host_url, rel_url):
 # c = os.path.abspath(os.path.join(os.path.dirname(a), b))
 # print("===0====envValue: \033[1;31m{}\033[0m".format(c))
 # print(f"===0====envValue: {RED}{c}{NC}")
-# print("===1====envValue: \033[1;31m{}\033[0m".format(joinFullPath(os.path.dirname(a), "./")))
-# print("===2====envValue: \033[1;31m{}\033[0m".format(joinFullPath(os.path.dirname(a), "../")))
-# print("===3====envValue: \033[1;31m{}\033[0m".format(joinFullPath(os.path.dirname(a), "../../")))
+# print("===1====envValue: \033[1;31m{}\033[0m".format(joinFullPath_checkExsit(os.path.dirname(a), "./")))
+# print("===2====envValue: \033[1;31m{}\033[0m".format(joinFullPath_checkExsit(os.path.dirname(a), "../")))
+# print("===3====envValue: \033[1;31m{}\033[0m".format(joinFullPath_checkExsit(os.path.dirname(a), "../../")))
 
 # aUrl = "http://acd/dfd/cdfd.com/"
 # print("===2.1====envValue: \033[1;31m{}\033[0m".format(joinFullUrl(aUrl, "/de/")))

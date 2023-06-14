@@ -79,13 +79,6 @@
             "category_id": "pack",
             "category_values": [
                 {
-                    "name": "update_projectEnv",
-                    "des": "打包相关(参数):更新项目的①code环境和②json环境",
-                    "action_type": "deal_script_by_config_待定使用",
-                    "action_script_config_file_rel_this_file": "./pack/pack_input.json",
-                    "action": "update_project_jsonEnv_and_codeEnv_action"
-                },
-                {
                     "name": "jenkins",
                     "des": "打包相关(Jenkins):执行Jenkins打包任务",
                     "action": "buildJenkinsJob"
@@ -104,6 +97,18 @@
                     "name": "uploadDSYM",
                     "des": "打包相关(符号表):上传符号表(需要jdk8支持)",
                     "action": "uploadDSYMAction"
+                }
+            ]
+        },
+        {
+            "category_id": "custom",
+            "category_values": [
+                {
+                    "name": "deal_custom_script",
+                    "des": "自定义脚本:（更新项目的①code环境和②json环境、签名、上传cos）",
+                    "action_type": "deal_script_by_config_待定使用",
+                    "action_script_config_file_rel_this_file": "./pack/pack_input.json",
+                    "action": "update_project_jsonEnv_and_codeEnv_action"
                 }
             ]
         }

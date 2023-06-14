@@ -11,6 +11,7 @@ if [ ! -d "${qtoolScriptDir_Absolute}" ]; then
     echo "==========qtoolScriptDir_Absolute=${qtoolScriptDir_Absolute}路径不存在，请检查"
     exit 1
 fi
+source ${qtoolScriptDir_Absolute}/base/get_system_env.sh
 
 # 定义颜色常量
 NC='\033[0m' # No Color
@@ -26,29 +27,6 @@ exit_script() { # 退出脚本的方法，省去当某个步骤失败后，还�
     exit 1
 }
 
-joinFullPath() {
-    dir_path_this=$1
-    path_rel_this_dir=$2
-    createIfNoExsit=$3
-    # dir_path_this="/Users/qian/Project/CQCI/script-branch-json-file/test/"
-    # path_rel_this_dir="../../"
-    temp_result_path="$dir_path_this/$path_rel_this_dir"
-    if [ ! -d "${temp_result_path}" ] && [ ! -f "${temp_result_path}" ]; then
-        if [ "${createIfNoExsit}" == true ]; then
-            mkdir "${temp_result_path}"
-        else 
-            printf "${RED}❌Error:路径不存在:%s${NC}\n" "${temp_result_path}"
-            return 1
-        fi
-    fi
-    
-    result_path=$(realpath "$temp_result_path") # shell 获取文件或文件夹的绝对路径，保存到临时变量中
-    if [ $? != 0 ]; then
-        return 1
-    fi
-    echo $result_path
-}
-
 project_tool_params_file_path=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
 # printf "${YELLOW}你所有的配置来自文件:%s${NC}\n" "${project_tool_params_file_path}"
 project_path_map=$(cat ${project_tool_params_file_path} | jq -r ".project_path")
@@ -57,23 +35,24 @@ project_path_map=$(cat ${project_tool_params_file_path} | jq -r ".project_path")
 
 home_path_rel_tool_dir=$(echo ${project_path_map} | jq -r ".home_path_rel_this_dir")
 # home_abspath=$(cd "$(dirname "$project_tool_params_file_path")/$home_path_rel_this_dir"; pwd)
-home_abspath=$(joinFullPath "$(dirname $project_tool_params_file_path)" $home_path_rel_tool_dir)
+home_abspath=$(joinFullPath_checkExsit "$(dirname $project_tool_params_file_path)" $home_path_rel_tool_dir)
 if [ $? != 0 ]; then
+    printf "${RED}home_abspath路径不存在，请检查 ${home_abspath}${NC}\n"
     exit_script
 fi
 printf "${BLUE}你要操作的项目的路径为：%s${NC}\n" "${home_abspath}"
 
-
 bugly_config_file_path_rel_home_dir=$(echo ${project_path_map} | jq -r ".dsym_path_rel_home.app_bugly_config_file")
-bugly_config_file_path=$(joinFullPath "$home_abspath" $bugly_config_file_path_rel_home_dir)
+bugly_config_file_path=$(joinFullPath_checkExsit "$home_abspath" $bugly_config_file_path_rel_home_dir)
 if [ $? != 0 ]; then
+    printf "${RED}${bugly_config_file_path}${NC}\n"
     exit_script
 fi
 
-
 app_info_file_rel_home_dir=$(echo ${project_path_map} | jq -r ".other_path_rel_home.app_info_file")
-app_info_abspath=$(joinFullPath "$home_abspath" $app_info_file_rel_home_dir)
+app_info_abspath=$(joinFullPath_checkExsit "$home_abspath" $app_info_file_rel_home_dir)
 if [ $? != 0 ]; then
+    printf "${RED}app_info_abspath路径不存在，请检查 ${app_info_abspath}${NC}\n"
     exit_script
 fi
 
@@ -82,8 +61,9 @@ fi
 get_xcarchive_output_dir() {
     app_pack_params_map=$(cat ${app_info_abspath} | jq -r ".")
     dSYM_file_path_rel_home_dir=$(echo ${app_pack_params_map} | jq -r ".package_url_result.package_local_dSYM_file_path")
-    dSYM_file_path=$(joinFullPath "$home_abspath" $dSYM_file_path_rel_home_dir)
+    dSYM_file_path=$(joinFullPath_checkExsit "$home_abspath" $dSYM_file_path_rel_home_dir)
     if [ $? != 0 ]; then
+        printf "${RED}dSYM_file_path路径不存在，请检查 ${dSYM_file_path}${NC}\n"
         exit_script
     fi
     if [ -z "${dSYM_file_path}" ] || [ "${dSYM_file_path}" == "null" ]; then
@@ -133,8 +113,9 @@ fi
 
 
 buglyqq_upload_symbol_rel_home_dir=$(echo ${project_path_map} | jq -r ".dsym_path_rel_home.buglyqq_upload_symbol")
-buglyqq_upload_symbol=$(joinFullPath "$home_abspath" $buglyqq_upload_symbol_rel_home_dir)
+buglyqq_upload_symbol=$(joinFullPath_checkExsit "$home_abspath" $buglyqq_upload_symbol_rel_home_dir)
 if [ $? != 0 ]; then
+    printf "${RED}buglyqq_upload_symbol路径不存在，请检查 ${buglyqq_upload_symbol}${NC}\n"
     exit_script
 fi
 

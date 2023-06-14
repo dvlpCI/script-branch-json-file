@@ -1,8 +1,8 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
-LastEditors: dvlproad dvlproad@163.com
-LastEditTime: 2023-06-04 23:57:54
+LastEditors: dvlproad
+LastEditTime: 2023-06-13 21:04:28
 FilePath: pack_input.py
 Description: 打包-输入
 '''
@@ -15,7 +15,7 @@ import subprocess
 from env_pack_util import getEnvValue_pack_input_params_file_path
 from base_util import callScriptCommond
 from path_util import getAbsPathByFileRelativePath
-from dealScript_by_scriptConfig_util import dealScriptByScriptConfig
+from dealScript_by_scriptConfig_util import chooseCustomScriptFromFilePaths, dealScriptByScriptConfig
 
 # 定义颜色常量
 NC='\033[0m' # No Color
@@ -35,7 +35,10 @@ CYAN='\033[0;36m'
 # args = parser.parse_args()
 # print(args)
 
-pack_input_params_file_path=getEnvValue_pack_input_params_file_path(shouldCheckExist=True)
+custom_script_files_abspath=getEnvValue_pack_input_params_file_path(shouldCheckExist=True)
+chooseScriptMap=chooseCustomScriptFromFilePaths(custom_script_files_abspath, shouldCheckExist=True)
+chooseScriptFilePath=chooseScriptMap["script_info_abspath"]
+pack_input_params_file_path=chooseScriptFilePath
 if pack_input_params_file_path == None:
     exit(1)
 

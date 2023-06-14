@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-14 14:09:09
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-06 12:48:48
+ # @LastEditTime: 2023-06-14 10:45:25
  # @Description: 
 ### 
 
@@ -34,7 +34,7 @@ project_dir=$(get_sysenv_project_dir)
 
 
 # if [ ! -d "$../.git/hooks/pre-push" ]; then
-source ${qtoolScriptDir_Absolute}/base/join_full_path.sh
+
 
 project_hook_dir_abspath=$(joinFullPath_noCheck "$project_dir/" ".git/hooks/pre-push")
 if [ $? != 0 ]; then

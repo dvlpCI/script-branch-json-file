@@ -12,7 +12,7 @@ import os
 import re
 import shutil
 
-from path_util import joinFullPath
+from path_util import joinFullPath_checkExsit
 from env_util import getEnvValue_project_parent_dir_path
 from path_choose_util import show_and_choose_folder_in_dir
 
@@ -71,7 +71,7 @@ def removeJsonByInputName():
         return 1
     
     # refs_remotes_dir_relpath=".git/refs/remotes"
-    # refs_remotes_dir_abspath = joinFullPath(git_project_dir_path, refs_remotes_dir_relpath)
+    # refs_remotes_dir_abspath = joinFullPath_checkExsit(git_project_dir_path, refs_remotes_dir_relpath)
     
     
     if checkShouldContinue_project_dir(git_project_dir_path) == 1:

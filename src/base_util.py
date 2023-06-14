@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
 LastEditors: dvlproad
-LastEditTime: 2023-06-05 11:59:32
+LastEditTime: 2023-06-13 21:05:46
 FilePath: src/base_util.py
 Description: 获取环境变量的值
 '''
@@ -30,7 +30,9 @@ def callScriptCommond(command, sript_file_absPath, verbose=False):
     print(f"\n{BLUE}开始执行脚本，执行过程中输出内容如下：{NC}")
     # 调用 subprocess.run() 函数执行 shell 命令
     if verbose==True:
-        print(f"{BLUE}正在执行命令:《 {YELLOW}{' '.join(command)}{NC} 》")
+        cmdString=' '.join(command)
+        escaped_command = cmdString.replace("(", r"\(").replace(")", r"\)")
+        print(f"{BLUE}正在执行命令:《 {YELLOW}{escaped_command}{NC} 》")
 
     # try:
     #     subprocess.check_call(command)

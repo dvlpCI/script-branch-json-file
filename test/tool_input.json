@@ -19,7 +19,11 @@
       "code": "/tsdemo/lib/"
     },
     "pack_path_rel_home": {
-      "pack_input_params_file_RELATIVE_HOME": "./pack/pack_input.json",
+      "custom_script_files_RELATIVE_HOME": [
+        "./pack/pack_input.json",
+        "./json/sign_apk.json",
+        "./json/upload_cos.json"
+      ],
       "android_waitSignApk": {
         "android_waitSignApkVersions_dir_RELATIVE_HOME": "../all_ipa_output/channel/",
         "android_waitSignApkVersion_dir_RELATIVE_SELECTED_VERSION_DIR": "./jiagu/",

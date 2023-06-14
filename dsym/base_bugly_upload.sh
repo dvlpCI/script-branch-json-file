@@ -150,7 +150,7 @@ echo "------------------- 准备开始进行dsym符号表上传到'bugly'上 ---
 # # 检查执行命令时候需要的jar文件是否再bin中有存在
 # BIN_buglySymboliOS_JAR_FILE_PATH_rel_home_dir=$(echo ${project_path_map} | jq -r ".dsym_path_rel_home.BIN_buglySymboliOS_JAR_FILE_PATH")
 # # echo "-------1-----${BIN_buglySymboliOS_JAR_FILE_PATH_rel_home_dir}"
-# BIN_buglySymboliOS_JAR_FILE_PATH=$(joinFullPath "$home_abspath" $BIN_buglySymboliOS_JAR_FILE_PATH_rel_home_dir)
+# BIN_buglySymboliOS_JAR_FILE_PATH=$(joinFullPath_checkExsit "$home_abspath" $BIN_buglySymboliOS_JAR_FILE_PATH_rel_home_dir)
 # if [ $? != 0 ]; then
 #     echo "-------2-----${BIN_buglySymboliOS_JAR_FILE_PATH}"
 #     exit_script
@@ -169,8 +169,8 @@ echo "------------------- 准备开始进行dsym符号表上传到'bugly'上 ---
 # fi
 # 
 # createIfNoExsit=true
-# joinFullPath "$home_abspath" $SYMBOL_OUTPUT_rel_home_dir "${createIfNoExsit}"
-# SYMBOL_OUTPUT_dir_abspath=$(joinFullPath "$home_abspath" $SYMBOL_OUTPUT_rel_home_dir "${createIfNoExsit}")
+# joinFullPath_checkExsit "$home_abspath" $SYMBOL_OUTPUT_rel_home_dir "${createIfNoExsit}"
+# SYMBOL_OUTPUT_dir_abspath=$(joinFullPath_checkExsit "$home_abspath" $SYMBOL_OUTPUT_rel_home_dir "${createIfNoExsit}")
 # if [ $? != 0 ]; then
 #     echo "-------3.1-----${SYMBOL_OUTPUT_dir_abspath}"
 #     exit_script
@@ -180,7 +180,7 @@ echo "------------------- 准备开始进行dsym符号表上传到'bugly'上 ---
 # UPLOAD_DSYM_ONLY=ture
 
 # DSYMUPLOAD_sh_FILE_PATH_rel_home_dir=$(echo ${project_path_map} | jq -r ".dsym_path_rel_home.dSYMUpload_script_file_path")
-# DSYMUPLOAD_sh_FILE_PATH=$(joinFullPath "$home_abspath" $DSYMUPLOAD_sh_FILE_PATH_rel_home_dir)
+# DSYMUPLOAD_sh_FILE_PATH=$(joinFullPath_checkExsit "$home_abspath" $DSYMUPLOAD_sh_FILE_PATH_rel_home_dir)
 # if [ $? != 0 ]; then
 #     exit_script
 # fi

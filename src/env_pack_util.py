@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
 LastEditors: dvlproad
-LastEditTime: 2023-06-02 19:21:36
+LastEditTime: 2023-06-13 17:28:52
 FilePath: /script-branch-json-file/src/env_util.py
 Description: 获取环境变量的值
 '''
@@ -10,7 +10,7 @@ import os
 import json
 import subprocess
 from base_util import openFile
-from path_util import joinFullPath, joinFullUrl
+from path_util import joinFullPath_checkExsit, joinFullUrl
 from env_util import getEnvValue_params_file_data, getEnvValue_project_dir_path, getEnvValue_params_file_path
 
 # 定义颜色常量
@@ -61,19 +61,16 @@ def getEnvValue_pack_input_params_file_path(shouldCheckExist=False):
     if pack_path_rel_home_map == None:
         return None
     
-    pack_input_params_file_path_relhome = pack_path_rel_home_map['pack_input_params_file_RELATIVE_HOME']
-    pack_input_params_file_abspath = joinFullPath(project_home_dir_path, pack_input_params_file_path_relhome)
-    # print(f"pack_input_params_file_abspath:{RED}{pack_input_params_file_abspath} {NC}")
-    if shouldCheckExist==False:
-        return pack_input_params_file_abspath
-    else:
-        if not os.path.exists(pack_input_params_file_abspath):
-            print(f"{RED}打包参数信息文件获取失败，原因为计算出来的相对目录不存在。请检查您的 {YELLOW}{getEnvValue_params_file_path()}{NC} 的 {BLUE}pack_input_params_file_RELATIVE_HOME{RED} 属性值 {BLUE}{pack_input_params_file_path_relhome}{RED} 是否正确。（其会导致计算相对于 {YELLOW}{project_home_dir_path}{RED} 的该属性值路径 {BLUE}{pack_input_params_file_abspath}{RED} 不存在)。{NC}")
-            openFile(getEnvValue_params_file_path())
-            return None
-        else:
-            # print(f"恭喜：打包参数信息文件:{RED}{pack_input_params_file_abspath}{NC}存在")
-            return pack_input_params_file_abspath
+    pack_input_params_files_abspath=[]
+    pack_input_params_files_path_relhome = pack_path_rel_home_map['custom_script_files_RELATIVE_HOME']
+    for i, pack_input_params_file_path_relhome in enumerate(pack_input_params_files_path_relhome):
+        # print("\033[1;32m{}\033[0m：\033[1;33m{}\033[0m".format(option['inputId'], option['inputMeaning']))
+
+        pack_input_params_file_path_relhome=pack_input_params_files_path_relhome[i]
+        pack_input_params_file_abspath = joinFullPath_checkExsit(project_home_dir_path, pack_input_params_file_path_relhome)
+        pack_input_params_files_abspath.append(pack_input_params_file_abspath)
+
+    return pack_input_params_files_abspath
 
 # 获取环境变量的值-android等待签名的版本文件夹
 def getEnvValue_android_waitSignApkVersions_dir_path(shouldCheckExist=False):
@@ -84,7 +81,7 @@ def getEnvValue_android_waitSignApkVersions_dir_path(shouldCheckExist=False):
         return None
     
     android_waitSignApkVersions_dir_path_relhome = android_waitSignApk_map['android_waitSignApkVersions_dir_RELATIVE_HOME']
-    android_waitSignApkVersions_dir_abspath = joinFullPath(project_home_dir_path, android_waitSignApkVersions_dir_path_relhome)
+    android_waitSignApkVersions_dir_abspath = joinFullPath_checkExsit(project_home_dir_path, android_waitSignApkVersions_dir_path_relhome)
     # print(f"android_sign_script_file_abspath:{RED}{android_sign_script_file_abspath} {NC}")
     if shouldCheckExist==False:
         return android_waitSignApkVersions_dir_abspath
@@ -104,7 +101,7 @@ def getEnvValue_android_waitSignApkDirPath_forVersion(selectedSignApkVersion_dir
         return None
     
     android_waitSignApkVersion_dir_path_relSelectedVersionDir = android_waitSignApk_map['android_waitSignApkVersion_dir_RELATIVE_SELECTED_VERSION_DIR']
-    android_waitSignApkVersion_dir_abspath = joinFullPath(selectedSignApkVersion_dir_path, android_waitSignApkVersion_dir_path_relSelectedVersionDir)
+    android_waitSignApkVersion_dir_abspath = joinFullPath_checkExsit(selectedSignApkVersion_dir_path, android_waitSignApkVersion_dir_path_relSelectedVersionDir)
     # print(f"android_waitSignApkVersion_dir_abspath:{YELLOW}{android_waitSignApkVersion_dir_abspath} {NC}")
     if shouldCheckExist==False:
         # print(f"恭喜：你选择的版本的android等待签名的apk文件夹:{RED}{android_waitSignApkVersion_dir_abspath}{NC}存在")
@@ -126,7 +123,7 @@ def getEnvValue_android_resultSignApkDirPath_forVersion(selectedSignApkVersion_d
         return None
     
     android_resultSignApkVersion_dir_path_relSelectedVersionDir = android_waitSignApk_map['android_resultSignApkVersion_dir_RELATIVE_SELECTED_VERSION_DIR']
-    android_resultSignApkVersion_dir_abspath = joinFullPath(selectedSignApkVersion_dir_path, android_resultSignApkVersion_dir_path_relSelectedVersionDir)
+    android_resultSignApkVersion_dir_abspath = joinFullPath_checkExsit(selectedSignApkVersion_dir_path, android_resultSignApkVersion_dir_path_relSelectedVersionDir)
     # print(f"android_resultSignApkVersion_dir_abspath:{YELLOW}{android_resultSignApkVersion_dir_abspath} {NC}")
     if shouldCheckExist==False:
         # print(f"恭喜：你选择的版本的android等待签名的apk文件夹:{RED}{android_resultSignApkVersion_dir_abspath}{NC}存在")
@@ -151,7 +148,7 @@ def getEnvValue_android_resultSignApkDirPath_backup_forVersion(selectedSignApkVe
     # 获取文件夹名称
     folder_name = os.path.basename(os.path.normpath(selectedSignApkVersion_dir_path))
 
-    android_resultSignApkVersion_dir_backup_abspath=joinFullPath(android_resultSignApkVersion_backupdir_parent_abspath, folder_name)
+    android_resultSignApkVersion_dir_backup_abspath=joinFullPath_checkExsit(android_resultSignApkVersion_backupdir_parent_abspath, folder_name)
     # print(f"android_resultSignApkVersion_dir_backup_abspath:{YELLOW}{android_resultSignApkVersion_dir_backup_abspath} {NC}")
     if shouldCheckExist==False:
         # print(f"恭喜：签名结果备份到的文件夹(用于内网直接访问):{RED}{android_resultSignApkVersion_dir_backup_abspath}{NC}存在")
@@ -186,7 +183,7 @@ def getEnvValue_android_sign_script_file_path(shouldCheckExist=False):
     
     android_signScript_map=getEnvValue_android_signScript_map()
     android_sign_script_file_path_relhome = android_signScript_map['android_sign_script_file_RELATIVE_HOME']
-    android_sign_script_file_abspath = joinFullPath(project_home_dir_path, android_sign_script_file_path_relhome)
+    android_sign_script_file_abspath = joinFullPath_checkExsit(project_home_dir_path, android_sign_script_file_path_relhome)
     # print(f"android_sign_script_file_abspath:{RED}{android_sign_script_file_abspath} {NC}")
     if shouldCheckExist==False:
         return android_sign_script_file_abspath
@@ -208,7 +205,7 @@ def getEnvValue_android_sign_script_params_file_path(shouldCheckExist=False):
     
     android_signScript_map=getEnvValue_android_signScript_map()
     android_sign_script_params_file_path_relhome = android_signScript_map['keystore_file_RELATIVE_HOME']
-    android_sign_script_params_file_abspath = joinFullPath(project_home_dir_path, android_sign_script_params_file_path_relhome)
+    android_sign_script_params_file_abspath = joinFullPath_checkExsit(project_home_dir_path, android_sign_script_params_file_path_relhome)
     # print(f"android_sign_script_params_file_abspath:{RED}{android_sign_script_params_file_abspath} {NC}")
     if shouldCheckExist==False:
         return android_sign_script_params_file_abspath

@@ -11,7 +11,7 @@ exit_script() { # 退出脚本的方法，省去当某个步骤失败后，还�
     exit 1
 }
 
-joinFullPath() {
+joinFullPath_checkExsit() {
     dir_path_this=$1
     path_rel_this_dir=$2
     createIfNoExsit=$3
@@ -36,7 +36,7 @@ get_project_dir() {
     project_path_map=$(cat ${project_tool_params_file_path} | jq -r ".project_path")
     home_path_rel_tool_dir=$(echo ${project_path_map} | jq -r ".home_path_rel_this_dir")
     # home_abspath=$(cd "$(dirname "$project_tool_params_file_path")/$home_path_rel_this_dir"; pwd)
-    home_abspath=$(joinFullPath "$(dirname $project_tool_params_file_path)" $home_path_rel_tool_dir)
+    home_abspath=$(joinFullPath_checkExsit "$(dirname $project_tool_params_file_path)" $home_path_rel_tool_dir)
     if [ $? != 0 ]; then
         exit_script
     fi
@@ -57,7 +57,7 @@ get_project_dir
 
 goCodeHome() {
     code_dir_rel_home_dir=$(echo ${project_path_map} | jq -r ".other_path_rel_home.code_home")
-    code_dir_abspath=$(joinFullPath "$home_abspath" $code_dir_rel_home_dir)
+    code_dir_abspath=$(joinFullPath_checkExsit "$home_abspath" $code_dir_rel_home_dir)
     if [ $? != 0 ]; then
         exit_script
     fi

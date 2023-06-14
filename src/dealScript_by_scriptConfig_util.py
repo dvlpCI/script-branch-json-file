@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-05 11:53:00
+LastEditTime: 2023-06-13 21:20:09
 FilePath: src/dealScript_by_scriptConfig_util.py
 Description: 打包-输入
 '''
@@ -16,7 +16,7 @@ import json
 
 from base_util import openFile, callScriptCommond
 from path_util import getAbsPathByFileRelativePath
-from env_util import get_json_file_data
+from env_util import check_command, get_json_file_data, getEnvValue_params_file_path, getEnvValue_project_dir_path
 
 
 # 定义颜色常量
@@ -49,9 +49,61 @@ def getActionById(actions, actionId, pack_input_params_file_path):
     return person
 
 
-def dealScriptByScriptConfig(pack_input_params_file_path):
+def chooseCustomScriptAndDealItFromFilePaths(custom_script_files_abspath):
+    chooseScriptMap=chooseCustomScriptFromFilePaths(custom_script_files_abspath)
+    chooseScriptFilePath=chooseScriptMap["script_info_abspath"]
+    dealScriptByScriptConfig(chooseScriptFilePath)
+
+
+# 1、展示 所有自定义的脚本中 并在选择便后后，并进行选择输出
+def chooseCustomScriptFromFilePaths(custom_script_files_abspath, shouldCheckExist=False):
+    print(f"")
+    script_info_maps=[]
+    for i, custom_script_file_abspath in enumerate(custom_script_files_abspath):
+        script_info_map=_get_custom_script_file_map(custom_script_file_abspath) # 会检查脚本文件是不是存在
+        # print(f"script_info_map={script_info_map}")
+        script_file_des = script_info_map['script_file_des']
+        # des_length = sum(2 if ord(c) > 127 else 1 for c in script_file_des)  # 计算中英文字符长度
+        placeHolder=""
+        print(f"{i+1}. {YELLOW}{script_file_des:<{15}}{NC} ({BLUE}{script_info_map['script_file_abspath']}{NC})\n{YELLOW}{placeHolder:<{23}}(来源于:{NC}{script_info_map['script_info_abspath']})")
+        script_info_maps.append(script_info_map)
+
+    if len(script_info_maps) == 1:
+        chooseScriptIndex=0
+    else:
+        while True:
+            env_input = input("请选择您想要执行的自定义脚本的编号（退出q/Q）：")
+            if env_input == "q" or env_input == "Q":
+                exit()
+
+            if not env_input.isnumeric():
+                print("输入的不是一个数字，请重新输入！")
+                continue
+
+            index = int(env_input) - 1
+            if index >= len(script_info_maps):
+                continue
+            else:
+                chooseScriptIndex = index
+                break
+        
+    chooseScriptMap = script_info_maps[chooseScriptIndex]
+    chooseScriptMapName = chooseScriptMap["script_file_des"]
+    chooseScriptFilePath=chooseScriptMap["script_info_abspath"]
+    # print(f"chooseScriptFilePath:{RED}{chooseScriptFilePath} {NC}")
+    if shouldCheckExist==True:
+        if not os.path.exists(chooseScriptFilePath):
+            print(f"{RED}打包参数信息文件 {YELLOW}{chooseScriptFilePath} {RED}不存在，请检查。请检查您的 {YELLOW}{getEnvValue_params_file_path()}{NC} 的 {BLUE}custom_script_files_RELATIVE_HOME{RED} 属性值是否正确。（其会导致计算相对于 {YELLOW}{getEnvValue_project_dir_path()}{RED} 的该属性值路径 {BLUE}{chooseScriptFilePath}{RED} 不存在)。{NC}")
+            openFile(getEnvValue_params_file_path())
+            return None
+        
+    print(f"您选择的想要执行的自定义脚本：{YELLOW}{chooseScriptMapName}{NC}")
+    return chooseScriptMap
+
+
+def _get_custom_script_file_map(pack_input_params_file_path):
     if not os.path.exists(pack_input_params_file_path):
-        print(f"{RED}您的脚本文件不存在，请检查 {YELLOW}{pack_input_params_file_path()}{NC}")
+        print(f"{RED}您的参数文件(内含脚本及脚本的参数)不存在，请检查 {YELLOW}{pack_input_params_file_path()}{NC}")
         openFile(pack_input_params_file_path())
         return False
     data=get_json_file_data(pack_input_params_file_path)
@@ -60,16 +112,41 @@ def dealScriptByScriptConfig(pack_input_params_file_path):
         return False
     
     # 1、获取脚本文件
-    if 'action_sript_file_rel_this_dir' not in data:
-        print(f"{RED}发生错误:{pack_input_params_file_path} 文件中不存在'action_sript_file_rel_this_dir'键，请检查{NC}")
+    action_script_file_absPath=getRealScriptOrCommandFromData(data, pack_input_params_file_path)
+    if action_script_file_absPath == False:
         return False
-    action_sript_file_rel_this_dir=data['action_sript_file_rel_this_dir']
-    # 获取脚本的实际绝对路径
-    action_sript_file_absPath=getAbsPathByFileRelativePath(pack_input_params_file_path, action_sript_file_rel_this_dir)
-    if not os.path.isfile(action_sript_file_absPath):
-        print(f"{RED}发生错误:脚本文件不存在，原因为计算出来的相对目录不存在。请检查您的 {YELLOW}{pack_input_params_file_path}{NC} 中的 {BLUE}action_sript_file_rel_this_dir{RED} 属性值 {BLUE}{action_sript_file_rel_this_dir}{RED} 是否正确。（其会导致计算相对于 {YELLOW}{pack_input_params_file_path}{RED} 的该属性值路径 {BLUE}{action_sript_file_absPath}{RED} 不存在)。{NC}")
-        openFile(pack_input_params_file_path)
-        # print(f"{RED}=======这里报错了，应该要退出方法{NC}")
+    
+    # 1、获取脚本文件描述
+    if 'action_sript_file_des' not in data:
+        print(f"{RED}发生错误:{pack_input_params_file_path} 文件中不存在'action_sript_file_des'键，请检查{NC}")
+        return False
+    action_sript_file_des=data['action_sript_file_des']
+    
+    return {
+        "script_info_abspath": pack_input_params_file_path,
+        "script_file_abspath": action_script_file_absPath, # 执行的脚本文件
+        "script_file_des": action_sript_file_des # 执行的脚本文件的描述
+    }
+    
+    
+
+
+
+def dealScriptByScriptConfig(pack_input_params_file_path):
+    if not os.path.exists(pack_input_params_file_path):
+        print(f"{RED}您的参数文件(内含脚本及脚本的参数)不存在，请检查 {YELLOW}{pack_input_params_file_path()}{NC}")
+        openFile(pack_input_params_file_path())
+        return False
+    data=get_json_file_data(pack_input_params_file_path)
+    if data == None:
+        print(f"{RED}发生错误:从{YELLOW}{pack_input_params_file_path}{RED} 文件获取数据失败，请检查{NC}")
+        return False
+    
+
+
+    # 1、获取脚本文件
+    action_script_file_absPath=getRealScriptOrCommandFromData(data, pack_input_params_file_path)
+    if action_script_file_absPath == False:
         return False
 
     # print(f"{YELLOW}=======上面如果报错了，这里不应该继续执行{NC}")
@@ -81,21 +158,58 @@ def dealScriptByScriptConfig(pack_input_params_file_path):
     
     # 3、使用获得的脚本文件和参数，执行脚本命令
     # 调用脚本
-    command = ["sh", action_sript_file_absPath]
+    _, file_ext = os.path.splitext(action_script_file_absPath)
+    if file_ext == '.sh':
+        command = ["sh", action_script_file_absPath]
+    else:
+        command = [action_script_file_absPath]
+    
     for i, scriptParamMap in enumerate(scriptParamMaps):
         # print(f"{i+1}.========参数如下：{json.dumps(scriptParamMap, indent=2)}{NC}")
-        try:
-            param = scriptParamMap["resultForParam"]
-        except KeyError:
-            raise KeyError(f"resultForParam 参数未设置，请检查配置文件！")
         value = scriptParamMap["resultValue"]
-        command += [f"{param}", value]
 
-    resultCode=callScriptCommond(command, action_sript_file_absPath, verbose=True)
+        if 'resultForParam' not in scriptParamMap:
+            command += [value]
+        else:
+            try:
+                param = scriptParamMap["resultForParam"]
+                if param == "null":
+                    command += [value]
+                else:
+                    command += [f"{param}", value]
+            except KeyError:
+                raise KeyError(f"resultForParam 参数未设置，请检查配置文件！")
+        
+
+    resultCode=callScriptCommond(command, action_script_file_absPath, verbose=True)
     if resultCode==False:
         return False
     else:
         return True
+    
+# 1、从 fileData 中获取展示可选择的操作，并进行选择输出
+def getRealScriptOrCommandFromData(data, pack_input_params_file_path):
+    if 'action_sript_bin' in data:
+        action_sript_bin=data['action_sript_bin']
+        # print(f"这是本地命令{action_sript_bin}")
+        # check_command(action_sript_bin) # TODO不正确
+        return action_sript_bin
+    
+    
+    # print(f"这不是本地命令，所以将继续寻找实际的脚本")
+    if 'action_sript_file_rel_this_dir' not in data:
+        print(f"{RED}发生错误:{pack_input_params_file_path} 文件中不存在'action_sript_file_rel_this_dir'键，请检查{NC}")
+        return False
+    action_sript_file_rel_this_dir=data['action_sript_file_rel_this_dir']
+    # 获取脚本的实际绝对路径
+    action_script_file_absPath=getAbsPathByFileRelativePath(pack_input_params_file_path, action_sript_file_rel_this_dir)
+    if not os.path.isfile(action_script_file_absPath):
+        print(f"{RED}发生错误:脚本文件不存在，原因为计算出来的相对目录不存在。请检查您的 {YELLOW}{pack_input_params_file_path}{NC} 中的 {BLUE}action_sript_file_rel_this_dir{RED} 属性值 {BLUE}{action_sript_file_rel_this_dir}{RED} 是否正确。（其会导致计算相对于 {YELLOW}{pack_input_params_file_path}{RED} 的该属性值路径 {BLUE}{action_script_file_absPath}{RED} 不存在)。{NC}")
+        openFile(pack_input_params_file_path)
+        # print(f"{RED}=======这里报错了，应该要退出方法{NC}")
+        return False
+    
+    return action_script_file_absPath
     
 
 # 1、从 fileData 中获取展示可选择的操作，并进行选择输出
@@ -115,23 +229,27 @@ def chooseFullActionMapByInputFromData(data, pack_input_params_file_path):
         print(f"{RED}发生错误:{pack_input_params_file_path} 文件中不存在'actions_envs_des'键，请检查{NC}")
         openFile(pack_input_params_file_path)
         return None
-    while True:
-        env_input = input("请选择%s编号（退出q/Q）：" % (envDes))
-        if env_input == "q" or env_input == "Q":
-            exit()
+    
+    if len(actions_envs) == 1:
+        chooseEnvMap = actions_envs[0]
+    else:
+        while True:
+            env_input = input("请选择%s编号（退出q/Q）：" % (envDes))
+            if env_input == "q" or env_input == "Q":
+                exit()
 
-        if not env_input.isnumeric():
-            print("输入的不是一个数字，请重新输入！")
-            continue
+            if not env_input.isnumeric():
+                print("输入的不是一个数字，请重新输入！")
+                continue
 
-        index = int(env_input) - 1
-        if index >= len(actions_envs):
-            continue
-        else:
-            chooseEnvMap = actions_envs[index]
-            chooseEnvMapName = chooseEnvMap["env_name"]
-            break
+            index = int(env_input) - 1
+            if index >= len(actions_envs):
+                continue
+            else:
+                chooseEnvMap = actions_envs[index]
+                break
 
+    chooseEnvMapName = chooseEnvMap["env_name"]
     print(f"您选择的{envDes}：{YELLOW}{chooseEnvMapName}{NC}")
     return chooseEnvMap
 
@@ -168,6 +286,9 @@ def _getScriptParamFromFileDataByOperate(data, operate, pack_input_params_file_p
     elif operateActionType == "choose": # 选择值
         print(f"")
         return __getChooseParamMapFromFile(operateHomeMap)
+    elif operateActionType == "custom": # 选择值
+        print(f"")
+        return __getInputParamMapFromFile(operateHomeMap)
     else: # 输入值
         print(f"")
         return __getInputParamMapFromFile(operateHomeMap)
@@ -215,29 +336,33 @@ def __getChooseParamMapFromFile(operateHomeMap):
         else:
             print(f"未找到id为{YELLOW}{chooseName}的用户{NC}")
 
-    while True:
-        person_input = input("请%s%s编号（自定义请填0,退出q/Q）：" % (operateActionTypeDes, operateDes))
-        if person_input == "q" or person_input == "Q":
-            exit()
-
-        if not person_input.isnumeric():
-            print("输入的不是一个数字，请重新输入！")
-            continue
-
-        if person_input == "0":
-            personName=input("请输入%s名（退出q/Q）：" % (operateDes))
-            if personName == "q" or personName == "Q":
+    if len(operateChooseMaps) == 1:
+        chooseValueMap = operateChooseMaps[0]
+    else:
+        while True:
+            person_input = input("请%s%s编号（自定义请填0,退出q/Q）：" % (operateActionTypeDes, operateDes))
+            if person_input == "q" or person_input == "Q":
                 exit()
-            break
 
-        index = int(person_input) - 1
-        if index >= len(operateChooseMaps):
-            continue
-        else:
-            chooseValueMap = operateChooseMaps[index]
-            personName = chooseValueMap["name"]
-            break
+            if not person_input.isnumeric():
+                print("输入的不是一个数字，请重新输入！")
+                continue
 
+            if person_input == "0":
+                personName=input("请输入%s名（退出q/Q）：" % (operateDes))
+                if personName == "q" or personName == "Q":
+                    exit()
+                break
+
+            index = int(person_input) - 1
+            if index >= len(operateChooseMaps):
+                continue
+            else:
+                chooseValueMap = operateChooseMaps[index]
+                break
+
+
+    personName = chooseValueMap["name"]
     print(f"您{operateActionTypeDes}的{operateDes}：{YELLOW}{personName}{NC}")
 
 
@@ -256,11 +381,7 @@ def __getInputParamMapFromFile(operateHomeMap):
     operateActionTypeDes="输入"
     operateDes = operateHomeMap['des']
     while True:
-        person_input = input("请%s%s名（退出q/Q）：" % (operateActionTypeDes, operateDes))
-        if person_input == "q" or person_input == "Q":
-            exit()
-
-        personName=input("请输入%s名（退出q/Q）：" % (operateDes))
+        personName = input("请%s%s名（退出q/Q）：" % (operateActionTypeDes, operateDes))
         if personName == "q" or personName == "Q":
             exit()
         break

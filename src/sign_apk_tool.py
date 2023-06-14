@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-02 19:22:13
+LastEditTime: 2023-06-13 15:45:52
 FilePath: sign_apk_tool.py
 Description: apk签名
 '''
@@ -86,7 +86,10 @@ def chooseVersionApk_SignThem():
     cmd = [android_sign_script_file_abspath, android_waitSignApkVersion_dir_abspath]
 
     # 调用 subprocess.run() 函数执行 shell 命令
-    print(f"{BLUE}开始签名....:《 {YELLOW}{' '.join(cmd)}{NC} 》")
+    cmdString=' '.join(cmd)
+    escaped_command = cmdString.replace("(", r"\(").replace(")", r"\)")
+    print(f"{BLUE}开始签名....:《 {YELLOW}{escaped_command}{NC} 》")
+    
     result = subprocess.run(cmd, capture_output=True, text=True)
     # 判断 shell 命令的返回值，并输出结果
     if result.returncode != 0:
