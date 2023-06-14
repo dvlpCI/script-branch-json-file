@@ -355,7 +355,7 @@ initTool() {
 }
 
 updateTool() {
-    brew update
+    brew update --verbose
     if [ $? != 0 ]; then
         echo "❌Error:更新终端，请重新执行"
         exit 1
