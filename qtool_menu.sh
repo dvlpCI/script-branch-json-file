@@ -182,10 +182,10 @@ pushGitCommitMessage() {
 }
 
 # 三、打包
-# 3.1、更改环境
+# 3.1、执行自定义的脚本
 update_project_jsonEnv_and_codeEnv_action() {
-    # echo "正在执行命令(更改环境):《 python3 \"${qtoolScriptDir_Absolute}/src/pack_input.py\" 》"
-    python3 "${qtoolScriptDir_Absolute}/src/pack_input.py"
+    # echo "正在执行命令(更改环境):《 python3 \"${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py\" 》"
+    python3 "${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py"
     checkResultCode $?
 }
 
