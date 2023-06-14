@@ -17,6 +17,11 @@
                     "name": "docWorkPlan",
                     "des": "打开《工作计划》",
                     "action": "openDocWorkPlan"
+                },
+                {
+                    "name": "docTodoBug",
+                    "des": "打开《内部待修复bug记录》",
+                    "action": "openDocTodoBug"
                 }
             ]
         },

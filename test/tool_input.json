@@ -4,7 +4,8 @@
   "website": {
     "doc_home": "http://wiki.xxx.com/zh/app/home",
     "doc_version_plan": "https://www.baidu.com",
-    "doc_work_plan": "https://www.sina.com"
+    "doc_work_plan": "https://www.sina.com",
+    "doc_todo_bug": "https://www.weibo.com"
   },
   "local_website_service": {
     "local_dir_path": "/Library/WebServer/Documents/",

@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-14 10:45:34
+ # @LastEditTime: 2023-06-14 10:56:12
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -118,6 +118,10 @@ openDocVersionPlan() {
 
 openDocWorkPlan() {
     openWebsitePage '.website.doc_work_plan'
+}
+
+openDocTodoBug() {
+    openWebsitePage '.website.doc_todo_bug'
 }
 
 # 打开指定的网页地址
