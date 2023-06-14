@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-14 10:56:12
+ # @LastEditTime: 2023-06-14 13:12:00
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -89,7 +89,7 @@ tool_menu() {
         elif [ $i = 3 ]; then
             iCatalogColor=${CYAN}
         elif [ $i = 4 ]; then
-            iCatalogColor=${PURPLE}
+            iCatalogColor=${YELLOW}
         else
             iCatalogColor=${YELLOW}
         fi
@@ -183,9 +183,15 @@ pushGitCommitMessage() {
 
 # 三、打包
 # 3.1、执行自定义的脚本
-update_project_jsonEnv_and_codeEnv_action() {
+dealScriptByCustomChoose() {
     # echo "正在执行命令(更改环境):《 python3 \"${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py\" 》"
     python3 "${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py"
+    checkResultCode $?
+}
+
+openWebsiteByCustomChoose() {
+    # echo "正在执行命令(更改环境):《 python3 \"${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py\" 》"
+    python3 "${qtoolScriptDir_Absolute}/src/openWebsiteByCustomChoose.py"
     checkResultCode $?
 }
 
@@ -303,19 +309,12 @@ evalActionByInput() {
         done
 
         if [ -n "${tCatalogOutlineMap}" ]; then
-            tCatalogOutlineActionType=$(echo "$tCatalogOutlineMap" | jq -r ".action_type")
-            if [ "${tCatalogOutlineActionType}" == "deal_script_by_config" ]; then
-                tAction_script_config_file_rel_this_file=$(echo "$tCatalogOutlineMap" | jq -r ".action_script_config_file_rel_this_file")
-                scriptFeatureConfigFilePath=$(getAbsPathByFileRelativePath "${qtool_menu_json_file_path}" "${tAction_script_config_file_rel_this_file}")
-
-                # printf "正在执行执行描述脚本功能的配置信息的文件的命令:《 ${YELLOW}python3 \"${qtoolScriptDir_Absolute}/src/dealScript_by_scriptConfig.py\" \"${scriptFeatureConfigFilePath}\" ${NC}》\n"
-                python3 "${qtoolScriptDir_Absolute}/src/dealScript_by_scriptConfig.py" "${scriptFeatureConfigFilePath}"
-                checkResultCode $?
-            else
-                tCatalogOutlineAction=$(echo "$tCatalogOutlineMap" | jq -r ".action")
-                # printf "正在执行命令：${BLUE}%s${NC}\n" "${tCatalogOutlineAction}"
-                eval "$tCatalogOutlineAction"
-            fi
+            # printf "====选中的操作项为======${RED}${tCatalogOutlineMap}${NC}\n"
+            # tCatalogOutlineActionType=$(echo "$tCatalogOutlineMap" | jq -r ".action_type")
+            
+            tCatalogOutlineAction=$(echo "$tCatalogOutlineMap" | jq -r ".action")
+            # printf "正在执行命令：${BLUE}%s${NC}\n" "${tCatalogOutlineAction}"
+            eval "$tCatalogOutlineAction"
         else
             echo "无此选项，请重新输入。"
         fi

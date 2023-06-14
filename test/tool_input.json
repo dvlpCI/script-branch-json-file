@@ -11,6 +11,40 @@
     "local_dir_path": "/Library/WebServer/Documents/",
     "local_ip_address": "http://192.168.72.202/"
   },
+  "custom": {
+    "custom_website": [
+      {
+        "id": "bugly",
+        "des": "bug相关：打开bugly",
+        "url": "https://bugly.qq.com/"
+      },
+      {
+        "id": "tingyun",
+        "des": "APM相关：打开基调听云（基调听云APP）",
+        "url": "https://www.tingyun.com/"
+      },
+      {
+        "id": "volcengine",
+        "des": "APM相关：打开火山引擎（应用性能监控全链路版--客户端监控）",
+        "url": "https://console.volcengine.com/apmplus/console/overview?monitorType=client"
+      },
+      {
+        "id": "ishumei",
+        "des": "Fraud相关：打开数美（天网-全栈式风控引擎--设备风险趋势）",
+        "url": "https://console.ishumei.com/new/tianwang/device/stat"
+      },
+      {
+        "id": "tongdun",
+        "des": "Fraud相关：打开同盾（可信设备）",
+        "url": "https://cn-portal.trustdecision.com/trustdevice/list/all"
+      },
+      {
+        "id": "cos",
+        "des": "腾讯云相关：打开腾讯云--对象存储（存储桶列表）",
+        "url": "https://console.cloud.tencent.com/cos/bucket"
+      }
+    ]
+  },
   "project_path": {
     "home_path_rel_this_dir": "../",
     "other_path_rel_home": {

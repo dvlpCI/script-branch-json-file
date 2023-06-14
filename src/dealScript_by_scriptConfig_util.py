@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-13 21:20:09
+LastEditTime: 2023-06-14 13:49:14
 FilePath: src/dealScript_by_scriptConfig_util.py
 Description: 打包-输入
 '''
@@ -65,7 +65,7 @@ def chooseCustomScriptFromFilePaths(custom_script_files_abspath, shouldCheckExis
         script_file_des = script_info_map['script_file_des']
         # des_length = sum(2 if ord(c) > 127 else 1 for c in script_file_des)  # 计算中英文字符长度
         placeHolder=""
-        print(f"{i+1}. {YELLOW}{script_file_des:<{15}}{NC} ({BLUE}{script_info_map['script_file_abspath']}{NC})\n{YELLOW}{placeHolder:<{23}}(来源于:{NC}{script_info_map['script_info_abspath']})")
+        print(f"{i+1}. {BLUE}{script_file_des:<{15}}{NC} ({BLUE}{script_info_map['script_file_abspath']}{NC})\n{YELLOW}{placeHolder:<{23}}(来源于:{NC}{script_info_map['script_info_abspath']})")
         script_info_maps.append(script_info_map)
 
     if len(script_info_maps) == 1:

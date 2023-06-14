@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
 LastEditors: dvlproad
-LastEditTime: 2023-06-13 17:28:52
+LastEditTime: 2023-06-14 12:06:57
 FilePath: /script-branch-json-file/src/env_util.py
 Description: 获取环境变量的值
 '''
@@ -11,7 +11,7 @@ import json
 import subprocess
 from base_util import openFile
 from path_util import joinFullPath_checkExsit, joinFullUrl
-from env_util import getEnvValue_params_file_data, getEnvValue_project_dir_path, getEnvValue_params_file_path
+from env_util import get_json_file_data, getEnvValue_params_file_data, getEnvValue_project_dir_path, getEnvValue_params_file_path
 
 # 定义颜色常量
 NC='\033[0m' # No Color
@@ -53,7 +53,7 @@ def getEnvValue_android_waitSignApk_map():
     else:
         return android_waitSignApk_map  
 
-# 获取环境变量的值-打包参数信息文件的存放路径
+# 获取环境变量的值-自定义的脚本信息文件
 def getEnvValue_pack_input_params_file_path(shouldCheckExist=False):
     project_home_dir_path = getEnvValue_project_dir_path()
     
@@ -71,6 +71,21 @@ def getEnvValue_pack_input_params_file_path(shouldCheckExist=False):
         pack_input_params_files_abspath.append(pack_input_params_file_abspath)
 
     return pack_input_params_files_abspath
+
+# 获取环境变量的值-自定义的website
+def getEnvValue_customWebsite():
+    tool_params_file_path = getEnvValue_params_file_path()
+    data = get_json_file_data(tool_params_file_path)
+    if data == None:
+        return None
+    
+    if "custom" not in data or "custom_website" not in data['custom']:
+        print(f"{tool_params_file_path}中不存在key为 .custom.custom_website 的值，请先检查补充")
+        openFile(tool_params_file_path)
+        return None
+    
+    customWebsites = data['custom']['custom_website']
+    return customWebsites
 
 # 获取环境变量的值-android等待签名的版本文件夹
 def getEnvValue_android_waitSignApkVersions_dir_path(shouldCheckExist=False):
