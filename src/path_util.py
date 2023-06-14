@@ -1,8 +1,8 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
-LastEditors: dvlproad dvlproad@163.com
-LastEditTime: 2023-06-04 18:41:39
+LastEditors: dvlproad
+LastEditTime: 2023-06-14 23:14:52
 FilePath: /path_util.py
 Description: 路径的计算方法
 '''
@@ -26,8 +26,7 @@ def getAbsPathByFileRelativePath(file_path, rel_path):
     return joinFullPath_checkExsit(file_parent_dir_path, rel_path)
 
 
-# 路径拼接(①支持尾部及头部斜杠的处理;②支持尾部拼接../)
-def joinFullPath_checkExsit(host_dir, rel_path):
+def joinFullPath_noCheck(host_dir, rel_path):
     # 在 Unix 和 Linux 系统中，以斜杠开头的路径被视为绝对路径。所以需要去掉头部结尾的斜杠或者尾部开头的斜杠
     if host_dir.endswith("/"):
         host_dir = host_dir[:-1]
@@ -35,9 +34,28 @@ def joinFullPath_checkExsit(host_dir, rel_path):
         rel_path = rel_path[1:]
     full_path = os.path.join(host_dir, rel_path)
     full_abspath = os.path.abspath(full_path)
-
-    # print(f"full_abspath: {YELLOW}{full_abspath}{NC}")
     return full_abspath
+
+
+# 路径拼接(①支持尾部及头部斜杠的处理;②支持尾部拼接../)
+def joinFullPath_checkExsit(host_dir, rel_path, createIfNoExsit=False):
+    # 在 Unix 和 Linux 系统中，以斜杠开头的路径被视为绝对路径。所以需要去掉头部结尾的斜杠或者尾部开头的斜杠
+    if host_dir.endswith("/"):
+        host_dir = host_dir[:-1]
+    if rel_path.startswith("/"):
+        rel_path = rel_path[1:]
+    full_path = os.path.join(host_dir, rel_path)
+    full_abspath = os.path.abspath(full_path)
+    if os.path.exists(full_abspath):
+        return full_abspath
+    else:
+        if createIfNoExsit==True:
+            os.makedirs(full_abspath)
+            return full_abspath
+        else:
+            print(f"{RED}路径拼接错误: 拼接 {BLUE}{host_dir} {RED}和 {BLUE}{rel_path} {RED}得到的 '{YELLOW}{full_abspath}{RED}' does not exist.{NC}")
+            return None
+        
 
 
 # Url路径拼接

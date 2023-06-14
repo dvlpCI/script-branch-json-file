@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-01 21:16:24
+LastEditTime: 2023-06-14 21:24:14
 FilePath: git_project_choose.py
 Description: 分支Json文件的信息更新
 '''
@@ -34,7 +34,8 @@ def choose_git_project_dir_path():
         return None
     # print("文件路径123：", jenkins_parent_dir_path)
 
-    selected_folder_abspath=show_and_choose_folder_in_dir(jenkins_parent_dir_path)
+    selected_folder_map=show_and_choose_folder_in_dir(jenkins_parent_dir_path)
+    selected_folder_abspath=selected_folder_map['path']
     return selected_folder_abspath
 
     
