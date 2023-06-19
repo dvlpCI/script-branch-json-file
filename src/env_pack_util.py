@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
 LastEditors: dvlproad
-LastEditTime: 2023-06-15 01:04:43
+LastEditTime: 2023-06-19 18:27:19
 FilePath: /script-branch-json-file/src/env_util.py
 Description: 获取环境变量的值
 '''
@@ -179,7 +179,7 @@ def getEnvValue_android_resultSignApkWebsite_backup_forVersion(selectedSignApkVe
     return android_resultSignApkVersion_dir_backup_absUrl
 
 
-# 获取环境变量的值-签名脚本文件的存放路径
+# 获取环境变量的值-签名脚本文件的存放路径、签名脚本文件可使用的签名配置信息存放路径
 def getEnvValue_android_sign_script_file_path(shouldCheckExist=False):
     project_home_dir_path = getEnvValue_project_dir_path()
     
@@ -187,34 +187,21 @@ def getEnvValue_android_sign_script_file_path(shouldCheckExist=False):
     android_sign_script_file_path_relhome = android_signScript_map['android_sign_script_file_RELATIVE_HOME']
     android_sign_script_file_abspath = joinFullPath_checkExsit(project_home_dir_path, android_sign_script_file_path_relhome)
     # print(f"android_sign_script_file_abspath:{RED}{android_sign_script_file_abspath} {NC}")
-    if shouldCheckExist==False:
-        return android_sign_script_file_abspath
-    else:
-        if not os.path.exists(android_sign_script_file_abspath):
-            print(f"android签名使用的脚本文件:{RED}{android_sign_script_file_abspath}{NC}不存在，请检查")
-            return None
-        else:
-            # print(f"恭喜：android签名使用的脚本文件:{RED}{android_sign_script_file_abspath}{NC}存在")
-            return android_sign_script_file_abspath
-        
-# 获取环境变量的值-签名脚本文件的使用的签名配置信息存放路径
-def getEnvValue_android_sign_script_params_file_path(shouldCheckExist=False):
-    project_home_dir_path = getEnvValue_project_dir_path()
-    
-    data = getEnvValue_params_file_data()
-    if data == None:
+    if shouldCheckExist==True and not os.path.exists(android_sign_script_file_abspath):
+        print(f"android签名使用的脚本文件:{RED}{android_sign_script_file_abspath}{NC}不存在，请检查")
         return None
-    
-    android_signScript_map=getEnvValue_android_signScript_map()
-    android_sign_script_params_file_path_relhome = android_signScript_map['keystore_file_RELATIVE_HOME']
-    android_sign_script_params_file_abspath = joinFullPath_checkExsit(project_home_dir_path, android_sign_script_params_file_path_relhome)
-    # print(f"android_sign_script_params_file_abspath:{RED}{android_sign_script_params_file_abspath} {NC}")
-    if shouldCheckExist==False:
-        return android_sign_script_params_file_abspath
-    else:
-        if not os.path.exists(android_sign_script_params_file_abspath):
-            print(f"android签名脚本使用的配置信息文件:{RED}{android_sign_script_params_file_abspath}{NC}不存在，请检查")
+
+    android_sign_properties_files_abspath=[]   
+    android_sign_properties_files_path_relhome = android_signScript_map['android_sign_properties_files_RELATIVE_HOME']
+    for i, android_sign_properties_file_path_relhome in enumerate(android_sign_properties_files_path_relhome):
+        android_sign_properties_file_abspath = joinFullPath_checkExsit(project_home_dir_path, android_sign_properties_file_path_relhome)
+        # print(f"android_sign_properties_file_abspath:{RED}{android_sign_properties_file_abspath} {NC}")
+        if shouldCheckExist==True and not os.path.exists(android_sign_properties_file_abspath):
+            print(f"android签名使用的脚本文件:{RED}{android_sign_properties_file_abspath}{NC}不存在，请检查")
             return None
-        else:
-            # print(f"恭喜：android签名脚本使用的配置信息文件:{RED}{android_sign_script_params_file_abspath}{NC}存在")
-            return android_sign_script_params_file_abspath
+        android_sign_properties_files_abspath.append(android_sign_properties_file_abspath)
+    
+    return {
+        "sign_script_file_abspath": android_sign_script_file_abspath,
+        "sign_properties_file_abspaths": android_sign_properties_files_abspath,
+    }

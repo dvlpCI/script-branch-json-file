@@ -68,6 +68,10 @@
       },
       "android_sign_script": {
         "android_sign_script_file_RELATIVE_HOME": "./bulidScript/sign_apk.sh",
+        "android_sign_properties_files_RELATIVE_HOME": [
+          "./bulidScript/sign_apk.properties",
+          "./bulidScript/sign_apk.properties"
+        ],
         "keystore_file_RELATIVE_HOME": "./wish/android/bojue.jks",
         "keystore_password": "bojue123456",
         "key_alias": "key0",

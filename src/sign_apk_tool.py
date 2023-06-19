@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-15 00:53:11
+LastEditTime: 2023-06-19 18:47:17
 FilePath: sign_apk_tool.py
 Description: apk签名
 '''
@@ -10,9 +10,10 @@ Description: apk签名
 import os
 import subprocess
 
-from env_pack_util import getEnvValue_android_waitSignApkVersions_dir_path, getEnvValue_android_waitSignApkDirPath_forVersion, getEnvValue_android_resultSignApkDirPath_forVersion, getEnvValue_android_sign_script_file_path, getEnvValue_android_resultSignApkDirPath_backup_forVersion, getEnvValue_android_resultSignApkWebsite_backup_forVersion, getEnvValue_android_sign_script_params_file_path
-from path_choose_util import show_and_choose_folder_in_dir, show_and_choose_file_in_dir, copy_special_file_inDir_toDir
+from env_pack_util import getEnvValue_android_waitSignApkVersions_dir_path, getEnvValue_android_waitSignApkDirPath_forVersion, getEnvValue_android_resultSignApkDirPath_forVersion, getEnvValue_android_sign_script_file_path, getEnvValue_android_resultSignApkDirPath_backup_forVersion, getEnvValue_android_resultSignApkWebsite_backup_forVersion
+from path_choose_util import show_and_choose_folder_in_dir, show_and_choose_file_in_dir, copy_special_file_inDir_toDir, show_and_choose_files_byNo
 from path_util import joinFullPath_noCheck
+from env_util import get_json_file_data
 
 # 定义颜色常量
 NC='\033[0m' # No Color
@@ -79,6 +80,21 @@ def checkShouldContinue_ApkVersion_dir(android_waitSignApkVersion_dir_abspath, a
             print(f"字符串{RED}{shouldContinue}{NC}不符合要求，请重新输入[继续y/退出n]\n")
     return 0
 
+def checkShouldContinue_signProperties(signProperties_file_path):
+    print (f"")
+    print (f"{BLUE}{signProperties_file_path}{NC}")
+    print (f"{BLUE}{get_json_file_data(signProperties_file_path)}{NC}")
+    while True:
+        shouldContinue = input(f"签名apk使用的签名信息如上。请确认是否继续进行签名.[继续y/退出n] : ")
+        if shouldContinue.lower() == 'y':
+            break
+        elif shouldContinue.lower() == 'n':
+            print(f"放弃操作，将退出")
+            exit(2)
+        else:
+            print(f"字符串{RED}{shouldContinue}{NC}不符合要求，请重新输入[继续y/退出n]\n")
+    return 0
+
 # 请选择操作类型
 def chooseVersionApk_SignThem(): 
     # 版本目录的获取及版本文件夹的罗列
@@ -96,12 +112,19 @@ def chooseVersionApk_SignThem():
     
     # 版本apk目录下的所有apk的签名
     print(f"")
-    android_sign_script_file_abspath=getEnvValue_android_sign_script_file_path()
-    android_sign_scriptParams_file_abspath=getEnvValue_android_sign_script_params_file_path()
+
+    android_sign_file_map=getEnvValue_android_sign_script_file_path()
+    android_sign_script_file_abspath=android_sign_file_map["sign_script_file_abspath"]
+    android_sign_properties_file_abspaths=android_sign_file_map["sign_properties_file_abspaths"]
+    android_sign_properties_file_abspath=show_and_choose_files_byNo(android_sign_properties_file_abspaths)
+    if checkShouldContinue_signProperties(android_sign_properties_file_abspath) == 1:
+        return None
+    
     # 调用shell脚本，并传递文件夹参数
     # 构造 shell 命令和参数列表
 
-    cmd = [android_sign_script_file_abspath, android_waitSignApkVersion_dir_abspath, android_apkSignResult_dir_abspath]
+    # 一个脚本文件 + 三个参数分别为： 签名脚本、签名脚本使用的签名信息、要签名的文件夹目录、签名结果输出的文件夹目录里
+    cmd = [android_sign_script_file_abspath, android_sign_properties_file_abspath, android_waitSignApkVersion_dir_abspath, android_apkSignResult_dir_abspath]
 
     # 调用 subprocess.run() 函数执行 shell 命令
     cmdString=' '.join(cmd)

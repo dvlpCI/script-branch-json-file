@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-14 22:04:04
+LastEditTime: 2023-06-19 18:34:36
 FilePath: path_choose_util.py
 Description: 指定文件夹下的 文件 或 文件夹 的选择
 '''
@@ -109,6 +109,37 @@ def show_and_choose_file_in_dir(searchInDir, fileExtension, GiveupChoose=False):
             # print(f"{user_input} 文件存在，路径为：{last_branchs_info_file_path}")
             break
     return last_branchs_info_file_path
+
+
+# 显示指定所有路径，并通过编号选择路径
+def show_and_choose_files_byNo(file_abspaths):
+    if len(file_abspaths) == 1:
+        return file_abspaths[0]
+    
+    # 打印文件列表
+    print(f"")
+    print(f"文件列表：共{YELLOW}{len(file_abspaths)}{NC}个")
+    for i, file_abspath in enumerate(file_abspaths):
+        print(f"{i+1}. {file_abspath}")
+
+    while True:
+        person_input = input("请输入想要操作的文件路径的编号（输入Q或q退出）：")
+        if person_input.lower() == 'q':
+            exit(2)
+            break
+
+        if not person_input.isnumeric():
+            print("输入的不是一个数字，请重新输入！")
+            continue
+        
+        index = int(person_input) - 1
+        if index >= len(file_abspaths):
+            print("输入错误，请重新输入想要操作的文件路径的编号（输入Q或q退出）：")
+            continue
+        else:
+            selected_file_abspath = file_abspaths[index]
+            break
+    return selected_file_abspath
 
 
 # 拷贝指定文件夹中，符合指定后缀格式的文件，到指定的备份文件夹中
