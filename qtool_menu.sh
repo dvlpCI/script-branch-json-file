@@ -252,7 +252,7 @@ checkResultCode() {
     else
         printf "${RED}很遗憾😭:您选择${YELLOW}%s${RED}操作执行未执行/失败${NC}\n" "$option|$tCatalogOutlineName $tCatalogOutlineDes"
     fi
-    valid_option=ture
+    # valid_option=ture # 设为ture后，执行 evalActionByInput 时候，可以退出 while 循环
 }
 
 

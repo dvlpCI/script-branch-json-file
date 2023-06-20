@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-19 18:34:36
+LastEditTime: 2023-06-19 19:25:16
 FilePath: path_choose_util.py
 Description: 指定文件夹下的 文件 或 文件夹 的选择
 '''
@@ -30,6 +30,15 @@ def show_and_choose_folder_in_dir(searchInDir, supportCustom=True):
     folder_names = [dir for dir in os.listdir(
         searchInDir) if os.path.isdir(os.path.join(searchInDir, dir))]
 
+    if len(folder_names) == 0:
+        print (f"{YELLOW}温馨提示：您的${searchInDir} 是空文件夹，请检查，且将自动进入自定义文件夹路径操作{NC}")
+        git_project_folder_path = input_folder_path("请输入想要操作的文件夹路径（输入Q或q退出）：")
+        isCustom = True
+        return {
+            "path": git_project_folder_path,
+            "isCustom": isCustom,
+        }
+    
     # 打印第一层的文件夹列表
     print(f"")
     print(f"文件夹列表：{YELLOW}{searchInDir}{NC}目录下")

@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2022-02-23 17:13:13
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-07 10:58:29
+ # @LastEditTime: 2023-06-20 10:12:14
  # @Description: bugly符号表的上传脚本(根据bugly参数)
 ### 
 # 有可能需要修改的变量
@@ -34,12 +34,13 @@ exit_script() { # 退出脚本的方法，省去当某个步骤失败后，还�
 }
 
 # shell 参数具名化
-show_usage="args: [-appBuglyConfigF, -appVersionInfoF, -appDSYMF]\
-                                  [-app-bugly-config-file=, --app-version-info-file=, --app-dsym-file=]"
+show_usage="args: [-javaHome, -appBuglyConfigF, -appBuglyScriptF, -appVersionInfoF, -appDSYMF]\
+                                  [--java-home-dir-path=, -app-bugly-config-file=, --app-bugly-script-file=, --app-version-info-file=, --app-dsym-file=]"
 
 while [ -n "$1" ]
 do
         case "$1" in
+                -javaHome|--java-home-dir-path) java_home_dir_path=$2; shift 2;; # 可空，为空时候使用默认的java环境变量
                 -appBuglyConfigF|--app-bugly-config-file) bugly_config_file_path=$2; shift 2;;
                 -appBuglyScriptF|--app-bugly-script-file) buglyqq_upload_symbol=$2; shift 2;;
                 -appVersionInfoF|--app-version-info-file) app_info_abspath=$2; shift 2;;
@@ -185,12 +186,23 @@ echo "------------------- 准备开始进行dsym符号表上传到'bugly'上 ---
 #     exit_script
 # fi
 
-
+# 检查Java版本是否为1.8
+if [ -z "$java_home_dir_path" ]; then
+    JavaBin=java
+else
+    JavaBin=$java_home_dir_path/bin/java
+fi
+if $JavaBin -version 2>&1 | grep -q "1.8"; then
+    echo "Java version is 1.8."
+else
+    printf "${RED}Error: 执行《 $JavaBin -version 》得到当前使用的Java版本不是1.8，而bugly的上传需要1.8的环境(打包安卓需要java11)，所以无法继续进行上传操作，将退出上传，${CYAN}可通过传递 -javaHome 参数修改使用的java版本 ${NC}\n"
+    exit 1
+fi
 
 # echo "开始执行以下dSYM命令为：《sh ${DSYMUPLOAD_sh_FILE_PATH} ${BUGLY_APP_ID} ${BUGLY_APP_KEY} ${APP_BUNDLE_IDENTIFIER} ${BUGLY_APP_VERSION} ${DWARF_DSYM_FOLDER_PATH} ${SYMBOL_OUTPUT_dir_abspath} ${UPLOAD_DSYM_ONLY}》"
 # sh ${DSYMUPLOAD_sh_FILE_PATH} ${BUGLY_APP_ID} ${BUGLY_APP_KEY} ${APP_BUNDLE_IDENTIFIER} ${BUGLY_APP_VERSION} ${DWARF_DSYM_FOLDER_PATH} ${SYMBOL_OUTPUT_dir_abspath} ${UPLOAD_DSYM_ONLY}
-echo "开始执行以下dSYM命令为：《java -jar ${buglyqq_upload_symbol} -appid ${BUGLY_APP_ID} -appkey ${BUGLY_APP_KEY} -bundleid ${APP_BUNDLE_IDENTIFIER} -version ${App_Version} -platform ${App_Platform} -inputSymbol ${DWARF_DSYM_FOLDER_PATH} 》"
-java -jar ${buglyqq_upload_symbol} -appid ${BUGLY_APP_ID} \
+printf "${BLUE}开始执行以下dSYM命令为：《 ${YELLOW}$JavaBin -jar ${buglyqq_upload_symbol} -appid ${BUGLY_APP_ID} -appkey ${BUGLY_APP_KEY} -bundleid ${APP_BUNDLE_IDENTIFIER} -version ${App_Version} -platform ${App_Platform} -inputSymbol ${DWARF_DSYM_FOLDER_PATH} ${BLUE}》${NC}\n"
+$JavaBin -jar ${buglyqq_upload_symbol} -appid ${BUGLY_APP_ID} \
                                     -appkey ${BUGLY_APP_KEY} \
                                     -bundleid ${APP_BUNDLE_IDENTIFIER} \
                                     -version ${App_Version} \
