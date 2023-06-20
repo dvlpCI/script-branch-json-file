@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-02 16:03:44
+LastEditTime: 2023-06-20 13:50:16
 FilePath: /bulidScript/branch_create/branchInfo_create.py
 Description: 分支JSON文件的创建-输入
 '''
@@ -141,8 +141,11 @@ def inputOutline():
     while True:
         try:
             # 尝试使用 UTF-8 编码解码用户输入
-            branchDes = input("请输入分支描述：") or "null"
-            break  # 如果解码成功，则跳出循环
+            branchDes = input("请输入分支描述(若要退出请输入Q|q) ：") or "null"
+            if branchDes.lower() == 'q':
+                exit(2)
+            else:
+                break  # 如果解码成功，则跳出循环
         except UnicodeDecodeError:
             print("输入的编码不是 UTF-8，请重新输入。")
     print("输入的分支描述：\033[1;31m{}\033[0m\n".format(branchDes))

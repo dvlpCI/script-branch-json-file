@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-05-23 20:44:48
+LastEditTime: 2023-06-20 13:48:49
 FilePath: /bulidScript/branch_create/branchInfo_create.py
 Description: 分支JSON文件的创建-python
 '''
@@ -13,7 +13,7 @@ import subprocess
 from datetime import datetime
 import re
 
-from path_util import joinFullPath_checkExsit
+from path_util import joinFullPath_noCheck
 from env_util import getEnvValue_project_dir_path, getEnvValue_branch_json_file_dir_path
 from git_util import get_currentBranchFullName
 from branchJsonFile_input import inputOutline, chooseAnswer, chooseTester
@@ -57,7 +57,7 @@ def create_branch_json_file():
     # print("分支类型 = {}, 分支简名 = {}".format(branchType, branchShortName))
     jsonFileName = f"{branchType}_{branchShortName}.json"
 
-    file_path = joinFullPath_checkExsit(branch_json_file_dir_path, jsonFileName)
+    file_path = joinFullPath_noCheck(branch_json_file_dir_path, jsonFileName)
     # print("等下要在以下路径创建的json文件：\033[1;31m{}\033[0m\n".format(file_path))
 
     create(branchType, branchShortName, file_path)
