@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-24 19:18:57
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-20 14:17:59
+ # @LastEditTime: 2023-06-20 20:11:33
  # @Description: 签名apk，支持批量签名(需要三个参数，分别为 ①签名使用的properties信息文件路径、②要签名的apk文件或者apk所在的目录、③签名结果要存放的文件夹目录 )
 ### 
 
@@ -173,10 +173,7 @@ fi
 if [ -d "$input_path" ]; then
   echo "$input_path 是一个目录"
   # 构建APK文件夹的绝对路径
-  apk_folder_abspath="$(
-    cd "$(dirname "$apk_folder")"
-    pwd
-  )/$(basename "$apk_folder")"
+  apk_folder_abspath="$input_path"
   # 使用find命令找到所有以.apk结尾的文件并循环处理
   # find命令默认情况下会递归地遍历指定目录下的所有子目录。如果您不希望查找子目录，可以使用-maxdepth选项限制find的搜索深度。
   find "$apk_folder_abspath" -maxdepth 1 -type f -name "*.apk" | while read apk_file; do

@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-19 18:47:17
+LastEditTime: 2023-06-20 20:38:18
 FilePath: sign_apk_tool.py
 Description: apk签名
 '''
@@ -14,6 +14,7 @@ from env_pack_util import getEnvValue_android_waitSignApkVersions_dir_path, getE
 from path_choose_util import show_and_choose_folder_in_dir, show_and_choose_file_in_dir, copy_special_file_inDir_toDir, show_and_choose_files_byNo
 from path_util import joinFullPath_noCheck
 from env_util import get_json_file_data
+from common_input import CustomPathType
 
 # 定义颜色常量
 NC='\033[0m' # No Color
@@ -26,24 +27,31 @@ CYAN='\033[0;36m'
 
 
 # 选择要加固的apk的版本文件夹
-def choose_SignApkVersion_dir_path():
+def choose_SignApkVersion_dirOrFile_path():
     waitSignApkVersions_dir_path=getEnvValue_android_waitSignApkVersions_dir_path(shouldCheckExist=True)
     if waitSignApkVersions_dir_path == None:
         return None
     # print(f"待加固的apk所有版本的所在目录路径：{RED}{waitSignApkVersions_dir_path}{NC}")
 
-    selected_folder_map=show_and_choose_folder_in_dir(waitSignApkVersions_dir_path)
-    selected_folder_abspath=selected_folder_map['path']
+    selected_folder_map=show_and_choose_folder_in_dir(waitSignApkVersions_dir_path, customPathType=CustomPathType.BOTH)
+        
     selected_folder_isCustom=selected_folder_map['isCustom']
     if selected_folder_isCustom==True:
-        selected_folder_map['apk_waitSignDir_abspath']=selected_folder_abspath
+        selected_folder_map['apk_waitSign_DirOrFile_abspath']=selected_folder_map['path']
+
+        selected_path=selected_folder_map['path']
+        if os.path.isdir(selected_path):
+            selected_folder_abspath=selected_path
+        else:
+            selected_folder_abspath= os.path.dirname(selected_path)
         selected_folder_map['apk_signResult_dir_abspath']=joinFullPath_noCheck(selected_folder_abspath, "signed")
         return selected_folder_map
-   
+    
+    selected_folder_abspath=selected_folder_map['path'] # 不是自定义的时候，肯定是文件夹，所以不用再多余判断
     android_waitSignApkVersion_dir_abspath=getEnvValue_android_waitSignApkDirPath_forVersion(selected_folder_abspath)
     if android_waitSignApkVersion_dir_abspath == None:
         return None
-    selected_folder_map['apk_waitSignDir_abspath']=android_waitSignApkVersion_dir_abspath
+    selected_folder_map['apk_waitSign_DirOrFile_abspath']=android_waitSignApkVersion_dir_abspath
 
 
     android_apkSignResult_dir_abspath=getEnvValue_android_resultSignApkDirPath_forVersion(selected_folder_abspath)
@@ -65,12 +73,16 @@ def choose_SignApkVersion_dir_path():
 #     with open(file_path, 'w') as f:
 #         json.dump(data, f, indent=2, ensure_ascii=False)
         
-def checkShouldContinue_ApkVersion_dir(android_waitSignApkVersion_dir_abspath, android_apkSignResult_dir_abspath):
-    while True:
-        showResultCode=show_and_choose_file_in_dir(android_waitSignApkVersion_dir_abspath, '.apk', GiveupChoose=True)
+def checkShouldContinue_ApkVersion_dir(android_waitSign_DirOrFile_abspath, android_apkSignResult_dir_abspath):
+    if os.path.isdir(android_waitSign_DirOrFile_abspath):
+        showResultCode=show_and_choose_file_in_dir(android_waitSign_DirOrFile_abspath, '.apk', GiveupChoose=True)
         if showResultCode == None:
             exit(2)
-        shouldContinue = input(f"等待签名的apk文件目录如上。签名结果会保存到 {BLUE}{android_apkSignResult_dir_abspath} {NC}。请确认是否继续进行签名.[继续y/退出n] : ")
+    else:
+        print(f"{android_waitSign_DirOrFile_abspath}")
+
+    while True:
+        shouldContinue = input(f"等待签名的apk文件/目录如上。签名结果会保存到 {BLUE}{android_apkSignResult_dir_abspath} {NC}。请确认是否继续进行签名.[继续y/退出n] : ")
         if shouldContinue.lower() == 'y':
             break
         elif shouldContinue.lower() == 'n':
@@ -98,16 +110,17 @@ def checkShouldContinue_signProperties(signProperties_file_path):
 # 请选择操作类型
 def chooseVersionApk_SignThem(): 
     # 版本目录的获取及版本文件夹的罗列
-    selected_folder_map=choose_SignApkVersion_dir_path()
+    selected_folder_map=choose_SignApkVersion_dirOrFile_path()
     if selected_folder_map == None:
         # print(f"selected_folder_map={RED}{selected_folder_map}{NC}不符合要求\n")
         return None
     
     # 版本apk目录的获取及apk文件罗列
     signApkVersion_dir_path=selected_folder_map['path']
-    android_waitSignApkVersion_dir_abspath=selected_folder_map['apk_waitSignDir_abspath']
     android_apkSignResult_dir_abspath=selected_folder_map['apk_signResult_dir_abspath']
-    if checkShouldContinue_ApkVersion_dir(android_waitSignApkVersion_dir_abspath, android_apkSignResult_dir_abspath) == 1:
+
+    android_waitSign_DirOrFile_abspath=selected_folder_map['apk_waitSign_DirOrFile_abspath']
+    if checkShouldContinue_ApkVersion_dir(android_waitSign_DirOrFile_abspath, android_apkSignResult_dir_abspath) == 1:
         return None
     
     # 版本apk目录下的所有apk的签名
@@ -124,7 +137,10 @@ def chooseVersionApk_SignThem():
     # 构造 shell 命令和参数列表
 
     # 一个脚本文件 + 三个参数分别为： 签名脚本、签名脚本使用的签名信息、要签名的文件夹目录、签名结果输出的文件夹目录里
-    cmd = [android_sign_script_file_abspath, android_sign_properties_file_abspath, android_waitSignApkVersion_dir_abspath, android_apkSignResult_dir_abspath]
+    # if not os.path.exists(android_apkSignResult_dir_abspath): # 不用检查路径，签名时候脚本内部自动生成
+    #     print(f"{RED}Error:android签名结束的apk存放的文件夹:{YELLOW}{android_apkSignResult_dir_abspath} {RED}不存在，请检查{NC}")
+    #     exit(1)
+    cmd = [android_sign_script_file_abspath, android_sign_properties_file_abspath, android_waitSign_DirOrFile_abspath, android_apkSignResult_dir_abspath]
 
     # 调用 subprocess.run() 函数执行 shell 命令
     cmdString=' '.join(cmd)
@@ -141,9 +157,6 @@ def chooseVersionApk_SignThem():
     else:
         print(f"{BLUE}签名结果如下: {result.stdout.strip()}")
     
-    if not os.path.exists(android_apkSignResult_dir_abspath):
-        print(f"{RED}Error:android签名结束的apk存放的文件夹:{YELLOW}{android_apkSignResult_dir_abspath} {RED}不存在，请检查{NC}")
-        exit(1)
     print(f"{GREEN}恭喜:签名成功，签名结果存在的文件夹(已为你自动打开)为 {YELLOW}{android_apkSignResult_dir_abspath}{NC}")
 
     # 在 macOS 或 Linux 上打开 file_path 文件。

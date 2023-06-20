@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-19 19:25:16
+LastEditTime: 2023-06-20 20:00:23
 FilePath: path_choose_util.py
 Description: 指定文件夹下的 文件 或 文件夹 的选择
 '''
@@ -11,7 +11,7 @@ import os
 import shutil
 import re
 from path_util import joinFullPath_checkExsit
-from common_input import input_folder_path
+from common_input import input_custom_path, CustomPathType
 
 
 # 定义颜色常量
@@ -25,14 +25,23 @@ CYAN = '\033[0;36m'
 
 
 # 显示指定文件夹下的所有文件夹，并在选择后输出
-def show_and_choose_folder_in_dir(searchInDir, supportCustom=True):
+def show_and_choose_folder_in_dir(searchInDir, customPathType=CustomPathType.NONE):
+    if customPathType ==CustomPathType.FOLDER:
+        supportCustomString="文件夹路径"
+    elif customPathType ==CustomPathType.FILE:
+        supportCustomString="文件路径"
+    elif customPathType ==CustomPathType.BOTH:
+        supportCustomString="文件夹路径或者文件路径"
+    else:
+        supportCustomString="未知项路径"
+
     # 获取第一层文件夹名，如果是文件则不需要
     folder_names = [dir for dir in os.listdir(
         searchInDir) if os.path.isdir(os.path.join(searchInDir, dir))]
 
     if len(folder_names) == 0:
         print (f"{YELLOW}温馨提示：您的${searchInDir} 是空文件夹，请检查，且将自动进入自定义文件夹路径操作{NC}")
-        git_project_folder_path = input_folder_path("请输入想要操作的文件夹路径（输入Q或q退出）：")
+        git_project_folder_path = input_custom_path(f"请输入想要操作的{supportCustomString}（输入Q或q退出）：", customPathType=customPathType)
         isCustom = True
         return {
             "path": git_project_folder_path,
@@ -45,7 +54,7 @@ def show_and_choose_folder_in_dir(searchInDir, supportCustom=True):
     for i, folder_name in enumerate(folder_names):
         print(f"{i+1}. {os.path.basename(folder_name)}")
 
-    if supportCustom == True:
+    if customPathType !=CustomPathType.NONE:
         promt = "请输入想要操作的文件夹名（输入0自定义，输入Q或q退出）："
     else:
         promt = "请输入想要操作的文件夹名（输入Q或q退出）："
@@ -54,9 +63,11 @@ def show_and_choose_folder_in_dir(searchInDir, supportCustom=True):
         if user_input.lower() == 'q':
             exit(2)
             break
-        if supportCustom == True and user_input.lower() == '0':
-            git_project_folder_path = input_folder_path(
-                "请输入想要操作的文件夹路径（输入Q或q退出）：")
+        if customPathType !=CustomPathType.NONE and user_input.lower() == '0':
+            
+
+            git_project_folder_path = input_custom_path(
+                f"请输入想要操作的{supportCustomString}（输入Q或q退出）：", customPathType=customPathType)
             isCustom = True
             break
         elif user_input not in [os.path.basename(folder_name) for folder_name in folder_names]:
