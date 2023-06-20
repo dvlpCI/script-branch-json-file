@@ -4,8 +4,8 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-04-25 14:02:57
-# @FilePath: qtool_menu.sh
+ # @LastEditTime: 2023-06-20 10:49:28
+# @FilePath: qtool_runenv.sh
 # @Description: 检查安装环境
 ###
 

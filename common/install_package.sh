@@ -4,8 +4,8 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-06 19:50:46
-# @FilePath: qtool_menu.sh
+ # @LastEditTime: 2023-06-20 10:37:23
+# @FilePath: common/install_package.sh
 # @Description: 检查安装环境
 ###
 

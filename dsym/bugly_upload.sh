@@ -2,6 +2,11 @@
 # 有可能需要修改的变量
 # 
 
+verboseStrings=("-verbose") # 输入哪些字符串算是想要日志
+if echo "${verboseStrings[@]}" | grep -wq "$1" &>/dev/null; then
+    verbose=true
+fi
+
 # 当前【shell脚本】的工作目录
 # $PWD代表获取当前路径，当cd后，$PWD也会跟着更新到新的cd路径。这个和在终端操作是一样的道理的
 CurrentDIR_Script_Absolute="$( cd "$( dirname "$0" )" && pwd )"
@@ -119,7 +124,6 @@ if [ $? != 0 ]; then
     exit_script
 fi
 
-verbose=false
 if [ "$verbose" = true ]; then
   printf "正在执行命令(获取bugly配置，并进行上传):《 sh ${CurrentDIR_Script_Absolute}/base_bugly_upload.sh -appBuglyConfigF \"${bugly_config_file_path}\" appBuglyScriptF \"${buglyqq_upload_symbol}\" -appVersionInfoF \"${app_info_abspath}\" -appDSYMF \"${DWARF_DSYM_FOLDER_PATH}\" \n》"
 fi

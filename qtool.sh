@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-20 10:08:16
+ # @LastEditTime: 2023-06-20 10:57:45
  # @Description: 
 ### 
 
@@ -26,7 +26,7 @@ local_test() {
 
 
 # 实际项目
-bjfVersion=0.5.5
+bjfVersion=0.5.6
 
 # 粗略计算，容易出现arm64芯片上的路径不对等问题
 # qtoolScriptDir_Absolute="/usr/local/Cellar/qtool/${bjfVersion}/lib"
@@ -81,8 +81,13 @@ project_dir=$(get_sysenv_project_dir)
 printf "${GREEN}温馨提示:您当前选择的操作参数使用  ${YELLOW}${project_tool_params_file_path} ${GREEN}。【其操作的项目为 ${YELLOW}${project_dir} ${GREEN}】。(如果需要变更，请输入${PURPLE}change${GREEN})${NC}\n"
 
 versionCmdStrings=("--version" "-version" "-v" "version")
-if [ -z "$1" ] || [ "$1" == "test" ]; then
-    sh ${qtoolScriptDir_Absolute}/qtool_menu.sh "${qtoolScriptDir_Absolute}"
+# verboseParam='-verbose'
+if [ -z "$1" ] ; then
+    verboseParam=$1
+    sh ${qtoolScriptDir_Absolute}/qtool_menu.sh "${qtoolScriptDir_Absolute}" "${verboseParam}"
+elif [ "$1" == "test" ]; then
+    verboseParam=$2
+    sh ${qtoolScriptDir_Absolute}/qtool_menu.sh "${qtoolScriptDir_Absolute}" "${verboseParam}"
 # elif [ "$1" == "change" ]; then
 #     sh ${qtoolScriptDir_Absolute}/qtool_change.sh "${qtoolScriptDir_Absolute}"
 elif echo "${versionCmdStrings[@]}" | grep -wq "$1" &>/dev/null; then

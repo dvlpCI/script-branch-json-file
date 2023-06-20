@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-14 13:12:00
+ # @LastEditTime: 2023-06-20 10:36:19
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -17,6 +17,10 @@ elif [ ! -d "${qtoolScriptDir_Absolute}" ]; then
     echo "qtoolScriptDir_Absolute=${qtoolScriptDir_Absolute}路径不存在，请检查"
     exit 1
 fi
+
+# verboseParam='-verbose'
+verboseParam=$2
+
 source ${qtoolScriptDir_Absolute}/base/get_system_env.sh
 
 
@@ -322,7 +326,7 @@ evalActionByInput() {
 }
 
 uploadDSYMAction() {
-    sh ${qtoolScriptDir_Absolute}/dsym/bugly_upload.sh
+    sh ${qtoolScriptDir_Absolute}/dsym/bugly_upload.sh "${verboseParam}"
     checkResultCode $?
 }
 
