@@ -3,12 +3,12 @@
  # @Author: dvlproad
  # @Date: 2023-04-24 19:18:57
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-19 19:01:20
- # @Description: 签名apk
+ # @LastEditTime: 2023-06-20 14:17:59
+ # @Description: 签名apk，支持批量签名(需要三个参数，分别为 ①签名使用的properties信息文件路径、②要签名的apk文件或者apk所在的目录、③签名结果要存放的文件夹目录 )
 ### 
 
 if [ $# -ne 3 ]; then
-  echo "Usage: 参数个数错误，请重新处理（需要三个参数：分别为 签名使用的 properties 信息文件 \ 要签名的目录 \ 签名结果存放的路径）"
+  echo "Usage: 参数个数错误，请重新处理"
   exit 1
 fi
 
@@ -19,15 +19,10 @@ sign_properties_map=$(cat ${sign_properties_file_path} | jq -r ".")
 
 
 # 获取传递的参数，即APK文件夹的相对路径
-apk_folder="$2"
+input_path="$2"
+# echo "input_path=$input_path"
 
-# echo "apk_folder=$apk_folder"
 
-# 构建APK文件夹的绝对路径
-apk_folder_abspath="$(
-  cd "$(dirname "$apk_folder")"
-  pwd
-)/$(basename "$apk_folder")"
 
 # 创建signed文件夹用于存放签名后的APK文件
 apkSignResult_dir_abspath="$3"
@@ -175,10 +170,29 @@ if [ $? != 0 ]; then
   exit_script
 fi
 
-# 使用find命令找到所有以.apk结尾的文件并循环处理
-find "$apk_folder_abspath" -type f -name "*.apk" | while read apk_file; do
-  signApkFile $apk_file
-done
+if [ -d "$input_path" ]; then
+  echo "$input_path 是一个目录"
+  # 构建APK文件夹的绝对路径
+  apk_folder_abspath="$(
+    cd "$(dirname "$apk_folder")"
+    pwd
+  )/$(basename "$apk_folder")"
+  # 使用find命令找到所有以.apk结尾的文件并循环处理
+  # find命令默认情况下会递归地遍历指定目录下的所有子目录。如果您不希望查找子目录，可以使用-maxdepth选项限制find的搜索深度。
+  find "$apk_folder_abspath" -maxdepth 1 -type f -name "*.apk" | while read apk_file; do
+    signApkFile $apk_file
+  done
+  printf "${GREEN}恭喜:${YELLOW}${apk_folder_abspath} ${GREEN}下所有apk文件签名完成。签名结果存放在 ${BLUE}${apkSignResult_dir_abspath}${NC}\n"
 
-printf "${GREEN}恭喜:${YELLOW}${apk_folder_abspath} ${GREEN}下所有apk文件签名完成。签名结果存放在 ${BLUE}${apkSignResult_dir_abspath}${NC}\n"
+elif [ -f "$input_path" ]; then
+  echo "$input_path 是一个文件"
+  signApkFile $input_path
+  printf "${GREEN}恭喜:${YELLOW}${input_path} ${GREEN}apk文件签名完成。签名结果存放在 ${BLUE}${apkSignResult_dir_abspath}${NC}\n"
+
+else
+  echo "$input_path 不是一个有效的路径"
+  exit 1
+fi
+
+
 printf "${BLUE}重复一遍之前打印的内容：签名脚本的实际参数为：\n keystore_file_abspath=%s\n keystore_password=%s\n key_alias=%s\n key_password=%s${NC}\n" "${keystore_file_abspath}" "${keystore_password}" "${key_alias}" "${key_password}"
