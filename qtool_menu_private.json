@@ -9,6 +9,21 @@
                     "action": "checkUnuseImages"
                 }
             ]
+        },
+        {
+            "category_id": "safe",
+            "category_values": [
+                {
+                    "name": "decompileDex",
+                    "des": "Android-反编译dex",
+                    "action": "decompileDexAction"
+                },
+                {
+                    "name": "decompileApk",
+                    "des": "Android-反编译apk",
+                    "action": "decompileApkAction"
+                }
+            ]
         }
     ]
 }

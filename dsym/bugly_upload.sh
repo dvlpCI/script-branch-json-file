@@ -2,9 +2,12 @@
 # 有可能需要修改的变量
 # 
 
-verboseStrings=("-verbose") # 输入哪些字符串算是想要日志
-if echo "${verboseStrings[@]}" | grep -wq "$1" &>/dev/null; then
+last_arg="${!#}"    # 获取最后一个参数
+verboseStrings=("--verbose" "-verbose") # 输入哪些字符串算是想要日志
+if echo "${verboseStrings[@]}" | grep -wq -- "$last_arg"; then
     verbose=true
+else
+    verbose=false
 fi
 
 # 当前【shell脚本】的工作目录

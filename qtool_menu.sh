@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-20 10:36:19
+ # @LastEditTime: 2023-06-25 19:18:31
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -330,16 +330,25 @@ uploadDSYMAction() {
     checkResultCode $?
 }
 
-checkUnuseImages() {
-    python3 "${qtoolScriptDir_Absolute}/package-size/unuse_images.py"
-    checkResultCode $?
-}
-
 signApkAction() {
     python3 "${qtoolScriptDir_Absolute}/src/sign_apk_tool.py"
     checkResultCode $?
 }
 
+checkUnuseImages() {
+    python3 "${qtoolScriptDir_Absolute}/package-size/unuse_images.py"
+    checkResultCode $?
+}
+
+decompileDexAction() {
+    python3 "${qtoolScriptDir_Absolute}/src/decompile_dex.py"
+    checkResultCode $?
+}
+
+decompileApkAction() {
+    python3 "${qtoolScriptDir_Absolute}/src/decompile_apk.py"
+    checkResultCode $?
+}
 
 # 显示工具选项
 showMenu() {
