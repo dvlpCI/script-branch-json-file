@@ -140,6 +140,7 @@ openWebsitePage() {
         exit 1
     fi
 
+    printf "${BLUE}正在为你打开网址:${YELLOW}${doc_home_website} ${BLUE}，(如打开失败，请确认是否该地址失效)${NC}\n"
     open "${doc_home_website}"
     checkResultCode $?
 }

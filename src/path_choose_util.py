@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-20 20:00:23
+LastEditTime: 2023-06-29 13:24:35
 FilePath: path_choose_util.py
 Description: 指定文件夹下的 文件 或 文件夹 的选择
 '''
@@ -40,7 +40,7 @@ def show_and_choose_folder_in_dir(searchInDir, customPathType=CustomPathType.NON
         searchInDir) if os.path.isdir(os.path.join(searchInDir, dir))]
 
     if len(folder_names) == 0:
-        print (f"{YELLOW}温馨提示：您的${searchInDir} 是空文件夹，请检查，且将自动进入自定义文件夹路径操作{NC}")
+        print (f"{YELLOW}温馨提示：您的 ${searchInDir} 是空文件夹，请检查，且将自动进入自定义文件夹路径操作{NC}")
         git_project_folder_path = input_custom_path(f"请输入想要操作的{supportCustomString}（输入Q或q退出）：", customPathType=customPathType)
         isCustom = True
         return {
@@ -85,6 +85,10 @@ def show_and_choose_folder_in_dir(searchInDir, customPathType=CustomPathType.NON
         "isCustom": isCustom,
     }
 
+def show_and_choose_file_from_currentDir(fileExtension):
+    current_path = os.getcwd()  # 获取当前路径
+    return show_and_choose_file_in_dir(current_path, fileExtension)
+
 
 # 显示指定文件夹下的所有指定后缀的文件，并在选择后输出
 # fileExtension 文件后缀(.json 等)
@@ -98,9 +102,13 @@ def show_and_choose_file_in_dir(searchInDir, fileExtension, GiveupChoose=False):
         print(f"{RED}脚本执行发生错误了:{YELLOW}{e}{NC}\n")
         return None
 
-    if lastBranchsInfo_files.__len__ == 0:
-        print(f"{RED}目录last_branchs_info_dir_path={searchInDir}下未找到json类型的文件，请检查{NC}")
-        return None
+    if len(lastBranchsInfo_files) == 0:
+        print (f"{YELLOW}温馨提示：您的 {BLUE}{searchInDir} {YELLOW}下未找到 {BLUE}{fileExtension} {YELLOW}类型的文件。故转为需要您自己输入路径。{NC}")
+        custom_input_file_path = input_custom_path(f"请输入想要操作的 {BLUE}{fileExtension} {NC}类型的文件路径（输入Q或q退出）：", customPathType=CustomPathType.FILE)
+        if is_file_extension(custom_input_file_path, fileExtension):
+            return custom_input_file_path
+        else:
+            return None
     # 打印文件列表
     print(f"")
     print(f"文件列表：{YELLOW}{searchInDir}{NC}目录下")
@@ -115,7 +123,7 @@ def show_and_choose_file_in_dir(searchInDir, fileExtension, GiveupChoose=False):
         if user_input.lower() == 'q':
             exit(2)
             break
-        elif not re.match(r'\.[jJ][sS][oO][nN]$', user_input):
+        elif not user_input.endswith(fileExtension):
             print(f"{RED}输入的{user_input}不是{fileExtension}格式的文件名，请重新输入{NC}")
             continue
         elif user_input not in [os.path.basename(file) for file in lastBranchsInfo_files]:
@@ -199,3 +207,25 @@ def copy_special_file_inDir_toDir(source_dir_path, copy_file_extension, backup_t
         shutil.copy(src_file_abspath, backup_file_abspath)
         # 输出拷贝进度信息
         print(f"{BLUE}拷贝进度{i+1}/{num_apk_files}:完成拷贝 {YELLOW}{src_file_abspath}{BLUE} 到 {YELLOW}{backup_file_abspath}{BLUE} 中{NC}")
+
+
+def is_file_extension(file_path, file_extension):
+    """
+    判断文件是否具有指定的扩展名或以指定的扩展名结尾
+    :param file_path: 文件路径
+    :param file_extension: 扩展名，可以是带"."的扩展名，例如".txt"，也可以是不带"."的扩展名，例如"txt"
+    :return: 如果文件具有指定的扩展名或以指定的扩展名结尾，则返回True，否则返回False
+    """
+    # 获取文件扩展名
+    _, ext = os.path.splitext(file_path)
+
+    # 判断文件扩展名是否与指定的扩展名匹配
+    return ext.lower() == file_extension.lower() or file_path.lower().endswith(file_extension.lower())
+
+# # 示例用法
+# file_path = "example.txt"
+# file_extension = ".txt"
+# if is_file_extension(file_path, file_extension):
+#     print(f"{file_path} 是 {file_extension} 文件")
+# else:
+#     print(f"{file_path} 不是 {file_extension} 文件")
