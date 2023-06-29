@@ -1,0 +1,306 @@
+{
+  "branch_belong2": [
+    {
+      "key": "strong_business",
+      "des": "强业务部分",
+      "values": [
+        {
+          "option": "auth",
+          "short_des": "登录模块",
+          "detail_des": "(登录/注册、退出)",
+          "creater": "developer1",
+          "mainer": "developer3",
+          "backuper": "developer5"
+        },
+        {
+          "option": "user",
+          "short_des": "用户模块",
+          "detail_des": "(profile:个人首页/个人中心; relation:关注、粉丝、朋友; member:会员中心)",
+          "creater": "developer1",
+          "mainer": "developer3",
+          "backuper": "developer7"
+        },
+        {
+          "option": "wish",
+          "short_des": "愿望单模块",
+          "detail_des": "(愿望单列表、愿望单详情)",
+          "creater": "developer2",
+          "mainer": "developer2",
+          "backuper": "developer6"
+        },
+        {
+          "option": "mall",
+          "short_des": "商城模块",
+          "detail_des": "(商城首页、商品详情)",
+          "creater": "developer1",
+          "mainer": "developer4",
+          "backuper": "developer3"
+        },
+        {
+          "option": "publish",
+          "short_des": "发布模块",
+          "detail_des": "(愿望单发布)",
+          "creater": "developer1",
+          "mainer": "developer3",
+          "backuper": "developer5"
+        },
+        {
+          "option": "order",
+          "short_des": "订单模块",
+          "detail_des": "(订单列表、订单详情)",
+          "creater": "developer4",
+          "mainer": "developer4",
+          "backuper": "developer6"
+        },
+        {
+          "option": "search",
+          "short_des": "搜索模块",
+          "detail_des": "(大搜索)",
+          "creater": "developer1",
+          "mainer": "developer7",
+          "backuper": "developer6"
+        },
+        {
+          "option": "im",
+          "short_des": "IM模块",
+          "detail_des": "（会话列表、会话窗口）",
+          "creater": "developer1",
+          "mainer": "developer2",
+          "backuper": "developer3"
+        },
+        {
+          "option": "live",
+          "short_des": "直播模块",
+          "detail_des": "（直播界面）",
+          "creater": "developer1",
+          "mainer": "developer3",
+          "backuper": "developer6"
+        },
+        {
+          "option": "comment",
+          "short_des": "评论模块",
+          "detail_des": "（作品评论、商品评论）",
+          "creater": "developer1",
+          "mainer": "developer4",
+          "backuper": "developer6"
+        },
+        {
+          "option": "activities",
+          "short_des": "活动模块",
+          "detail_des": "（话题活动）",
+          "creater": "developer1",
+          "mainer": "developer6",
+          "backuper": "developer4"
+        }
+      ]
+    },
+    {
+      "key": "service",
+      "des": "中台服务",
+      "values": [
+        {
+          "option": "user",
+          "short_des": "用户管理模块",
+          "detail_des": "",
+          "creater": "developer1",
+          "mainer": "developer1",
+          "backuper": "developer5"
+        },
+        {
+          "option": "game",
+          "short_des": "游戏模块",
+          "detail_des": "（游戏路由）",
+          "creater": "developer1",
+          "mainer": "developer3",
+          "backuper": "developer5"
+        },
+        {
+          "option": "popup",
+          "short_des": "弹窗管理模块",
+          "detail_des": "",
+          "creater": "developer1",
+          "mainer": "developer5",
+          "backuper": "developer3"
+        },
+        {
+          "option": "push",
+          "short_des": "推送模块",
+          "detail_des": "安卓推送、苹果推送、IM推送",
+          "creater": "developer3",
+          "mainer": "developer3",
+          "backuper": "developer2"
+        },
+        {
+          "option": "auth_sdk",
+          "short_des": "认证",
+          "detail_des": "（人脸认证、实名认证）",
+          "creater": "developer1",
+          "mainer": "developer6",
+          "backuper": "developer4"
+        }
+      ]
+    },
+    {
+      "key": "package",
+      "des": "基础服务",
+      "values": [
+        {
+          "option": "network",
+          "short_des": "网络模块",
+          "detail_des": "（基础请求、重试请求、缓存请求、业务请求、埋点请求、其他三方请求）",
+          "creater": "developer1",
+          "mainer": "developer1",
+          "backuper": "developer2"
+        },
+        {
+          "option": "download",
+          "short_des": "上传、下载",
+          "detail_des": "（Cos上传、断点续传）",
+          "creater": "developer1",
+          "mainer": "developer5",
+          "backuper": "developer1"
+        },
+        {
+          "option": "route",
+          "short_des": "路由模块",
+          "detail_des": "",
+          "creater": "developer1",
+          "mainer": "developer2",
+          "backuper": "developer5"
+        },
+        {
+          "option": "webview",
+          "short_des": "网页模块",
+          "detail_des": "（页面、js）",
+          "creater": "developer1",
+          "mainer": "developer2",
+          "backuper": "developer1"
+        },
+        {
+          "option": "version",
+          "short_des": "版本模块",
+          "detail_des": "（版本检查(含蒲公英)、应用内下载）",
+          "creater": "developer1",
+          "mainer": "developer1",
+          "backuper": "developer3"
+        },
+        {
+          "option": "location",
+          "short_des": "位置模块",
+          "detail_des": "（定位、位置选择）",
+          "creater": "developer1",
+          "mainer": "developer5",
+          "backuper": "developer3"
+        },
+        {
+          "option": "player",
+          "short_des": "播放器模块",
+          "detail_des": "（视频）",
+          "creater": "developer1",
+          "mainer": "developer3",
+          "backuper": "developer2"
+        },
+        {
+          "option": "media",
+          "short_des": "媒体模块",
+          "detail_des": "（选择、编辑、降噪增益）",
+          "creater": "developer1",
+          "mainer": "developer3",
+          "backuper": "developer1"
+        },
+        {
+          "option": "share",
+          "short_des": "分享模块",
+          "detail_des": "（网页、视频、图片、链接）",
+          "creater": "developer1",
+          "mainer": "developer1",
+          "backuper": "developer5"
+        },
+        {
+          "option": "pay",
+          "short_des": "支付模块",
+          "detail_des": "",
+          "creater": "developer1",
+          "mainer": "developer2",
+          "backuper": "developer4"
+        },
+        {
+          "option": "apm",
+          "short_des": "应用性能管理",
+          "detail_des": "(dokit、火山引擎、听云)",
+          "creater": "developer1",
+          "mainer": "developer5",
+          "backuper": "developer6"
+        },
+        {
+          "option": "fraud",
+          "short_des": "风控(数美、同盾)",
+          "detail_des": "",
+          "creater": "developer1",
+          "mainer": "developer5",
+          "backuper": "developer5"
+        },
+        {
+          "option": "buriedpoint",
+          "short_des": "埋点",
+          "detail_des": "",
+          "creater": "developer1",
+          "mainer": "developer1",
+          "backuper": "developer5"
+        },
+        {
+          "option": "package",
+          "short_des": "其他基础库",
+          "detail_des": "",
+          "creater": "developer1",
+          "mainer": "developer1",
+          "backuper": "developer5"
+        }
+      ]
+    },
+    {
+      "key": "tool",
+      "des": "开发工具-效率",
+      "values": [
+        {
+          "option": "environment",
+          "short_des": "环境切换",
+          "detail_des": "",
+          "creater": "developer1",
+          "mainer": "developer1",
+          "backuper": "developer5"
+        },
+        {
+          "option": "proxy",
+          "short_des": "代理调试",
+          "detail_des": "",
+          "creater": "developer1",
+          "mainer": "developer1",
+          "backuper": "developer5"
+        },
+        {
+          "option": "js",
+          "short_des": "JS调试",
+          "detail_des": "（js自测h5）",
+          "creater": "developer1",
+          "mainer": "developer1",
+          "backuper": "developer1"
+        }
+      ]
+    },
+    {
+      "key": "other",
+      "des": "其他未分类",
+      "values": [
+        {
+          "option": "bugfix_online",
+          "short_des": "线上各种bug的修复",
+          "detail_des": "",
+          "creater": "developer1",
+          "mainer": "developer1",
+          "backuper": "developer5"
+        }
+      ]
+    }
+  ]
+}

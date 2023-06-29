@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-14 13:48:49
+LastEditTime: 2023-06-28 20:53:15
 FilePath: src/openWebsite_by_websiteConfig_util.py
 Description: 打开选中的网站
 '''
@@ -33,7 +33,14 @@ def chooseCustomWebsiteFromWebsites(customWebisteMaps):
     for i, customWebisteMap in enumerate(customWebisteMaps):
         customWebisteDes = customWebisteMap['des']
         customWebisteUrl = customWebisteMap['url']
-        print(f"{i+1}. {BLUE}{customWebisteDes:<{15}}{NC} (网址:{NC}{customWebisteUrl})")
+        print(f"{i+1}. {BLUE}{customWebisteDes:<{15}}{NC}")
+        print(f"   {NC}控制台:{NC}{customWebisteUrl}")
+
+        if "docUrl" in customWebisteMap:
+            customWebisteDocUrl = customWebisteMap['docUrl']
+            print(f"   {NC}文  档:{customWebisteDocUrl}")
+        
+        
 
     if len(customWebisteMaps) == 1:
         chooseScriptIndex=0

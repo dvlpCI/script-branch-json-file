@@ -1,6 +1,16 @@
 {
     "catalog": [
         {
+            "category_id": "file-info",
+            "category_values": [
+                {
+                    "name": "log_file",
+                    "des": "显示文件信息",
+                    "action": "logFileMessageAction"
+                }
+            ]
+        },
+        {
             "category_id": "package-size",
             "category_values": [
                 {

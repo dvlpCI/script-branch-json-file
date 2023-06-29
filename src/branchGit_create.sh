@@ -4,10 +4,22 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-05 10:42:10
+ # @LastEditTime: 2023-06-29 10:54:08
 # @FilePath: src/branchGit_create.sh
 # @Description: 分支JSON的创建-shell
 ###
+
+# 当前【shell脚本】的工作目录
+# $PWD代表获取当前路径，当cd后，$PWD也会跟着更新到新的cd路径。这个和在终端操作是一样的道理的
+CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
+CommonFun_HomeDir_Absolute=${CurrentDIR_Script_Absolute%/*} # 使用此方法可以避免路径上有..
+qtoolScriptDir_Absolute=${CommonFun_HomeDir_Absolute}
+if [ ! -d "${qtoolScriptDir_Absolute}" ]; then
+    echo "==========qtoolScriptDir_Absolute=${qtoolScriptDir_Absolute}路径不存在，请检查"
+    exit 1
+fi
+source ${qtoolScriptDir_Absolute}/base/get_system_env.sh # 为了引入 open_sysenv_file getAbsPathByFileRelativePath 方法
+source ${qtoolScriptDir_Absolute}/src/framework_category_util.sh # 为了引入 
 
 # 定义颜色常量
 NC='\033[0m' # No Color
@@ -21,15 +33,43 @@ CYAN='\033[0;36m'
 # 1、branchJsonName_input 分支json文件名的输入
 quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退出
 
+exit_script() { # 退出脚本的方法，省去当某个步骤失败后，还去继续多余的执行其他操作
+    exit 1
+}
+
+function getCategoryFile() {
+    # 读取文件内容
+    tool_root_content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
+    relFilePathKey=".branch_belong_file_rel_this_file"
+    rel_file_path_value=$(echo "$tool_root_content" | jq -r "${relFilePathKey}")
+    if [ -z "${rel_file_path_value}" ] || [ "${rel_file_path_value}" == "null" ]; then
+        printf "${RED}请先在 ${BLUE}${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH} ${RED}文件中设置 ${BLUE}${relFilePathKey} ${NC}\n"
+        exit_script
+    fi
+
+    target_file_abspath=$(getAbsPathByFileRelativePath "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" $rel_file_path_value)
+    if [ $? != 0 ]; then
+        printf "${RED}拼接 ${BLUE}${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH} ${RED}和 ${BLUE}${rel_file_path_value} ${RED}组成的路径结果错误，错误结果为 ${target_file_abspath}${NC}\n"
+        exit_script
+    fi
+
+    echo "${target_file_abspath}"
+}
+target_category_file_abspath=$(getCategoryFile)
+# echo "=======target_category_file_abspath=${target_category_file_abspath}"
+
+
+target_branch_type_file_abspath=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
+
 # 1、确定分支名(分支类型选择+分支名输入)
 # 1.1、分支类型选择
 branch_type_menu() {
-    # 读取文件内容
-    content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
+    content=$(cat "${target_branch_type_file_abspath}")
+
     branchBelongKey1="branch_categorys"
     branchBelongMaps1=$(echo "$content" | jq -r ".${branchBelongKey1}")
     if [ -z "${branchBelongMaps1}" ] || [ "${branchBelongMaps1}" == "null" ]; then
-        rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .${branchBelongKey1} "
+        rebaseErrorMessage="请先在 ${target_branch_type_file_abspath} 文件中设置 .${branchBelongKey1} "
         printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
         exit 1
     fi
@@ -64,46 +104,27 @@ chooseBranchTypeMap() {
     valid_option=true
 }
 
-branch_type_menu
-valid_option=false
-while [ "$valid_option" = false ]; do
-    read -r -p "①请选择您所要创建的分支类型的编号(若要退出请输入Q|q) : " option
-    if [ ${option} == "q" ] || [ ${option} == "Q" ]; then
-        exit 2
-    elif [ ${option} -le ${branchBelongMapCount} ]; then
-        tBranchBelongMap=$(echo "$content" | jq ".${branchBelongKey1}" | jq -r ".[$((option - 1))]") # 添加 jq -r 的-r以去掉双引号
-        chooseBranchTypeMap "${tBranchBelongMap}"
-        break
-    else
-        valid_option=false echo "无此选项，请重新输入。"
-    fi
-done
-printf "①已选择您所要创建的分支类型${RED}%s${NC}\n\n" "$branchType"
+function chooseBranchType() {
+    branch_type_menu
 
-# 1.2、分支模块选择
-# 1.2.1、分支模块列表
-menu_module() {
-    # 读取文件内容
-    content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
-    branchBelongKey2="branch_belong2"
-    branchBelongMaps2=$(echo "$content" | jq -r ".${branchBelongKey2}")
-    if [ -z "${branchBelongMaps2}" ] || [ "${branchBelongMaps2}" == "null" ]; then
-        rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .${branchBelongKey2} "
-        printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
-        exit 1
-    fi
-
-    # branchBelongMapCount2=$(echo "$content" | jq ".${branchBelongKey2}" | jq ".|length")
-    # # echo "=============branchBelongMapCount2=${branchBelongMapCount2}"
-    # if [ ${branchBelongMapCount2} -eq 0 ]; then
-    #     echo "友情提醒💡💡💡：没有找到可选的分支模块类型"
-    #     return 1
-    # fi
-    echo "已知模块选项、已知基础选项："
-    echo "$content" | jq -r '.branch_belong2.strong_business, .branch_belong2.service, .branch_belong2.package, .branch_belong2.other | to_entries[] | "\(.key): \(.value)"'
-    # 从 JSON 数据中获取 key 列表
-    moduleOptionKeys=($(echo "$content" | jq -r '.branch_belong2.strong_business, .branch_belong2.service, .branch_belong2.package, .branch_belong2.other | keys[]'))
+    valid_option=false
+    while [ "$valid_option" = false ]; do
+        read -r -p "①请选择您所要创建的分支类型的编号(若要退出请输入Q|q) : " option
+        if [ ${option} == "q" ] || [ ${option} == "Q" ]; then
+            exit 2
+        elif [ ${option} -le ${branchBelongMapCount} ]; then
+            tBranchBelongMap=$(echo "$content" | jq ".${branchBelongKey1}" | jq -r ".[$((option - 1))]") # 添加 jq -r 的-r以去掉双引号
+            chooseBranchTypeMap "${tBranchBelongMap}"
+            break
+        else
+            valid_option=false echo "无此选项，请重新输入。"
+        fi
+    done
+    printf "①已选择您所要创建的分支类型${RED}%s${NC}\n\n" "$branchType"
 }
+# chooseBranchType
+
+
 # 1.2.2、选择分支所属模块，并完善分支名
 chooseAndCompleteBranchName() {
     # 无限循环，监听用户输入
@@ -189,11 +210,13 @@ if [ -n "${branchTypeCodeEnable}" ] && [ "${branchTypeCodeEnable}" == "false" ];
 fi
 
 if [ "${onlyInput}" == true ]; then
-    perfectVersionBranchName   # 完善版本分支名
+    perfectVersionBranchName # 完善版本分支名
 else
-    menu_module # 罗列模块列表
+    # 1.2、分支模块选择
+    # 1.2.1、分支模块列表
+    show_framework_category_forBranchCreate "${target_category_file_abspath}" # 罗列模块列表
     chooseAndCompleteBranchName # 选择分支所属模块
-    perfectDevBranchName   # 完善开发分支名
+    perfectDevBranchName        # 完善开发分支名
 fi
 
 # 1.3、分支名确认

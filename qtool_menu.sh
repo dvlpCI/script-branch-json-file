@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-25 19:18:31
+ # @LastEditTime: 2023-06-29 11:07:23
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -332,6 +332,11 @@ uploadDSYMAction() {
 
 signApkAction() {
     python3 "${qtoolScriptDir_Absolute}/src/sign_apk_tool.py"
+    checkResultCode $?
+}
+
+logFileMessageAction() {
+    sh $qtoolScriptDir_Absolute/src/framework_category_showForResponsiblePerson.sh
     checkResultCode $?
 }
 
