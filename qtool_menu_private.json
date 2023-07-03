@@ -5,7 +5,7 @@
             "category_values": [
                 {
                     "name": "log_file",
-                    "des": "显示文件信息",
+                    "des": "显示文件信息（模块区分与负责人）",
                     "action": "logFileMessageAction"
                 }
             ]

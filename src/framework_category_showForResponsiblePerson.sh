@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-29 11:03:36
+ # @LastEditTime: 2023-07-03 19:55:44
 # @FilePath: src/branchGit_create.sh
 # @Description: 分支JSON的创建-shell
 ###
@@ -55,7 +55,9 @@ function getCategoryFile() {
 
     echo "${target_file_abspath}"
 }
+
 target_category_file_abspath=$(getCategoryFile)
 
-
-show_framework_category_md "${target_category_file_abspath}" # 罗列模块列表
+tempMdFilePath=$(goPath_rel_project_dir_byKey ".project_path.other_path_rel_home.framework_category_md")
+# tempMdFilePath="~/Downloads/temp_framework_category.md"
+show_framework_category_md "${target_category_file_abspath}" "${tempMdFilePath}" # 罗列模块列表

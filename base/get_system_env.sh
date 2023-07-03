@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-05-06 14:57:41
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-14 10:44:48
+ # @LastEditTime: 2023-07-03 19:45:37
  # @Description: 含路径相关和获取环境变量中的相对路径（因为需要引用路径，所以路径不抽离出去）
 ### 
 
@@ -180,12 +180,25 @@ get_sysenv_project_dir() {
 }
 
 
-goCodeHome() {
-    code_dir_rel_home_dir=$(echo ${project_path_map} | jq -r ".other_path_rel_home.code_home")
-    code_dir_abspath=$(joinFullPath_checkExsit "$home_abspath" $code_dir_rel_home_dir)
+goPath_rel_project_dir_byKey() {
+    requestKey="$1" # .project_path.other_path_rel_home.code_home
+
+    project_tool_params_file_path=$(get_sysenv_project_params_file)
+    if [ $? != 0 ]; then
+        return 1
+    fi
+
+    project_dir=$(get_sysenv_project_dir)
+    result_relpath_rel_project_dir=$(cat ${project_tool_params_file_path} | jq -r "${requestKey}")
+    
+    result_abspath_rel_project_dir=$(joinFullPath_noCheck "$project_dir" $result_relpath_rel_project_dir)
     if [ $? != 0 ]; then
         exit_script
     fi
-    printf "${BLUE}app的代码根目录为：%s${NC}\n" "${code_dir_abspath}"
-    cd "$code_dir_abspath" || exit # 切换到工作目录后，才能争取创建git分支。"exit" 命令用于确保如果更改目录时出现错误，则脚本将退出。
+
+    # printf "${YELLOW}温馨提示：获取到相对 ${BLUE}${project_dir}${YELLOW} 的 ${BLUE}${result_relpath_rel_project_dir} ${YELLOW}目录为： ${BLUE}${result_abspath_rel_project_dir}${NC}\n"
+    echo "$result_abspath_rel_project_dir"
 }
+
+# result_file_absPath=$(goPath_rel_project_dir_byKey ".project_path.other_path_rel_home.framework_category_md")
+# echo "${result_file_absPath}"
