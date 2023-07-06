@@ -1,54 +1,25 @@
 {
-    "action_sript_file_rel_this_dir": "./all01_update_env.sh",
-    "action_sript_file_des": "更新项目环境",
+    "action_sript_file_rel_this_dir": "./env_update_for_choosingEnvFile.sh",
+    "action_sript_file_des": "更新项目所选择的环境",
     "actions_envs_des": "要操作的环境",
     "actions_envs_values": [
         {
-            "env_id": "pack_test",
-            "env_name": "打测试包",
+            "env_id": "env_update_for_choosingEnvFile_any",
+            "env_name": "选择并更新所选择的环境的版本信息（只区分包网络环境，不区分运行平台和发布平台）",
             "env_action_ids": [
-                "updateIOSCodeEnvScriptFile",
-                "updateAndroidCodeEnvScriptFile",
-                "updateJsonEnvScriptFile",
                 "saveToF",
-                "platform",
-                "network",
-                "target"
+                "network"
             ]
         }
     ],
     "actions": [
         {
-            "id": "updateIOSCodeEnvScriptFile",
-            "des": "用来更新【iOS项目代码环境】的文件",
-            "actionType": "fixed",
-            "resultForParam": "-updateIOSCodeEnvScriptFile",
-            "fixedType": "dir-path-rel-this-file",
-            "fixedValue": "../update_app_info_ios.sh"
-        },
-        {
-            "id": "updateAndroidCodeEnvScriptFile",
-            "des": "用来更新【Android项目代码环境】的文件",
-            "actionType": "fixed",
-            "resultForParam": "-updateAndroidCodeEnvScriptFile",
-            "fixedType": "dir-path-rel-this-file",
-            "fixedValue": "../update_app_info_android.sh"
-        },   
-        {
-            "id": "updateJsonEnvScriptFile",
-            "des": "更新 json文件中环境的 脚本文件",
-            "actionType": "fixed",
-            "resultForParam": "-updateJsonEnvScriptFile",
-            "fixedType": "dir-path-rel-this-file",
-            "fixedValue": "../app_info_out_update.sh"
-        },
-        {
             "id": "saveToF",
             "des": "脚本执行结果保存到的文件",
             "actionType": "fixed",
-            "resultForParam": "-saveToF",
-            "fixedType": "file-path-rel-this-file",
-            "fixedValue": "../app_pack_output_params.json"
+            "resultForParam": "-appEnvDir",
+            "fixedType": "dir-path-rel-this-file",
+            "fixedValue": "../../env_config/"
         },
         {
             "id": "platform",

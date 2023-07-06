@@ -1,16 +1,23 @@
 #!/bin/bash
+###
+ # @Author: dvlproad
+ # @Date: 2023-06-09 19:24:14
+ # @LastEditors: dvlproad
+ # @LastEditTime: 2023-07-06 10:55:20
+ # @Description: 
+### 
 :<<!
 更新项目的①code环境；②json环境
 
-updateJsonEnv_scriptFile_Absolute="/Users/qian/Project/AppProject/appdemo/bulidScriptCommon/app_info_out_update"
-updateIOSCodeEnv_scriptFile_Absolute="/Users/qian/Project/AppProject/appdemo/buildScriptSource/bulidScript/update_app_info_ios.sh"
-updateAndroidCodeEnv_scriptFile_Absolute="/Users/qian/Project/AppProject/appdemo/buildScriptSource/bulidScript/update_app_info_android.sh"
+updateJsonEnv_scriptFile_Absolute="/Users/qian/Project/App1/appdemo/bulidScriptCommon/app_info_out_update"
+updateIOSCodeEnv_scriptFile_Absolute="/Users/qian/Project/App1/appdemo/buildScriptSource/bulidScript/update_app_info_ios.sh"
+updateAndroidCodeEnv_scriptFile_Absolute="/Users/qian/Project/App1/appdemo/buildScriptSource/bulidScript/update_app_info_android.sh"
 PlatformType="Android"
 PackageTargetType="生成最后只发布到蒲公英的包"
 PackageNetworkType="测试"
-APPEVN_SAVE_TO_FILE="/Users/qian/Project/AppProject/appdemo/bulidScript/app_info.json"
-echo "正在执行《sh all01_update_env.sh -updateJsonEnvScriptFile \"${updateJsonEnv_scriptFile_Absolute}\" -updateIOSCodeEnvScriptFile \"${updateIOSCodeEnv_scriptFile_Absolute}\" -updateAndroidCodeEnvScriptFile \"${updateAndroidCodeEnv_scriptFile_Absolute}\" -pl ${PlatformType} -pt $PackageTargetType -pn $PackageNetworkType -saveToF \"${APPEVN_SAVE_TO_FILE}\" 》"
-sh all01_update_env.sh -updateJsonEnvScriptFile "${updateJsonEnv_scriptFile_Absolute}" -updateIOSCodeEnvScriptFile "${updateIOSCodeEnv_scriptFile_Absolute}" -updateAndroidCodeEnvScriptFile "${updateAndroidCodeEnv_scriptFile_Absolute}" -pl ${PlatformType} -pt $PackageTargetType -pn $PackageNetworkType -saveToF "${APPEVN_SAVE_TO_FILE}"
+APPEVN_SAVE_TO_FILE="/Users/qian/Project/App1/appdemo/bulidScript/app_info.json"
+echo "正在执行《sh env_update_for_appInfoJsonAndCode.sh -updateJsonEnvScriptFile \"${updateJsonEnv_scriptFile_Absolute}\" -updateIOSCodeEnvScriptFile \"${updateIOSCodeEnv_scriptFile_Absolute}\" -updateAndroidCodeEnvScriptFile \"${updateAndroidCodeEnv_scriptFile_Absolute}\" -pl ${PlatformType} -pt $PackageTargetType -pn $PackageNetworkType -saveToF \"${APPEVN_SAVE_TO_FILE}\" 》"
+sh env_update_for_appInfoJsonAndCode.sh -updateJsonEnvScriptFile "${updateJsonEnv_scriptFile_Absolute}" -updateIOSCodeEnvScriptFile "${updateIOSCodeEnv_scriptFile_Absolute}" -updateAndroidCodeEnvScriptFile "${updateAndroidCodeEnv_scriptFile_Absolute}" -pl ${PlatformType} -pt $PackageTargetType -pn $PackageNetworkType -saveToF "${APPEVN_SAVE_TO_FILE}"
 exit
 !
 
@@ -74,7 +81,7 @@ elif [ "${PackageNetworkType}" == "生产环境" ]; then
     echo "这个是【生产】包"
     PackageNetworkType='product'
 else
-    printf "${RED}发生错误，脚本中未处理输入源为 ${YELLOW}${PackageNetworkType}${RED} 时候，应该映射到的【网络环境】，请先调整你的输入源！${NC}\n"
+    printf "${RED}发生错误，${YELLOW}$0 ${RED}脚本中未处理输入源为 ${YELLOW}${PackageNetworkType}${RED} 时候，应该映射到的【网络环境】，请先调整你的输入源！${NC}\n"
     exit_script
 fi
 
@@ -95,7 +102,7 @@ elif [ "${PackageTargetType}" == "生成最后只发布到TestFlight的包" ] ; 
 elif [ "${PackageTargetType}" == "生成最后只发布到蒲公英的包" ] ; then
     PackageTargetType="dev"
 else
-    printf "${RED}发生错误，脚本中未处理输入源为 ${YELLOW}${PackageTargetType}${RED} 时候，应该映射到的【发布平台】，请先调整你的输入源！${NC}\n"
+    printf "${RED}发生错误，${YELLOW}$0 ${RED}脚本中未处理输入源为 ${YELLOW}${PackageTargetType}${RED} 时候，应该映射到的【发布平台】，请先调整你的输入源！${NC}\n"
     exit_script
 fi
 
@@ -117,6 +124,28 @@ cur_date_minute=$(date "+%M")
 #VERSION="1.${cur_date_month}.${cur_date_day}"   # 1.02.21
 #BUILD="${cur_date_month}${cur_date_day}${cur_date_hour}${cur_date_minute}" # 02211506
 
+function get_version_and_buildNumber_forFormalProduct() {
+    # _get_version_and_buildNumber_forFormalProduct_byHereManual
+    _get_version_and_buildNumber_forFormalProduct_fromEnvJsonFile
+}
+
+function _get_version_and_buildNumber_forFormalProduct_byHereManual() {
+    if [ "${PlatformType}" == "iOS" ] ; then
+        VERSION="1.3.2"
+    elif [ "${PlatformType}" == "Android" ] ; then
+        VERSION="1.3.2"
+    else
+        exit_script
+    fi
+    BUILD="${cur_date_month}${cur_date_day}${cur_date_hour}${cur_date_minute}" # 02211506
+}
+
+function _get_version_and_buildNumber_forFormalProduct_fromEnvJsonFile() {
+    ConfigTypeJsonFilePath="$WORKSPACE/env_config/$PackageNetworkType.json"
+    VERSION=$(jq -r '.APP_VERSION' $ConfigTypeJsonFilePath)
+    BUILD=$(jq -r '.BUILD_NUMBER' $ConfigTypeJsonFilePath)
+}
+
 if [ "${PackageTargetType}" == "dev" ] ; then
 #    VERSION="1."$(date "+%m.%d") # 1.02.21
     VERSION="1.${cur_date_month}.${cur_date_day}" # 1.02.21
@@ -126,14 +155,7 @@ elif [ "${PackageTargetType}" == "inner" ] ; then
     VERSION="1.1.1" # 因为ios tf的上既放着审核包也放着内测包，所以为了避免审核包已经审核通过，所以内测包的版本要比审核包高，不然会在上传tf时候失败
     BUILD="${cur_date_month}${cur_date_day}${cur_date_hour}${cur_date_minute}" # 02211506
 elif [ "${PackageTargetType}" == "formal" ] ; then
-    if [ "${PlatformType}" == "iOS" ] ; then
-        VERSION="1.2.4"
-    elif [ "${PlatformType}" == "Android" ] ; then
-        VERSION="1.2.4"
-    else
-        exit_script
-    fi
-    BUILD="${cur_date_month}${cur_date_day}${cur_date_hour}${cur_date_minute}" # 02211506
+    get_version_and_buildNumber_forFormalProduct
 else
     exit_script
 fi
@@ -142,39 +164,48 @@ fi
 BUILD=$(echo $BUILD | sed -r 's/0*([0-9])/\1/') # 去除字符串前所有的0
 echo "BUILD=${BUILD}"
 
-
-printf "${BLUE}正在执行命令(更新打包参数保存到 ${APPEVN_SAVE_TO_FILE} 文件中)《 ${YELLOW}sh ${bulidScriptCommon_dir_Absolute}/app_info_out_update.sh -appInfoF ${APPEVN_SAVE_TO_FILE} -p \"${PlatformType}\" -pt \"${PackageTargetType}\" -pn \"${PackageNetworkType}\" -v $VERSION -bd $BUILD ${BLUE}》${NC}\n"
-if [ ! -f "${updateJsonEnv_scriptFile_Absolute}" ]; then
-    printf "${RED}发生错误，用来更新项目【JSON信息环境】的文件不存在，请先检查 ${YELLOW}${updateJsonEnv_scriptFile_Absolute}${RED} ${NC}\n"
-    exit_script
-fi
-sh ${updateJsonEnv_scriptFile_Absolute} -appInfoF ${APPEVN_SAVE_TO_FILE} -b "${BRANCH}" -p "${PlatformType}" -pt "${PackageTargetType}" -pn "${PackageNetworkType}" -v $VERSION -bd $BUILD
-if [ $? != 0 ]; then
-    sh ${bulidScriptCommon_dir_Absolute}/noti_new_package.sh -appInfoF ${APPEVN_SAVE_TO_FILE} --log-robottype "error"
-    exit_script
-fi
-
-
-# 更新app项目信息
-if [ "${PlatformType}" == "iOS" ] ; then
-    if [ ! -f "${updateIOSCodeEnv_scriptFile_Absolute}" ]; then
-        printf "${RED}发生错误，用来更新【iOS项目代码环境】的文件不存在，请先检查 ${YELLOW}${updateIOSCodeEnv_scriptFile_Absolute}${RED} ${NC}\n"
+# 可选（为了后续打包过程的日志输出）：将上述环境变量值，更新到 app 版本包信息的文件里
+function updateEnv_inAppInfoJson() {
+    printf "${BLUE}正在执行命令(更新打包参数保存到 ${APPEVN_SAVE_TO_FILE} 文件中)《 ${YELLOW}sh ${bulidScriptCommon_dir_Absolute}/app_info_out_update.sh -appInfoF ${APPEVN_SAVE_TO_FILE} -p \"${PlatformType}\" -pt \"${PackageTargetType}\" -pn \"${PackageNetworkType}\" -v $VERSION -bd $BUILD ${BLUE}》${NC}\n"
+    if [ ! -f "${updateJsonEnv_scriptFile_Absolute}" ]; then
+        printf "${RED}发生错误，用来更新项目【JSON信息环境】的文件不存在，请先检查 ${YELLOW}${updateJsonEnv_scriptFile_Absolute}${RED} ${NC}\n"
         exit_script
     fi
-    sh ${updateIOSCodeEnv_scriptFile_Absolute} -pt "${PackageTargetType}" -pn "${PackageNetworkType}" -v $VERSION -bd $BUILD
-elif [ "${PlatformType}" == "Android" ] ; then
-    if [ ! -f "${updateAndroidCodeEnv_scriptFile_Absolute}" ]; then
-        printf "${RED}发生错误，用来更新【Android项目代码环境】的文件不存在，请先检查 ${YELLOW}${updateAndroidCodeEnv_scriptFile_Absolute}${RED} ${NC}\n"
+    sh ${updateJsonEnv_scriptFile_Absolute} -appInfoF ${APPEVN_SAVE_TO_FILE} -b "${BRANCH}" -p "${PlatformType}" -pt "${PackageTargetType}" -pn "${PackageNetworkType}" -v $VERSION -bd $BUILD
+    if [ $? != 0 ]; then
+        sh ${bulidScriptCommon_dir_Absolute}/noti_new_package.sh -appInfoF ${APPEVN_SAVE_TO_FILE} --log-robottype "error"
         exit_script
     fi
-    sh ${updateAndroidCodeEnv_scriptFile_Absolute} -pt "${PackageTargetType}" -pn "${PackageNetworkType}" -v $VERSION -bd $BUILD
-else
-    exit_script
-fi
-if [ $? != 0 ]; then
-    printf "${RED}❌Error:环境切换错误，终止打包！${NC}\n"
-    exit_script
-fi
+}
+
+# 必填（影响项目打包出来的版本号）：将上述环境变量值，更新到 app 项目代码里
+function updateEnv_inCode() {
+    # 更新app项目信息
+    if [ "${PlatformType}" == "iOS" ] ; then
+        if [ ! -f "${updateIOSCodeEnv_scriptFile_Absolute}" ]; then
+            printf "${RED}发生错误，用来更新【iOS项目代码环境】的文件不存在，请先检查 ${YELLOW}${updateIOSCodeEnv_scriptFile_Absolute}${RED} ${NC}\n"
+            exit_script
+        fi
+        sh ${updateIOSCodeEnv_scriptFile_Absolute} -pt "${PackageTargetType}" -pn "${PackageNetworkType}" -v $VERSION -bd $BUILD
+    elif [ "${PlatformType}" == "Android" ] ; then
+        if [ ! -f "${updateAndroidCodeEnv_scriptFile_Absolute}" ]; then
+            printf "${RED}发生错误，用来更新【Android项目代码环境】的文件不存在，请先检查 ${YELLOW}${updateAndroidCodeEnv_scriptFile_Absolute}${RED} ${NC}\n"
+            exit_script
+        fi
+        sh ${updateAndroidCodeEnv_scriptFile_Absolute} -pt "${PackageTargetType}" -pn "${PackageNetworkType}" -v $VERSION -bd $BUILD
+    else
+        exit_script
+    fi
+    if [ $? != 0 ]; then
+        printf "${RED}❌Error:环境切换错误，终止打包！${NC}\n"
+        exit_script
+    fi
+}
+
+updateEnv_inAppInfoJson
+updateEnv_inCode
+
+
 
 
 

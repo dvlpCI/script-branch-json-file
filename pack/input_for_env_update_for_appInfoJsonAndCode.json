@@ -1,0 +1,122 @@
+{
+    "action_sript_file_rel_this_dir": "./env_update_for_appInfoJsonAndCode.sh",
+    "action_sript_file_des": "更新项目环境",
+    "actions_envs_des": "要操作的环境",
+    "actions_envs_values": [
+        {
+            "env_id": "env_update_for_appInfoJsonAndCode_any",
+            "env_name": "更新项目代码环境_任意包",
+            "env_action_ids": [
+                "updateIOSCodeEnvScriptFile",
+                "updateAndroidCodeEnvScriptFile",
+                "updateJsonEnvScriptFile",
+                "saveToF",
+                "platform",
+                "network",
+                "target"
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "id": "updateIOSCodeEnvScriptFile",
+            "des": "用来更新【iOS项目代码环境】的文件",
+            "actionType": "fixed",
+            "resultForParam": "-updateIOSCodeEnvScriptFile",
+            "fixedType": "file-path-rel-this-file",
+            "fixedValue": "../../bulidScript/update_app_info_ios.sh"
+        },
+        {
+            "id": "updateAndroidCodeEnvScriptFile",
+            "des": "用来更新【Android项目代码环境】的文件",
+            "actionType": "fixed",
+            "resultForParam": "-updateAndroidCodeEnvScriptFile",
+            "fixedType": "file-path-rel-this-file",
+            "fixedValue": "../../bulidScript/update_app_info_android.sh"
+        },   
+        {
+            "id": "updateJsonEnvScriptFile",
+            "des": "更新 json文件中环境的 脚本文件",
+            "actionType": "fixed",
+            "resultForParam": "-updateJsonEnvScriptFile",
+            "fixedType": "file-path-rel-this-file",
+            "fixedValue": "../../bulidScriptCommon/app_info_out_update.sh"
+        },
+        {
+            "id": "saveToF",
+            "des": "脚本执行结果保存到的文件",
+            "actionType": "fixed",
+            "resultForParam": "-saveToF",
+            "fixedType": "file-path-rel-this-file",
+            "fixedValue": "../../bulidScript/app_info.json"
+        },
+        {
+            "id": "platform",
+            "des": "平台类型",
+            "actionType": "choose",
+            "resultForParam": "-pl",
+            "chooseValues": [
+                {
+                    "id": "iOS",
+                    "name": "iOS"
+                },
+                {
+                    "id": "Android",
+                    "name": "Android"
+                }
+            ]
+        },
+        {
+            "id": "network",
+            "des": "网络环境",
+            "actionType": "choose",
+            "resultForParam": "-pn",
+            "chooseValues": [
+                {
+                    "id": "dev1",
+                    "name": "开发环境1"
+                },
+                {
+                    "id": "dev2",
+                    "name": "开发环境2"
+                },
+                {
+                    "id": "test1",
+                    "name": "测试环境1"
+                },
+                {
+                    "id": "test2",
+                    "name": "测试环境2"
+                },
+                {
+                    "id": "preproduct",
+                    "name": "预生产环境"
+                },
+                {
+                    "id": "product",
+                    "name": "生产环境"
+                }
+            ]
+        },
+        {
+            "id": "target",
+            "des": "上线位置",
+            "actionType": "choose",
+            "resultForParam": "-pt",
+            "chooseValues": [
+                {
+                    "id": "dev",
+                    "name": "生成最后只发布到蒲公英的包"
+                },
+                {
+                    "id": "inner",
+                    "name": "生成最后只发布到TestFlight的包"
+                },
+                {
+                    "id": "formal",
+                    "name": "生成最后要发布到AppStore的包"
+                }
+            ]
+        }
+    ]
+}
