@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-06-14 13:49:14
+LastEditTime: 2023-07-06 10:45:46
 FilePath: src/dealScript_by_scriptConfig_util.py
 Description: 打包-输入
 '''
@@ -42,7 +42,7 @@ def getActionById(actions, actionId, pack_input_params_file_path):
         person = matchPersons[0]
     else:
         # 对匹配的元素进行操作
-        print(f"{RED}发生错误：在{json.dumps(actions, indent=2)}中没有id为{YELLOW}{actionId}{RED}的操作项，请检查 {YELLOW}{pack_input_params_file_path}{RED} 文件！{NC}")
+        print(f"{RED}发生错误：在{json.dumps(actions, indent=2)}中没有id为 {YELLOW}{actionId}{RED} 的操作项，请检查 {YELLOW}{pack_input_params_file_path}{RED} 文件！{NC}")
         openFile(pack_input_params_file_path)
         return None
 
@@ -54,13 +54,14 @@ def chooseCustomScriptAndDealItFromFilePaths(custom_script_files_abspath):
     chooseScriptFilePath=chooseScriptMap["script_info_abspath"]
     dealScriptByScriptConfig(chooseScriptFilePath)
 
-
 # 1、展示 所有自定义的脚本中 并在选择便后后，并进行选择输出
 def chooseCustomScriptFromFilePaths(custom_script_files_abspath, shouldCheckExist=False):
     print(f"")
     script_info_maps=[]
     for i, custom_script_file_abspath in enumerate(custom_script_files_abspath):
         script_info_map=_get_custom_script_file_map(custom_script_file_abspath) # 会检查脚本文件是不是存在
+        if script_info_map==False:
+            return None
         # print(f"script_info_map={script_info_map}")
         script_file_des = script_info_map['script_file_des']
         # des_length = sum(2 if ord(c) > 127 else 1 for c in script_file_des)  # 计算中英文字符长度
@@ -203,7 +204,7 @@ def getRealScriptOrCommandFromData(data, pack_input_params_file_path):
     action_sript_file_rel_this_dir=data['action_sript_file_rel_this_dir']
     # 获取脚本的实际绝对路径
     action_script_file_absPath=getAbsPathByFileRelativePath(pack_input_params_file_path, action_sript_file_rel_this_dir)
-    if not os.path.isfile(action_script_file_absPath):
+    if action_script_file_absPath == None or not os.path.isfile(action_script_file_absPath):
         print(f"{RED}发生错误:脚本文件不存在，原因为计算出来的相对目录不存在。请检查您的 {YELLOW}{pack_input_params_file_path}{NC} 中的 {BLUE}action_sript_file_rel_this_dir{RED} 属性值 {BLUE}{action_sript_file_rel_this_dir}{RED} 是否正确。（其会导致计算相对于 {YELLOW}{pack_input_params_file_path}{RED} 的该属性值路径 {BLUE}{action_script_file_absPath}{RED} 不存在)。{NC}")
         openFile(pack_input_params_file_path)
         # print(f"{RED}=======这里报错了，应该要退出方法{NC}")

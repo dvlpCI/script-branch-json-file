@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
 LastEditors: dvlproad
-LastEditTime: 2023-06-14 23:14:52
+LastEditTime: 2023-07-06 10:15:02
 FilePath: /path_util.py
 Description: 路径的计算方法
 '''
@@ -53,7 +53,7 @@ def joinFullPath_checkExsit(host_dir, rel_path, createIfNoExsit=False):
             os.makedirs(full_abspath)
             return full_abspath
         else:
-            print(f"{RED}路径拼接错误: 拼接 {BLUE}{host_dir} {RED}和 {BLUE}{rel_path} {RED}得到的 '{YELLOW}{full_abspath}{RED}' does not exist.{NC}")
+            print(f"{RED}路径拼接后的目标文件 '{YELLOW}{full_abspath}{RED}' 不存在，请检查其拼接参数 {BLUE}{host_dir} {RED}和 {BLUE}{rel_path} {RED}.{NC}")
             return None
         
 

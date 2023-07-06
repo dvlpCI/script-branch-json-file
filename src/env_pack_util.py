@@ -68,6 +68,8 @@ def getEnvValue_pack_input_params_file_path(shouldCheckExist=False):
 
         pack_input_params_file_path_relhome=pack_input_params_files_path_relhome[i]
         pack_input_params_file_abspath = joinFullPath_checkExsit(project_home_dir_path, pack_input_params_file_path_relhome)
+        if pack_input_params_file_abspath==None:
+            return None
         pack_input_params_files_abspath.append(pack_input_params_file_abspath)
 
     return pack_input_params_files_abspath
