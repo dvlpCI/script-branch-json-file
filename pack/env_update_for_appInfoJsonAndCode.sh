@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-06-09 19:24:14
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-07-06 10:55:20
+ # @LastEditTime: 2023-07-06 11:33:46
  # @Description: 
 ### 
 :<<!
@@ -166,7 +166,7 @@ echo "BUILD=${BUILD}"
 
 # 可选（为了后续打包过程的日志输出）：将上述环境变量值，更新到 app 版本包信息的文件里
 function updateEnv_inAppInfoJson() {
-    printf "${BLUE}正在执行命令(更新打包参数保存到 ${APPEVN_SAVE_TO_FILE} 文件中)《 ${YELLOW}sh ${bulidScriptCommon_dir_Absolute}/app_info_out_update.sh -appInfoF ${APPEVN_SAVE_TO_FILE} -p \"${PlatformType}\" -pt \"${PackageTargetType}\" -pn \"${PackageNetworkType}\" -v $VERSION -bd $BUILD ${BLUE}》${NC}\n"
+    printf "${BLUE}正在执行命令(更新打包参数保存到 ${APPEVN_SAVE_TO_FILE} 文件中)《 ${YELLOW}sh ${updateJsonEnv_scriptFile_Absolute} -appInfoF ${APPEVN_SAVE_TO_FILE} -b \"${BRANCH}\" -p \"${PlatformType}\" -pt \"${PackageTargetType}\" -pn \"${PackageNetworkType}\" -v $VERSION -bd $BUILD ${BLUE}》${NC}\n"
     if [ ! -f "${updateJsonEnv_scriptFile_Absolute}" ]; then
         printf "${RED}发生错误，用来更新项目【JSON信息环境】的文件不存在，请先检查 ${YELLOW}${updateJsonEnv_scriptFile_Absolute}${RED} ${NC}\n"
         exit_script
