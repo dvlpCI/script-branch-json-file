@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-07-06 10:11:30
+LastEditTime: 2023-07-06 13:38:09
 FilePath: dealScriptByCustomChoose.py
 Description: 打包-输入
 '''
@@ -39,6 +39,8 @@ custom_script_files_abspath=getEnvValue_pack_input_params_file_path(shouldCheckE
 if custom_script_files_abspath == None:
     exit(1)
 chooseScriptMap=chooseCustomScriptFromFilePaths(custom_script_files_abspath, shouldCheckExist=True)
+if chooseScriptMap == None:
+    exit(1)
 chooseScriptFilePath=chooseScriptMap["script_info_abspath"]
 pack_input_params_file_path=chooseScriptFilePath
 if pack_input_params_file_path == None:

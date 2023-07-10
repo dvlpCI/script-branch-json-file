@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-07-06 10:45:46
+LastEditTime: 2023-07-06 15:10:29
 FilePath: src/dealScript_by_scriptConfig_util.py
 Description: 打包-输入
 '''
@@ -167,21 +167,17 @@ def dealScriptByScriptConfig(pack_input_params_file_path):
     
     for i, scriptParamMap in enumerate(scriptParamMaps):
         # print(f"{i+1}.========参数如下：{json.dumps(scriptParamMap, indent=2)}{NC}")
-        value = scriptParamMap["resultValue"]
-
-        if 'resultForParam' not in scriptParamMap:
-            command += [value]
+        if 'resultForParam' in scriptParamMap:
+            param = scriptParamMap["resultForParam"]
+            if param != "null" and param != "":
+                command += [f"{param}"]
+        if 'resultValue' not in scriptParamMap:
+            print(f"{RED}resultValue 参数未设置，请检查配置文件 {YELLOW}{pack_input_params_file_path()}{NC}")
+            return False
         else:
-            try:
-                param = scriptParamMap["resultForParam"]
-                if param == "null":
-                    command += [value]
-                else:
-                    command += [f"{param}", value]
-            except KeyError:
-                raise KeyError(f"resultForParam 参数未设置，请检查配置文件！")
-        
-
+            value = scriptParamMap["resultValue"]
+            command += [value]
+       
     resultCode=callScriptCommond(command, action_script_file_absPath, verbose=True)
     if resultCode==False:
         return False
@@ -318,8 +314,16 @@ def __getFixParamMapFromFile(operateHomeMap, pack_input_params_file_path):
                 "resultForParam": param_key,
                 "resultValue": dir_path,
             }
+    elif param_type == "fixed-value":
+        # 如果是固定值
+        param_value = operateHomeMap['fixedValue']
+        param_key = operateHomeMap['resultForParam']
+        return {
+            "resultForParam": param_key,
+            "resultValue": param_value,
+        }
     else:
-        print(f"{RED}错误:不支持{param_type}的处理，请检查{NC}")
+        print(f"{RED}错误:'fixedType'不支持类型为 {BLUE}{param_type} {RED}的处理（其目前只支持 {BLUE}dir-path-rel-this-file {RED}和 {BLUE}file-path-rel-this-file {RED}），请检查并修改。{NC}")
         return None
     
 

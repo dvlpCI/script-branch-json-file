@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-16 00:10:18
 LastEditors: dvlproad
-LastEditTime: 2023-06-13 21:05:46
+LastEditTime: 2023-07-06 14:52:29
 FilePath: src/base_util.py
 Description: 获取环境变量的值
 '''
@@ -38,6 +38,17 @@ def callScriptCommond(command, sript_file_absPath, verbose=False):
     #     subprocess.check_call(command)
     # except subprocess.CalledProcessError as e:
     #     print("Error: ", e.returncode, e.output)
+    # 假设 command=["python3", sript_file_absPath, pack_input_params_file_path]
+    if os.path.basename(command[0]) != "sh" and os.path.basename(command[0]) != "python3":
+        # 获取脚本文件的扩展名
+        ext = os.path.splitext(sript_file_absPath)[1]
+        if ext == ".py":
+            # 如果脚本文件是 Python 文件，则在 command 数组的第一个位置插入 python3
+            command.insert(0, "python3")
+        elif ext == ".sh":
+            # 如果脚本文件是 Shell 文件，则在 command 数组的第一个位置插入 sh
+            command.insert(0, "sh")
+
     try:
         # 尝试执行脚本
         # 设置了 check=True 参数，这可以使函数在命令执行失败时抛出一个 CalledProcessError 异常。
