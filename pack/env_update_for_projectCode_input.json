@@ -1,0 +1,84 @@
+{
+    "action_sript_file_rel_this_dir": "./env_update_for_projectCode.py",
+    "action_sript_file_des": "在代码中更新项目环境",
+    "actions_envs_des": "要操作的环境",
+    "actions_envs_values": [
+        {
+            "env_id": "env_update_for_projectCode_any",
+            "env_name": "选择环境信息并更新到项目代码中（只区分包网络环境，不区分运行平台和发布平台）",
+            "env_action_ids": [
+                "network"
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "id": "platform",
+            "des": "平台类型",
+            "actionType": "choose",
+            "resultForParam": "-pl",
+            "chooseValues": [
+                {
+                    "id": "iOS",
+                    "name": "iOS"
+                },
+                {
+                    "id": "Android",
+                    "name": "Android"
+                }
+            ]
+        },
+        {
+            "id": "network",
+            "des": "网络环境",
+            "actionType": "choose",
+            "resultForParam": "",
+            "chooseValues": [
+                {
+                    "id": "dev1",
+                    "name": "develop1"
+                },
+                {
+                    "id": "dev2",
+                    "name": "develop2"
+                },
+                {
+                    "id": "test1",
+                    "name": "test1"
+                },
+                {
+                    "id": "test2",
+                    "name": "test2"
+                },
+                {
+                    "id": "preproduct",
+                    "name": "preproduct"
+                },
+                {
+                    "id": "product",
+                    "name": "product"
+                }
+            ]
+        },
+        {
+            "id": "target",
+            "des": "上线位置",
+            "actionType": "choose",
+            "resultForParam": "-pt",
+            "chooseValues": [
+                {
+                    "id": "dev",
+                    "name": "生成最后只发布到蒲公英的包"
+                },
+                {
+                    "id": "inner",
+                    "name": "生成最后只发布到TestFlight的包"
+                },
+                {
+                    "id": "formal",
+                    "name": "生成最后要发布到AppStore的包"
+                }
+            ]
+        }
+    ]
+}

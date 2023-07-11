@@ -1,0 +1,17 @@
+{
+    "action_sript_file_rel_this_dir": "./env_update_for_runinsimulator.py",
+    "action_sript_file_des": "在代码中更新登录变量，以支持模拟器登录",
+    "actions_envs_des": "要操作的环境",
+    "actions_envs_values": [
+        {
+            "env_id": "env_update_for_runinsimulator",
+            "env_name": "在代码中更新登录变量，以支持模拟器登录",
+            "env_action_ids": [
+                
+            ]
+        }
+    ],
+    "actions": [
+        
+    ]
+}

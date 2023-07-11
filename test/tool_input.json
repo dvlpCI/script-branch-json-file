@@ -55,9 +55,13 @@
     },
     "pack_path_rel_home": {
       "custom_script_files_RELATIVE_HOME": [
-        "./pack/pack_input.json",
+        "./json/env_update_for_appInfoJsonAndCode_input.json",
+        "./json/env_update_for_choosingEnvFile_input.json",
+        "./json/env_update_for_projectCode_input.json",
+        "./json/env_update_for_runinsimulator_input.json",
         "./json/sign_apk.json",
-        "./json/upload_cos.json"
+        "./json/upload_cos.json",
+        "./json/get_version_json.json"
       ],
       "android_waitSignApk": {
         "android_waitSignApkVersions_dir_RELATIVE_HOME": "../all_ipa_output/channel/",
