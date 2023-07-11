@@ -6,22 +6,22 @@
  # @LastEditTime: 2023-07-06 11:12:08
  # @Description: 
 ### 
-#sh env_update_for_choosingEnvFile.sh -appEnvF "${AppEnvFilePath}" -p "${PlatformType}" -b "${BRANCH}" -pt "${PackageTargetType}" -pn "${PackageNetworkType}" -d "${ChangeLog}" -v $VERSION -bd $BUILD
-#sh env_update_for_choosingEnvFile.sh -appEnvF "app_info.json" -p iOS -b dev_all -pt pgyer -pn preproduct -d "更新说明略\n分支信息:\ndev_fix:功能修复" -v 1.0.0 -bd 11041000
+#sh env_update_for_choosingEnvFile.sh -appEnvDir "${AppEnvFile_DirPath}" -pn "${PackageNetworkType}"
+#sh env_update_for_choosingEnvFile.sh -appEnvDir "~/Project/CQCI/script-branch-json-file/test" -pn preproduct
 
 
 # echo "===============进入脚本:$0"
-
 
 # 当前【shell脚本】的工作目录
 # $PWD代表获取当前路径，当cd后，$PWD也会跟着更新到新的cd路径。这个和在终端操作是一样的道理的
 CurrentDIR_Script_Absolute="$( cd "$( dirname "$0" )" && pwd )"
 #echo "CurrentDIR_Script_Absolute=${CurrentDIR_Script_Absolute}"
-#bulidScriptCommon_dir_Absolute=${CurrentDIR_Script_Absolute}/..
-bulidScriptApp_dir_Absolute=${CurrentDIR_Script_Absolute%/*} # 使用此方法可以避免路径上有..
-bulidScriptHome_dir_Absolute=${bulidScriptApp_dir_Absolute%/*}
-bulidScriptCommon_dir_Absolute=${bulidScriptHome_dir_Absolute}/buildScriptSource/bulidScriptCommon
-#echo "bulidScriptCommon_dir_Absolute=${bulidScriptCommon_dir_Absolute}"
+#currentScriptHome_dir_Absolute=${CurrentDIR_Script_Absolute}/..
+currentScriptHome_dir_Absolute=${CurrentDIR_Script_Absolute%/*} # 使用此方法可以避免路径上有..
+qscript_path_get_filepath="${currentScriptHome_dir_Absolute}/qscript_path_get.sh"
+
+qbase_homdir_abspath=$(sh ${qscript_path_get_filepath} "qbase")
+# echo "qbase_homdir_abspath=${qbase_homdir_abspath}"
 
 # 包来源分支
 # shell 参数具名化
@@ -55,6 +55,10 @@ CYAN='\033[0;36m'
 
 JQ_EXEC=`which jq`
 
+if [[ $AppEnvFile_DirPath =~ ^~.* ]]; then
+    # 如果 $AppEnvFile_DirPath 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
+    AppEnvFile_DirPath="${HOME}${AppEnvFile_DirPath:1}"
+fi
 if [ ! -d "${AppEnvFile_DirPath}" ];then
     echo "❌:您的 AppEnvFile_DirPath=${AppEnvFile_DirPath} 文件目录不存在，请检查！"
     exit_script
@@ -87,8 +91,7 @@ AppEnvFilePath="${AppEnvFile_DirPath}/$PackageNetworkType.json"
 
 
 
-sh ${bulidScriptCommon_dir_Absolute}/json_check/json_file_check.sh -checkedJsonF "${AppEnvFilePath}"
-
+sh ${qbase_homdir_abspath}/json_check/json_file_check.sh -checkedJsonF "${AppEnvFilePath}"
 
 # 版本号version+build/VersionCode
 # 更改app信息，并返回 VERSION 和 BUILD
@@ -103,5 +106,5 @@ cur_date_minute=$(date "+%M")
 BUILD="${cur_date_month}${cur_date_day}${cur_date_hour}${cur_date_minute}" # 02211506
 if [ -n "$BUILD" ]; then
     # sed -i '' "s/package unknow buildNumber/${BUILD}/g" ${AppEnvFilePath}
-    sh ${bulidScriptCommon_dir_Absolute}/update_json_file_singleString.sh -jsonF ${AppEnvFilePath} -k 'BUILD_NUMBER' -v "${BUILD}"
+    sh ${qbase_homdir_abspath}/update_value/update_json_file_singleString.sh -jsonF ${AppEnvFilePath} -k 'BUILD_NUMBER' -v "${BUILD}"
 fi
