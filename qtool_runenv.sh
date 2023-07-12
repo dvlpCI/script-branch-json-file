@@ -14,6 +14,7 @@ qtoolScriptDir_Absolute=$1
 
 checkRunEnvironment() {
     sh "${qtoolScriptDir_Absolute}/common/install_package.sh" "jq"
+    sh "${qtoolScriptDir_Absolute}/common/install_package.sh" "qbase"
 }
 
 

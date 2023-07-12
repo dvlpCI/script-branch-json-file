@@ -17,14 +17,36 @@
 #     bulidScriptHome_dir_Absolute=${bulidScriptApp_dir_Absolute%/*}
 # }
 
-function getqbase_HomeDir_abspath_homebrew() {
-    homebrew_Cellar_dir="$(echo $(which qbase) | sed 's/\/bin\/.*//')"
-    if [ -z "${homebrew_Cellar_dir}" ]; then
-        brew update # 执行下载
-        if [ $? != 0 ]; then
-            return 1
-        fi
+# Checks if the specified command is available
+# If the command is not available, it will be installed
+function check_command_onlybrewupdate() {
+    local cmd=$1
+    if ! command -v $cmd &> /dev/null; then
+        echo "$cmd command not found, installing..."
+        echo "正在执行安装命令：《 brew tap dvlpCI/qbase & brew install qbase 》"
+        brew update
+        brew tap dvlpCI/qbase
+        brew install qbase
     fi
+}
+
+# 生效环境变量
+effectiveEnvironmentVariables() {
+    SHELL_TYPE=$(basename $SHELL)
+
+    if [ "$SHELL_TYPE" = "bash" ]; then
+        source ~/.bash_profile
+    elif [ "$SHELL_TYPE" = "zsh" ]; then
+        source ~/.zshrc
+    else
+        echo "Unknown shell type: $SHELL_TYPE"
+        return 1
+    fi
+}
+
+function getqbase_HomeDir_abspath_homebrew() {
+    check_command_onlybrewupdate "qbase"
+    effectiveEnvironmentVariables
     
     qbase_homedir_abspath=$(qbase)
     echo "$qbase_homedir_abspath"

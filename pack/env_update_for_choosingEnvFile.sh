@@ -7,7 +7,7 @@
  # @Description: 
 ### 
 #sh env_update_for_choosingEnvFile.sh -appEnvDir "${AppEnvFile_DirPath}" -pn "${PackageNetworkType}"
-#sh env_update_for_choosingEnvFile.sh -appEnvDir "~/Project/CQCI/script-branch-json-file/test" -pn preproduct
+#sh env_update_for_choosingEnvFile.sh -appEnvDir "~/Project/CQCI/script-branch-json-file/test" -pn 生产环境
 
 
 # echo "===============进入脚本:$0"
