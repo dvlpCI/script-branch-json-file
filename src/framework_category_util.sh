@@ -12,16 +12,18 @@
 # 显示分支模块列表_供分支创建时候使用
 show_framework_category_forBranchCreate() {
     target_category_file_abspath=$1
+    saveModuleOptionKeysToFile=$2
 
-    _show_framework_category "${target_category_file_abspath}" "forBranchCreate"
+    _show_framework_category "${target_category_file_abspath}" "forBranchCreate" "${saveModuleOptionKeysToFile}"
 }
 
 # 显示分支模块列表_供负责人查找时候使用
 show_framework_category_md() {
     target_category_file_abspath=$1
     tempMdFilePath=$2
+    saveModuleOptionKeysToFile=$3
 
-    _show_framework_category "${target_category_file_abspath}" "onlyMdFile"
+    _show_framework_category "${target_category_file_abspath}" "onlyMdFile" "${saveModuleOptionKeysToFile}"
 
     log_framework_category_md "${markdownString}" "${tempMdFilePath}"
 }
@@ -31,6 +33,7 @@ _show_framework_category() {
     target_category_file_abspath=$1
     target_person_file_abspath=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
     showType=$2
+    saveModuleOptionKeysToFile=$3
     
     # 读取文件内容
     content=$(cat "${target_category_file_abspath}")
@@ -93,6 +96,8 @@ _show_framework_category() {
             mainerName=$(getPersonNameById "$target_person_file_abspath" "$mainerId")
             backuperName=$(getPersonNameById "$target_person_file_abspath" "$backuperId")
 
+            moduleOptionKeys+=("${option}")
+
             if [ "${showType}" == "forBranchCreate" ]; then
                 # printf "%10s: %-20s [%s %s %s] %s\n" "$option" "$short_des" "${createrName}" "${mainerName}" "${backuperName}" "${detail_des}"
                 # 格式化字符串
@@ -106,10 +111,13 @@ _show_framework_category() {
                 # markdownString+="| %-8s    | %-8s | %-17s | %-4s | %-10s | %-10s |\n" "$categoryIndex.$categoryValueIndex" "$option" "$short_des" "$option" "$createrName" "$mainerName"
                 multiline_detail_des=$(echo "$detail_des" | sed 's/;/<br>/g')
                 markdownString+="| $(printf '%-4s' "$((categoryIndex+1)).$((categoryValueIndex+1))") | $(printf '%-8s' "$option") | $(printf '%-17s' "$short_des") | $(printf '%-4s' "$multiline_detail_des") | $(printf '%-10s' "$createrName") | $(printf '%-10s' "$mainerName") | $(printf '%-10s' "$backuperName") |\n"
-                moduleOptionKeys+=("${option}")
             fi
         done
     done
+
+    if [ "${saveModuleOptionKeysToFile}" != null ]; then
+        echo "${moduleOptionKeys[@]}" > ${saveModuleOptionKeysToFile} # 创建文件，并写入内容到该文件。如果该文件已经存在，则会覆盖原有内容。
+    fi
 }
 
 # 根据 用户id 获取 用户名

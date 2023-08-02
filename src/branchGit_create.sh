@@ -122,7 +122,7 @@ function chooseBranchType() {
     done
     printf "①已选择您所要创建的分支类型${RED}%s${NC}\n\n" "$branchType"
 }
-# chooseBranchType
+chooseBranchType
 
 
 # 1.2.2、选择分支所属模块，并完善分支名
@@ -209,12 +209,23 @@ if [ -n "${branchTypeCodeEnable}" ] && [ "${branchTypeCodeEnable}" == "false" ];
     onlyInput=true
 fi
 
+function show_and_get_framework_category_forBranchCreate() {
+    now_time=$(date +"%m%d%H%M%S")
+    TempDir_Absolute="$( cd "$( dirname "$0" )" && pwd )"
+    temp_file_abspath="${TempDir_Absolute}/${now_time}.json"
+    
+    show_framework_category_forBranchCreate "${target_category_file_abspath}" "${temp_file_abspath}" # 罗列模块列表
+    moduleOptionKeys=($(cat ${temp_file_abspath}))
+    rm -rf ${temp_file_abspath} # 删除文件temp_file_abspath
+}
+
 if [ "${onlyInput}" == true ]; then
     perfectVersionBranchName # 完善版本分支名
 else
     # 1.2、分支模块选择
     # 1.2.1、分支模块列表
-    show_framework_category_forBranchCreate "${target_category_file_abspath}" # 罗列模块列表
+    show_and_get_framework_category_forBranchCreate
+
     chooseAndCompleteBranchName # 选择分支所属模块
     perfectDevBranchName        # 完善开发分支名
 fi
