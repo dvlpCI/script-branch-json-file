@@ -44,15 +44,22 @@ effectiveEnvironmentVariables() {
     fi
 }
 
-function getqbase_HomeDir_abspath_homebrew() {
-    check_command_onlybrewupdate "qbase"
-    effectiveEnvironmentVariables
-    
-    qbase_homedir_abspath=$(qbase)
-    echo "$qbase_homedir_abspath"
-}
 
 requstQScript=$1
 if [ "${requstQScript}" == "qbase" ]; then
-    getqbase_HomeDir_abspath_homebrew
+    check_command_onlybrewupdate "qbase"
+    effectiveEnvironmentVariables
+    qbase_homedir_abspath=$(qbase)
+
+    if [ "$2" == "home" ]; then
+        echo "$qbase_homedir_abspath"
+    elif [ "$2" == "sedtext" ]; then
+        echo "$qbase_homedir_abspath/update_value/sed_text.sh"
+    elif [ "$2" == "update_json_file_singleString" ]; then
+        echo "$qbase_homedir_abspath/update_value/update_json_file_singleString.sh"
+    elif [ "$2" == "json_file_check" ]; then
+        echo "$qbase_homedir_abspath/json_check/json_file_check.sh"
+    else
+        echo "$qbase_homedir_abspath"
+    fi
 fi

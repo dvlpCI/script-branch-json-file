@@ -19,9 +19,10 @@ CurrentDIR_Script_Absolute="$( cd "$( dirname "$0" )" && pwd )"
 #currentScriptHome_dir_Absolute=${CurrentDIR_Script_Absolute}/..
 currentScriptHome_dir_Absolute=${CurrentDIR_Script_Absolute%/*} # 使用此方法可以避免路径上有..
 qscript_path_get_filepath="${currentScriptHome_dir_Absolute}/qscript_path_get.sh"
+qbase_update_json_file_singleString_script_path="$(sh ${qscript_path_get_filepath} qbase update_json_file_singleString)"
+qbase_json_file_check_script_path="$(sh ${qscript_path_get_filepath} qbase json_file_check)"
 
-qbase_homdir_abspath=$(sh ${qscript_path_get_filepath} "qbase")
-# echo "qbase_homdir_abspath=${qbase_homdir_abspath}"
+
 
 # 包来源分支
 # shell 参数具名化
@@ -91,7 +92,7 @@ AppEnvFilePath="${AppEnvFile_DirPath}/$PackageNetworkType.json"
 
 
 
-sh ${qbase_homdir_abspath}/json_check/json_file_check.sh -checkedJsonF "${AppEnvFilePath}"
+sh ${qbase_json_file_check_script_path} -checkedJsonF "${AppEnvFilePath}"
 
 # 版本号version+build/VersionCode
 # 更改app信息，并返回 VERSION 和 BUILD
@@ -106,5 +107,5 @@ cur_date_minute=$(date "+%M")
 BUILD="${cur_date_month}${cur_date_day}${cur_date_hour}${cur_date_minute}" # 02211506
 if [ -n "$BUILD" ]; then
     # sed -i '' "s/package unknow buildNumber/${BUILD}/g" ${AppEnvFilePath}
-    sh ${qbase_homdir_abspath}/update_value/update_json_file_singleString.sh -jsonF ${AppEnvFilePath} -k 'BUILD_NUMBER' -v "${BUILD}"
+    sh ${qbase_update_json_file_singleString_script_path} -jsonF ${AppEnvFilePath} -k 'BUILD_NUMBER' -v "${BUILD}"
 fi
