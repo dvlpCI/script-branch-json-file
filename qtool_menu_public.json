@@ -25,8 +25,13 @@
                 },
                 {
                     "name": "open_custom_website",
+                    "des": "打开《更多网站(代码:gitlab、需求:tapd、UI:mockplus等)》",
+                    "action": "openWebsiteByCustomChoose_fromProjectCustom"
+                },
+                {
+                    "name": "open_custom_website",
                     "des": "打开《更多网站(APM、风控等)》",
-                    "action": "openWebsiteByCustomChoose"
+                    "action": "openWebsiteByCustomChoose_fromSystemRecommend"
                 }
             ]
         },

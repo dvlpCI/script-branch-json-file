@@ -1,0 +1,59 @@
+{
+  "website": {
+    "recommend": [
+      {
+        "id": "bugly",
+        "des": "bug相关：打开bugly",
+        "url": "https://bugly.qq.com/",
+        "docUrl": "https://bugly.qq.com/docs/",
+        "integration_url": "https://pub.dev/packages/flutter_bugly",
+        "trigger_cmds": ["today", "apm"]
+      },
+      {
+        "id": "360加固",
+        "des": "安全相关：打开360加固",
+        "url": "https://jiagu.360.cn/",
+        "docUrl": "https://jiagu.360.cn/#/global/vip/desc",
+        "trigger_cmds": ["safe"]
+      },
+      {
+        "id": "tingyun",
+        "des": "APM相关：打开基调听云（基调听云-悟空平台-用户体验-APP）",
+        "url": "https://wukong2.tingyun.com/app/application/list",
+        "docUrl": "https://wukongdoc.tingyun.com/app/sdk_deploy/Hybrid/flutter/Flutter_requirement.html",
+        "integration_url": "https://wukongdoc.tingyun.com/app/sdk_deploy/Hybrid/flutter/Flutter_deploy.html",
+        "trigger_cmds": ["today", "apm"]
+      },
+      {
+        "id": "volcengine",
+        "des": "APM相关：打开火山引擎（应用性能监控全链路版--客户端监控）",
+        "url": "https://console.volcengine.com/apmplus/console/overview?monitorType=client",
+        "docUrl": "https://www.volcengine.com/docs/6431",
+        "integration_url": "",
+        "trigger_cmds": ["today", "apm"]
+      },
+      {
+        "id": "ishumei",
+        "des": "Fraud相关：打开数美（天网-全栈式风控引擎--设备风险趋势）",
+        "url": "https://console.ishumei.com/new/tianwang/device/stat",
+        "docUrl": "https://help.ishumei.com/docs/tx/telRisk/newest/developDoc",
+        "trigger_cmds": ["safe"]
+      },
+      {
+        "id": "tongdun",
+        "des": "Fraud相关：打开同盾（可信设备）",
+        "url": "https://cn-portal.trustdecision.com/trustdevice/list/all",
+        "docUrl": "https://cn-doc.trustdecision.com/reference/%E5%8F%AF%E4%BF%A1%E8%AE%BE%E5%A4%87-api-1",
+        "integration_url": "",
+        "trigger_cmds": ["safe"]
+      },
+      {
+        "id": "cos",
+        "des": "腾讯云相关：打开腾讯云--对象存储（存储桶列表--app上传目录）",
+        "url": "https://console.cloud.tencent.com/cos/bucket?bucket=prod-xhw-image-1302324914&region=ap-shanghai&path=%252Fmcms%252Fdownload%252Fapp%252F",
+        "docUrl": "https://cloud.tencent.com/document/product/436",
+        "trigger_cmds": ["sdk"]
+      }
+    ]
+  }
+}

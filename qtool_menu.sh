@@ -194,11 +194,16 @@ dealScriptByCustomChoose() {
     checkResultCode $?
 }
 
-openWebsiteByCustomChoose() {
-    # echo "正在执行命令(更改环境):《 python3 \"${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py\" 》"
-    python3 "${qtoolScriptDir_Absolute}/src/openWebsiteByCustomChoose.py"
+openWebsiteByCustomChoose_fromProjectCustom() {
+    python3 "${qtoolScriptDir_Absolute}/src/openWebsiteByCustomChoose.py" "custom"
     checkResultCode $?
 }
+
+openWebsiteByCustomChoose_fromSystemRecommend() {
+    python3 "${qtoolScriptDir_Absolute}/src/openWebsiteByCustomChoose.py" "recommend"
+    checkResultCode $?
+}
+
 
 # 二、执行Jenkins上的Job
 buildJenkinsJob() {
