@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-07-12 15:11:53
+ # @LastEditTime: 2023-08-03 20:55:49
  # @Description: 
 ### 
 
@@ -18,12 +18,6 @@ CYAN='\033[0;36m'
 
 qtoolQuickCmdStrings=("cz" "help") # qtool 支持的快捷命令
 
-# 本地测试
-local_test() {
-    CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
-    qtoolScriptDir_Absolute=${CurrentDIR_Script_Absolute}
-}
-
 
 
 # 本地测试
@@ -33,72 +27,7 @@ function local_test() {
     echo "$qbaseScriptDir_Absolute"
 }
 
-function getMaxVersionNumber_byDir() {
-    # 指定目录
-    dir_path="$1"
 
-    # 获取目录下所有文件的列表
-    files=("$dir_path"/*)
-
-    # 从文件列表中筛选出版本号
-    versions=()
-    for file in "${files[@]}"; do
-        version=$(basename "$file" | cut -d "-" -f 2)
-        versions+=("$version")
-    done
-
-    # 选择最新的版本号
-    latest_version=$(echo "${versions[@]}" | tr ' ' '\n' | sort -r | head -n 1)
-    echo "${latest_version}"
-}
-
-function getHomeDir_abspath_byVersion() {
-    # 指定目录
-    dir_path="$1"
-    latest_version="$2"
-
-    # 输出最新版本的路径
-    curretnVersionDir_abspath="$dir_path/$latest_version/lib" # 放在lib目录下
-    if [[ $curretnVersionDir_abspath =~ ^~.* ]]; then
-        # 如果 $curretnVersionDir_abspath 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
-        curretnVersionDir_abspath="${HOME}${curretnVersionDir_abspath:1}"
-    fi
-    echo "$curretnVersionDir_abspath"
-
-    if [ ! -d "${curretnVersionDir_abspath}" ]; then
-        return 1
-    fi
-}
-
-# 粗略计算，容易出现arm64芯片上的路径不对等问题
-# qbaseScriptDir_Absolute="/usr/local/Cellar/qtool/${bjfVersion}/lib"
-
-# 精确计算
-# which_qbase_bin_dir_path=$(which qtool)
-# which_qbase_source_dir_path="$(echo "$which_qbase_bin_dir_path" | sed 's/bin/Cellar/')"
-# echo "which_qbase_bin_dir_path: $which_qbase_bin_dir_path"
-# echo "which_qbase_source_dir_path: $which_qbase_source_dir_path"
-
-function getqscript_allVersionHomeDir_abspath() {
-    requstQScript=$1
-    homebrew_Cellar_dir="$(echo $(which $requstQScript) | sed 's/\/bin\/.*//')"
-    if [ -z "${homebrew_Cellar_dir}" ]; then
-        return 1
-    fi
-
-    if [[ "${homebrew_Cellar_dir}" == */ ]]; then
-        homebrew_Cellar_dir="${homebrew_Cellar_dir::-1}"
-    fi
-    homebrew_Cellar_dir=${homebrew_Cellar_dir}/Cellar
-
-    qscript_allVersion_homedir="${homebrew_Cellar_dir}/$requstQScript"
-    echo "${qscript_allVersion_homedir}"
-}
-
-qtargetScript_allVersion_homedir=$(getqscript_allVersionHomeDir_abspath "qtool")
-qtargetScript_latest_version=$(getMaxVersionNumber_byDir "${qtargetScript_allVersion_homedir}")
-
-versionCmdStrings=("--version" "-version" "-v" "version")
 
 # 计算倒数第一个参数的位置
 argCount=$#
@@ -132,28 +61,62 @@ else # 最后一个元素不是 verbose
     fi
 fi
 
-# 如果是获取版本号
-if echo "${versionCmdStrings[@]}" | grep -wq "$1" &>/dev/null; then
-    echo "${qtargetScript_latest_version}"
-    exit
+
+args=()
+if [ "${verbose}" == true ]; then
+    args+=("-verbose")
+fi
+if [ "${isTestingScript}" == true ]; then
+    args+=("test")
 fi
 
 # 如果是测试脚本中
 if [ "${isTestingScript}" == true ]; then
-    qtargetScript_curVersion_homedir_abspath=$(local_test) # 本地测试
+    qtool_homedir_abspath=$(local_test) # 本地测试
 else
-    qtargetScript_curVersion_homedir_abspath=$(getHomeDir_abspath_byVersion "${qtargetScript_allVersion_homedir}" "${qtargetScript_latest_version}")
+    qtoolScriptDir_Absolute="$(cd "$(dirname "$0")" && pwd)"
+    get_package_util_script_path=$(qbase -path "get_package_util")
+    # echo "✅✅✅✅ get_package_util_script_path = ${get_package_util_script_path}"
+    # echo "正在执行命令(获取脚本包的版本号):《 sh ${get_package_util_script_path} -package \"qtool\" -param \"version\" \"${args[@]}\" 》"
+    # echo "正在执行命令(获取脚本包的根路径):《 sh ${get_package_util_script_path} -package \"qtool\" -param \"homedir_abspath\" \"${args[@]}\" 》"
+    qtool_latest_version=$(sh ${get_package_util_script_path} -package "qtool" -param "version" "${args[@]}")
+    qtool_homedir_abspath=$(sh ${get_package_util_script_path} -package "qtool" -param "homedir_abspath" "${args[@]}")
+    # echo "✅✅✅✅ qtool_latest_version=${qtool_latest_version}"
+    # echo "✅✅✅✅ qbase_homedir_abspath=${qtool_homedir_abspath}"
     if [ $? != 0 ]; then
         exit 1
     fi
 fi
-echo "${qtargetScript_curVersion_homedir_abspath}"
+# echo "${qtargetScript_curVersion_homedir_abspath}"
+
+function get_path() {
+    if [ "$1" == "home" ]; then
+        echo "$qtool_homedir_abspath"
+    else
+        echo "$qtool_homedir_abspath"
+    fi
+}
+
+
+# 如果是获取版本号
+versionCmdStrings=("--version" "-version" "-v" "version")
+if echo "${versionCmdStrings[@]}" | grep -wq "$1" &>/dev/null; then
+    echo "${qtool_latest_version}"
+elif [ "$1" == "-path" ]; then
+    get_path "$2"
+else
+    echo "${qtool_latest_version}"
+fi
 
 
 
 
 
-qtoolScriptDir_Absolute="${qtargetScript_curVersion_homedir_abspath}"
+
+
+
+
+qtoolScriptDir_Absolute="${qtool_homedir_abspath}"
 # echo "qtoolScriptDir_Absolute=${qtoolScriptDir_Absolute}"
 
 # 检查运行环境
