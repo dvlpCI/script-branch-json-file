@@ -81,6 +81,7 @@ else
     # echo "正在执行命令(获取脚本包的根路径):《 sh ${get_package_util_script_path} -package \"qtool\" -param \"homedir_abspath\" \"${args[@]}\" 》"
     qtool_latest_version=$(sh ${get_package_util_script_path} -package "qtool" -param "version" "${args[@]}")
     qtool_homedir_abspath=$(sh ${get_package_util_script_path} -package "qtool" -param "homedir_abspath" "${args[@]}")
+    qtool_homedir_abspath="${qtool_homedir_abspath%/*}/lib" # 纠正路径(因为有些代码源码是放在bin，有些是放在lib)
     # echo "✅✅✅✅ qtool_latest_version=${qtool_latest_version}"
     # echo "✅✅✅✅ qbase_homedir_abspath=${qtool_homedir_abspath}"
     if [ $? != 0 ]; then
