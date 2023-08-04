@@ -98,8 +98,11 @@ sh ${qbase_json_file_check_script_path} -checkedJsonF "${AppEnvFilePath}"
 # 更改app信息，并返回 VERSION 和 BUILD
 #VERSION="1."$(date "+%m.%d") # 1.02.21
 #BUILD=$(date "+%m%d%H%M") # 02211506
-cur_date_month=$(date "+%m")
-cur_date_month=$((cur_date_month+12)) # 隔年了
+cur_date_month_haszero=$(date "+%m")
+# 在Bash shell中，以0开头的数字表示一个八进制数。例如，08被解释为一个八进制数字，但是八进制数字中只允许出现0~7，因此会提示错误。
+# 为了解决这个问题，你可以将date命令的输出的月份信息转换为十进制数，而不是八进制数。你可以通过在%m选项前添加%-来实现
+cur_date_month_nozero=$(date "+%-m")
+cur_date_month=$((cur_date_month_nozero+12))    # 隔年了
 cur_date_day=$(date "+%d")
 cur_date_hour=$(date "+%H")
 cur_date_minute=$(date "+%M")
