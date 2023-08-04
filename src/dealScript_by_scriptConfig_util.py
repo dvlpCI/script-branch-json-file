@@ -282,7 +282,7 @@ def _getScriptParamFromFileDataByOperate(data, operate, pack_input_params_file_p
         return __getFixParamMapFromFile(operateHomeMap, pack_input_params_file_path)
     elif operateActionType == "choose": # 选择值
         print(f"")
-        return __getChooseParamMapFromFile(operateHomeMap)
+        return __getChooseParamMapFromFile(operateHomeMap, pack_input_params_file_path)
     elif operateActionType == "custom": # 选择值
         print(f"")
         return __getInputParamMapFromFile(operateHomeMap)
@@ -328,7 +328,11 @@ def __getFixParamMapFromFile(operateHomeMap, pack_input_params_file_path):
     
 
 # ②从 jsonFile 中获取脚本的指定固定参数
-def __getChooseParamMapFromFile(operateHomeMap):
+def __getChooseParamMapFromFile(operateHomeMap, pack_input_params_file_path):
+    if "chooseValues" not in operateHomeMap:
+        print(f"{RED}发生错误:{BLUE}{pack_input_params_file_path} {RED}的\n{BLUE}{operateHomeMap}\n{RED}中不存在key为 {BLUE}.chooseValues {RED}的值，请先检查补充")
+        openFile(pack_input_params_file_path)
+        return None
     operateActionTypeDes="选择"
 
     # ③如果是选择，选择项有哪些，然后提示进行"选择"输入(只需要输入)
