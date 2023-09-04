@@ -27,13 +27,6 @@ def openFile(file_path):
        
         
 def callScriptCommond(command, sript_file_absPath, verbose=False):
-    print(f"\n{BLUE}开始执行脚本，执行过程中输出内容如下：{NC}")
-    # 调用 subprocess.run() 函数执行 shell 命令
-    if verbose==True:
-        cmdString=' '.join(command)
-        escaped_command = cmdString.replace("(", r"\(").replace(")", r"\)")
-        print(f"{BLUE}正在执行命令:《 {YELLOW}{escaped_command}{NC} 》")
-
     # try:
     #     subprocess.check_call(command)
     # except subprocess.CalledProcessError as e:
@@ -49,6 +42,14 @@ def callScriptCommond(command, sript_file_absPath, verbose=False):
             # 如果脚本文件是 Shell 文件，则在 command 数组的第一个位置插入 sh
             command.insert(0, "sh")
 
+    print(f"\n{BLUE}开始执行脚本，执行过程中输出内容如下：{NC}")
+    if verbose==True:
+        cmdString=' '.join(command)
+        escaped_command = cmdString.replace("(", r"\(").replace(")", r"\)")
+        print(f"{BLUE}正在执行命令:《 {YELLOW}{escaped_command}{NC} 》")
+
+
+    # 调用 subprocess.run() 函数执行 shell 命令
     try:
         # 尝试执行脚本
         # 设置了 check=True 参数，这可以使函数在命令执行失败时抛出一个 CalledProcessError 异常。
