@@ -38,6 +38,8 @@ print("当前项目目录===========：", project_dir)
 
 
 branch_json_file_dir_path = getEnvValue_branch_json_file_dir_path()
+if branch_json_file_dir_path == None:
+    exit(1)
 
 
 def create_branch_json_file():

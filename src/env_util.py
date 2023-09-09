@@ -88,7 +88,7 @@ def get_json_file_data(json_file_path):
 # 获取环境变量的值-项目路径 project_dir_path
 def getEnvValue_project_dir_path():
     tool_params_file_path = getEnvValue_params_file_path()
-    tool_params_file_data = getEnvValue_params_file_data()
+    tool_params_file_data = get_json_file_data(tool_params_file_path)
     if tool_params_file_data == None:
         return None
     project_home_path_rel_this = tool_params_file_data['project_path']['home_path_rel_this_dir']
@@ -117,12 +117,18 @@ def getEnvValue_project_parent_dir_path():
 def getEnvValue_branch_json_file_dir_path(shouldCheckExist=False):
     branch_json_file_git_home = getEnvValue_project_dir_path()
     
-    data = getEnvValue_params_file_data()
-    if data == None:
+    tool_params_file_path = getEnvValue_params_file_path()
+    tool_params_file_data = get_json_file_data(tool_params_file_path)
+    if tool_params_file_data == None:
         return None
-    branch_json_file_dir_relpath = data['branchJsonFile']['BRANCH_JSON_FILE_DIR_RELATIVE_PATH']
+    
+    branch_json_file_dir_relpath = tool_params_file_data['branchJsonFile']['BRANCH_JSON_FILE_DIR_RELATIVE_PATH']
     branch_json_file_dir_abspath = joinFullPath_checkExsit(branch_json_file_git_home, branch_json_file_dir_relpath)
     # print(f"branch_json_file_dir_abspath:{RED}{branch_json_file_dir_abspath} {NC}")
+    if branch_json_file_dir_abspath == None:
+        print(f"{RED}路径拼接失败，请检查从文件 {tool_params_file_path} 中的 ['branchJsonFile']['BRANCH_JSON_FILE_DIR_RELATIVE_PATH'] 获得的拼接参数 {RED}.{NC}")
+        return None
+    
     if shouldCheckExist==False:
         return branch_json_file_dir_abspath
     else:
