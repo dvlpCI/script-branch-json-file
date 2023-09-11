@@ -17,8 +17,13 @@ import json
 import re
 
 # 定义颜色常量
-RED = "\033[31m"
-NC = "\033[0m"
+NC = '\033[0m'  # No Color
+RED = '\033[31m'
+GREEN = '\033[32m'
+YELLOW = '\033[33m'
+BLUE = '\033[34m'
+PURPLE = '\033[0;35m'
+CYAN = '\033[0;36m'
 
 
 
@@ -34,8 +39,9 @@ def getPersonById(persons, personId):
     matchPersons = list(filter(lambda x: x['id'] == personId, persons))
     if matchPersons:
         person = matchPersons[0]
-
-    return person
+        return person
+    else:
+        return None
 
 
 def chooseAnswer():
@@ -45,11 +51,11 @@ def chooseAnswer():
 
     personMaps = data['branchJsonFile']['answerAllowId']
     for i, personId in enumerate(personMaps):
-        person = getPersonById(data['person'], personId)
+        person = getPersonById(data['person'], personId)  
         if person:
             print(f"{i+1}. {person['name']}")
         else:
-            print("未找到id为\033[1;31m{}\033[0m的用户\n".format(personId))
+            print(f"{i+1}. 未找到id为 {RED}{personId} {NC}的用户, 详情请查看 {BLUE}{tool_params_file_path} {NC}中的 {BLUE}person {NC}字段")
 
     while True:
         person_input = input("请输入需求方人员编号（自定义请填0,退出q/Q）：")

@@ -46,7 +46,7 @@ def create_branch_json_file():
     os.chdir(project_dir)  # 修改当前 Python 进程的工作目录
 
     currentBranchFullName = get_currentBranchFullName()
-    print("当前分支全名：\033[1;31m{}\033[0m\n".format(currentBranchFullName))
+    print(f"当前分支全名： {BLUE}{currentBranchFullName}{NC}\n")
 
     parts = currentBranchFullName.split("/")
     branchShortName = parts[-1]
@@ -62,12 +62,12 @@ def create_branch_json_file():
     file_path = joinFullPath_noCheck(branch_json_file_dir_path, jsonFileName)
     # print("等下要在以下路径创建的json文件：\033[1;31m{}\033[0m\n".format(file_path))
 
-    create(branchType, branchShortName, file_path)
+    create(branchType, currentBranchFullName, file_path)
 
 
 
 
-def create(branchType, branchShortName, file_path):
+def create(branchType, branchFullName, file_path):
     # 创建日期
     cur_date = datetime.now().strftime("%m.%d")
 
@@ -100,7 +100,7 @@ def create(branchType, branchShortName, file_path):
         "pass_test_time": "null",
         "merger_pre_time": "null",
         "type": branchType,
-        "name": branchShortName,
+        "name": branchFullName,
         "des": "详见outlines",
         "outlines": [
             outlineMap

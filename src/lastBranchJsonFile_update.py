@@ -18,8 +18,13 @@ from path_choose_util import show_and_choose_file_in_dir
 
 
 # 定义颜色常量
-RED = "\033[31m"
-NC = "\033[0m"
+NC = '\033[0m'  # No Color
+RED = '\033[31m'
+GREEN = '\033[32m'
+YELLOW = '\033[33m'
+BLUE = '\033[34m'
+PURPLE = '\033[0;35m'
+CYAN = '\033[0;36m'
 
 
 
