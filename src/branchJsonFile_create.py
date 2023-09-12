@@ -15,7 +15,7 @@ import re
 
 from path_util import joinFullPath_noCheck
 from env_util import getEnvValue_project_dir_path, getEnvValue_branch_json_file_dir_path
-from git_util import get_currentBranchFullName
+from git_util import get_currentBranchFullName, get_branch_file_name, get_branch_type
 from branchJsonFile_input import inputOutline, chooseAnswer, chooseTester
 
 import getpass
@@ -48,16 +48,8 @@ def create_branch_json_file():
     currentBranchFullName = get_currentBranchFullName()
     print(f"当前分支全名： {BLUE}{currentBranchFullName}{NC}\n")
 
-    parts = currentBranchFullName.split("/")
-    branchShortName = parts[-1]
-    if len(parts) >= 2:
-        branchType = parts[-2]
-    else:
-        # branchType = None
-        branchType = "unkonw"
-
-    # print("分支类型 = {}, 分支简名 = {}".format(branchType, branchShortName))
-    jsonFileName = f"{branchType}_{branchShortName}.json"
+    jsonFileName=get_branch_file_name(currentBranchFullName)
+    branchType=get_branch_type(currentBranchFullName)
 
     file_path = joinFullPath_noCheck(branch_json_file_dir_path, jsonFileName)
     # print("等下要在以下路径创建的json文件：\033[1;31m{}\033[0m\n".format(file_path))

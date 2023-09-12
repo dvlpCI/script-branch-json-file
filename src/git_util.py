@@ -8,6 +8,15 @@ Description: git工具
 '''
 # -*- coding: utf-8 -*-
 
+# 定义颜色常量
+NC = '\033[0m'  # No Color
+RED = '\033[31m'
+GREEN = '\033[32m'
+YELLOW = '\033[33m'
+BLUE = '\033[34m'
+PURPLE = '\033[0;35m'
+CYAN = '\033[0;36m'
+
 import subprocess
 import os
 from path_util import joinFullPath_checkExsit
@@ -30,7 +39,7 @@ def get_currentBranchFullName():
         print("标准错误输出:", e.stderr)
 
     if currentBranchFullName=="master":
-        print("您的分支还是\033[1;31m{}\033[0m未切换到可编码分支，请检查：\n".format(currentBranchFullName))
+        print(f"您的分支还是{BLUE}{currentBranchFullName}{NC}未切换到可编码分支，请检查：\n")
         exit(1)
 
     # 提取分支名称
@@ -43,13 +52,18 @@ project_dir=getEnvValue_project_dir_path()
 branch_json_file_dir_path = getEnvValue_branch_json_file_dir_path()
 
 
-def get_branch_json_file_path():
-    os.chdir(project_dir) # 修改当前 Python 进程的工作目录
+def get_branch_type(fullBranchName):
+    parts = fullBranchName.split("/")
+    branchShortName = parts[-1]
+    if len(parts) >= 2:
+        branchType = parts[-2]
+    else:
+        # branchType = None
+        branchType = "unkonw"
+    return branchType
 
-    currentBranchFullName = get_currentBranchFullName()
-    print("当前分支全名：\033[1;31m{}\033[0m\n".format(currentBranchFullName))
-
-    parts = currentBranchFullName.split("/")
+def get_branch_file_name(fullBranchName):
+    parts = fullBranchName.split("/")
     branchShortName = parts[-1]
     if len(parts) >= 2:
         branchType = parts[-2]
@@ -60,10 +74,24 @@ def get_branch_json_file_path():
     # print("分支类型 = {}, 分支简名 = {}".format(branchType, branchShortName))
     jsonFileName = f"{branchType}_{branchShortName}.json"
 
+    return jsonFileName
+
+def get_branch_json_file_path():
+    os.chdir(project_dir) # 修改当前 Python 进程的工作目录
+
+    currentBranchFullName = get_currentBranchFullName()
+    print(f"当前分支全名：{BLUE}{currentBranchFullName}{NC}\n")
+
+    jsonFileName=get_branch_file_name(currentBranchFullName)
+
     file_path = joinFullPath_checkExsit(branch_json_file_dir_path, jsonFileName)
-    print("要更新的json文件：\033[1;31m{}\033[0m\n".format(file_path))
+    if file_path == None:
+        print(f"未找到要更新的json文件：{BLUE}{file_path}{NC}\n")
+        exit(1)
+
+    print(f"要更新的json文件：{BLUE}{file_path}{NC}\n")
     if not os.path.exists(file_path):
-        print("Error❌:在\033[1;31m{}\033[0m分支中不存在\033[1;31m{}\033[0m文件，请检查！\n".format(currentBranchFullName, file_path))
+        print(f"Error❌:在{BLUE}{currentBranchFullName}{NC}分支中不存在{BLUE}{file_path}{NC}文件，请检查！\n")
         exit(1)
     else:
         return file_path
