@@ -147,7 +147,7 @@ def inputOutline():
     while True:
         try:
             # 尝试使用 UTF-8 编码解码用户输入
-            branchDes = input("请输入分支描述(若要退出请输入Q|q) ：") or "null"
+            branchDes = input("请输入分支描述(支持描述后加地址，若要退出请输入Q|q) ：") or "null"
             if branchDes.lower() == 'q':
                 exit(2)
             else:
