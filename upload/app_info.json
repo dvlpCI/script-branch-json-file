@@ -1,0 +1,302 @@
+{
+  "version": "1.21.25",
+  "buildNumber": "21251935",
+  "package_create_time": "09.25 19:35",
+  "package_from_brance": "v1.6.0_0925",
+  "platform_type": "iOS",
+  "package_default_target": "dev",
+  "package_default_env": "test2",
+  "package_des": {
+    "english": "[v1.6.0_0925]dev_test2_iOSV1.21.25(21251935)",
+    "chinese": "会直接发布的iOSdevtest2包"
+  },
+  "package_result": {
+    "package_description": "devtest2包",
+    "shoudUploadToAppStrore": "-np",
+    "shoudUploadToCos": "false",
+    "pgyerUploadUrlType": "toDownUrl",
+    "shoudUploadToPgyerOwner": "332960910@qq.com",
+    "shoudUploadToPgyerKey": "a6f5a92ffe5f43677c5580de3e1e0d99",
+    "package_official_website": "https://www.pgyer.com/bjtkewish",
+    "package_download_website": "unknown download website",
+    "pgyer_branch_config": {
+      "uploadChannelShortcut": "fzgy",
+      "uploadChannelKey": "e3573459c2955847cf549bd207803e4d",
+      "downloadChannelShortcut": "ZJCBvd",
+      "downloadChannelKey": "d0fa8e490748c0c3ff977825ed35c294"
+    }
+  },
+  "package_url_result": {
+    "package_local_url": "package local url",
+    "package_local_backup_dir": "package local backup dir",
+    "package_local_dSYM_file_path": "./wish/ios/outputs/Runner.xcarchive/dSYMs/Runner.app.dSYM",
+    "package_cos_url": "package cos url"
+  },
+  "package_update_des": "Test-up",
+  "package_version_update_detail": "package version unkonw update detail",
+  "packing_state": "pack doing",
+  "package_code": "package_code_0",
+  "package_message": "package unknow message",
+  "package_noti_people": "all",
+  "package_noti_msgtype": "markdown",
+  "package_notification_argument_current": {
+    "network": "test2",
+    "des": "测试2包",
+    "result_last_message": {
+      "dev": "已打包成功，请测试验证后，及时同步通过状态。(无特别说明，默认测试对此包的当前测试状态无异议)",
+      "inner": "已打包成功，请测试验证后，及时同步通过状态。(无特别说明，默认测试对此包的当前测试状态无异议)",
+      "formal": "已打包成功，请测试验证后，及时同步通过状态。(无特别说明，默认测试对此包的当前测试状态无异议)"
+    },
+    "wechat": {
+      "result": {
+        "value": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=a5648bff-8113-446f-8f21-4a4e3a83098b",
+        "description": "测试打包的结果信息，发送到【app新包-测试】群",
+        "mentioned_list": [
+          "tanxian",
+          "suwanyi",
+          "linshangting",
+          "qinghaijun"
+        ]
+      },
+      "error": {
+        "value": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=4353faba-aedc-4bd8-b200-cd3ed2f6e640",
+        "description": "测试打包的错误信息，发送到【移动端开发组】",
+        "mentioned_list": []
+      },
+      "other": {
+        "value": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=e3c3f7f1-5d03-42c5-8c4a-a3d25d7a8587",
+        "description": "测试打包的其他信息，发送到【只是测试机器人】",
+        "mentioned_list": []
+      }
+    }
+  },
+  "historyVersionJsonFile": "unkonw historyVersionJsonFile path",
+  "developBranchsJsonFile": "unkonw developBranchsJsonFile path",
+  "branchsResultJsonFile": "unkonw branchsResultJsonFile path",
+  "uploadSupplementJsonFile": "unkonw uploadSupplementJsonFile path",
+  "productPersonnelJsonFile": "/Users/linzehua/.jenkins/workspace/wish_ios_测试/bulidScript/app_product_personnel.json",
+  "package_pgyer_params": [
+    {
+      "network": "product",
+      "des": "生产包",
+      "owner": "913168921@qq.com",
+      "pgyerKey": "da2bc35c7943aa78e66ee9c94fdd0824",
+      "iOS": {
+        "pygerAppKey": "5f84348a16bef907dc0ea977deb249ab",
+        "appOfficialWebsite": "https://www.pgyer.com/app_bj"
+      },
+      "Android": {
+        "pygerAppKey": "70fda79d944eeb6797961db785f8d2b8",
+        "appOfficialWebsite": "https://www.pgyer.com/bjprowishA"
+      },
+      "allowBranchConfig": [
+        {
+          "branchRegulars": [
+            "v*"
+          ],
+          "branchNames": [
+            "dev_publish_in",
+            "dev_publish_out",
+            "develop",
+            "master"
+          ],
+          "mustContainBranchNameArray": [],
+          "branchChannelConfig": {
+            "iOS": {
+              "uploadChannelShortcut": "bjwishproitemp",
+              "uploadChannelKey": "e9a4a06bb7a0ad087dd0eb04a30dbc37",
+              "downloadChannelShortcut": "bjwishproidown",
+              "downloadChannelKey": "775edb75862fca78fee75688b2e58c3b"
+            },
+            "Android": {
+              "uploadChannelShortcut": "bjwishproAtemp",
+              "uploadChannelKey": "8cb0898c74515bd52df8fe113a1a697f",
+              "downloadChannelShortcut": "bjwishproAdown",
+              "downloadChannelKey": "02bc557dcd313e5b945a7dd6b308d719"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "network": "preproduct",
+      "des": "预生产包",
+      "owner": "332960910@qq.com",
+      "pgyerKey": "a6f5a92ffe5f43677c5580de3e1e0d99",
+      "iOS": {
+        "pygerAppKey": "3aa46e5f75c648922bb2450ac2da7909",
+        "appOfficialWebsite": "https://www.pgyer.com/bjtkewish"
+      },
+      "Android": {
+        "pygerAppKey": "0ff51c2519a23078fac1f8e8ea1bbdef",
+        "appOfficialWebsite": "https://www.pgyer.com/bjtkewishA"
+      },
+      "allowBranchConfig": [
+        {
+          "branchRegulars": [
+            "v*"
+          ],
+          "branchNames": [
+            "dev_publish_in"
+          ],
+          "mustContainBranchNameArray": [
+            "dev_publish_out"
+          ],
+          "branchChannelConfig": {
+            "iOS": {
+              "uploadChannelShortcut": "lLZq",
+              "uploadChannelKey": "f56f18024ea6c7ecfed1e822d1e8589b"
+            },
+            "Android": {
+              "uploadChannelShortcut": "v8I3",
+              "uploadChannelKey": "3cff4e4ce0ae3d936aa3ed162fb6b069"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "network": "test1",
+      "des": "测试包",
+      "owner": "332960910@qq.com",
+      "pgyerKey": "a6f5a92ffe5f43677c5580de3e1e0d99",
+      "iOS": {
+        "pygerAppKey": "3aa46e5f75c648922bb2450ac2da7909",
+        "appOfficialWebsite": "https://www.pgyer.com/bjtkewish"
+      },
+      "Android": {
+        "pygerAppKey": "0ff51c2519a23078fac1f8e8ea1bbdef",
+        "appOfficialWebsite": "https://www.pgyer.com/bjtkewishA"
+      },
+      "allowBranchConfig": [
+        {
+          "branchRegulars": [
+            "v*"
+          ],
+          "branchNames": [
+            "dev_all"
+          ],
+          "mustContainBranchNameArray": [
+            "dev_in_pgyer"
+          ],
+          "branchChannelConfig": {
+            "iOS": {
+              "uploadChannelShortcut": "09nB",
+              "uploadChannelKey": "27251623e2b1418ab2479e14d9688cff"
+            },
+            "Android": {
+              "uploadChannelShortcut": "b2Mf",
+              "uploadChannelKey": "a20f9ab4f78029a13b3fa0fe7b629d3b"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "network": "test2",
+      "des": "测试包",
+      "owner": "332960910@qq.com",
+      "pgyerKey": "a6f5a92ffe5f43677c5580de3e1e0d99",
+      "iOS": {
+        "pygerAppKey": "3aa46e5f75c648922bb2450ac2da7909",
+        "appOfficialWebsite": "https://www.pgyer.com/bjtkewish"
+      },
+      "Android": {
+        "pygerAppKey": "0ff51c2519a23078fac1f8e8ea1bbdef",
+        "appOfficialWebsite": "https://www.pgyer.com/bjtkewishA"
+      },
+      "allowBranchConfig": [
+        {
+          "branchRegulars": [
+            "v*"
+          ],
+          "branchNames": [
+            "dev_all"
+          ],
+          "mustContainBranchNameArray": [
+            "dev_in_pgyer"
+          ],
+          "branchChannelConfig": {
+            "iOS": {
+              "uploadChannelShortcut": "tbpZzJ",
+              "uploadChannelKey": "62db5b98204d75fb7175372dea10834e"
+            },
+            "Android": {
+              "uploadChannelShortcut": "jLC6np",
+              "uploadChannelKey": "c12313b6f482eb4e48822090a704627c"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "network": "develop1",
+      "des": "开发1包",
+      "owner": "332960910@qq.com",
+      "pgyerKey": "a6f5a92ffe5f43677c5580de3e1e0d99",
+      "iOS": {
+        "pygerAppKey": "3aa46e5f75c648922bb2450ac2da7909",
+        "appOfficialWebsite": "https://www.pgyer.com/bjtkewish"
+      },
+      "Android": {
+        "pygerAppKey": "0ff51c2519a23078fac1f8e8ea1bbdef",
+        "appOfficialWebsite": "https://www.pgyer.com/bjtkewishA"
+      },
+      "allowBranchConfig": [
+        {
+          "branchRegulars": [
+            "v*"
+          ],
+          "branchNames": [],
+          "branchChannelConfig": {
+            "iOS": {
+              "uploadChannelShortcut": "zHzO",
+              "uploadChannelKey": "635e67a69be1f0a5dadcf595a30ba57b"
+            },
+            "Android": {
+              "uploadChannelShortcut": "a0Ko",
+              "uploadChannelKey": "ea5224cb5f251489aa7ec972af40bb2d"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "package_pgyer_params_current": {
+    "network": "test2",
+    "des": "测试包",
+    "owner": "332960910@qq.com",
+    "pgyerKey": "a6f5a92ffe5f43677c5580de3e1e0d99",
+    "iOS": {
+      "pygerAppKey": "3aa46e5f75c648922bb2450ac2da7909",
+      "appOfficialWebsite": "https://www.pgyer.com/bjtkewish"
+    },
+    "Android": {
+      "pygerAppKey": "0ff51c2519a23078fac1f8e8ea1bbdef",
+      "appOfficialWebsite": "https://www.pgyer.com/bjtkewishA"
+    },
+    "allowBranchConfig": [
+      {
+        "branchRegulars": [
+          "v*"
+        ],
+        "branchNames": [
+          "dev_all"
+        ],
+        "mustContainBranchNameArray": [
+          "dev_in_pgyer"
+        ],
+        "branchChannelConfig": {
+          "iOS": {
+            "uploadChannelShortcut": "tbpZzJ",
+            "uploadChannelKey": "62db5b98204d75fb7175372dea10834e"
+          },
+          "Android": {
+            "uploadChannelShortcut": "jLC6np",
+            "uploadChannelKey": "c12313b6f482eb4e48822090a704627c"
+          }
+        }
+      }
+    ]
+  }
+}
