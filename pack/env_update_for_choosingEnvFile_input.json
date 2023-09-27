@@ -1,6 +1,6 @@
 {
     "action_sript_file_rel_this_dir": "./env_update_for_choosingEnvFile.sh",
-    "action_sript_file_des": "更新项目所选择的环境",
+    "action_sript_file_des": "更新项目所选择的环境，以迭代上线的版本号",
     "actions_envs_des": "要操作的环境",
     "actions_envs_values": [
         {
@@ -29,11 +29,11 @@
             "chooseValues": [
                 {
                     "id": "iOS",
-                    "name": "iOS"
+                    "value": "iOS"
                 },
                 {
                     "id": "Android",
-                    "name": "Android"
+                    "value": "Android"
                 }
             ]
         },
@@ -45,27 +45,27 @@
             "chooseValues": [
                 {
                     "id": "dev1",
-                    "name": "开发环境1"
+                    "value": "开发环境1"
                 },
                 {
                     "id": "dev2",
-                    "name": "开发环境2"
+                    "value": "开发环境2"
                 },
                 {
                     "id": "test1",
-                    "name": "测试环境1"
+                    "value": "测试环境1"
                 },
                 {
                     "id": "test2",
-                    "name": "测试环境2"
+                    "value": "测试环境2"
                 },
                 {
                     "id": "preproduct",
-                    "name": "预生产环境"
+                    "value": "预生产环境"
                 },
                 {
                     "id": "product",
-                    "name": "生产环境"
+                    "value": "生产环境"
                 }
             ]
         },
@@ -77,15 +77,15 @@
             "chooseValues": [
                 {
                     "id": "dev",
-                    "name": "生成最后只发布到蒲公英的包"
+                    "value": "生成最后只发布到蒲公英的包"
                 },
                 {
                     "id": "inner",
-                    "name": "生成最后只发布到TestFlight的包"
+                    "value": "生成最后只发布到TestFlight的包"
                 },
                 {
                     "id": "formal",
-                    "name": "生成最后要发布到AppStore的包"
+                    "value": "生成最后要发布到AppStore的包"
                 }
             ]
         }
