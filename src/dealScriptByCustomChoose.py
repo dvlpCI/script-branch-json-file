@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-07-06 13:38:09
+LastEditTime: 2023-09-27 15:01:08
 FilePath: dealScriptByCustomChoose.py
 Description: 打包-输入
 '''
@@ -14,8 +14,7 @@ Description: 打包-输入
 import subprocess
 from env_pack_util import getEnvValue_pack_input_params_file_path
 from base_util import callScriptCommond
-from path_util import getAbsPathByFileRelativePath
-from dealScript_by_scriptConfig_util import chooseCustomScriptFromFilePaths, dealScriptByScriptConfig
+from dealScriptByCustomChoose_util import chooseCustomScriptFromFilePaths
 
 # 定义颜色常量
 NC='\033[0m' # No Color
@@ -46,13 +45,17 @@ pack_input_params_file_path=chooseScriptFilePath
 if pack_input_params_file_path == None:
     exit(1)
 
-# 执行方法1：直接使用util方法
-# dealScriptByScriptConfig(pack_input_params_file_path)
 
-# 执行方法2：调用python脚本
-import os
-current_file_path = os.path.realpath(__file__)
-sript_file_absPath=getAbsPathByFileRelativePath(current_file_path, "./dealScript_by_scriptConfig.py")
+# 使用subprocess.run执行Shell命令
+result = subprocess.run('qbase -path execScript_by_configJsonFile', shell=True, capture_output=True, text=True)
+# 检查命令执行结果
+if result.returncode != 0:
+    print(result.stderr)    # 打印错误信息
+    exit(1)
+else:
+    print(result.stdout)    # 打印命令输出
+sript_file_absPath=result.stdout.strip()  # 去除字符串两端的空白字符（避免多出个换行符）
+# print(f"{GREEN}要执行的脚本是 {BLUE}{sript_file_absPath} {GREEN}。{NC}")
+
 command=["python3", sript_file_absPath, pack_input_params_file_path]
 callScriptCommond(command, sript_file_absPath)
-
