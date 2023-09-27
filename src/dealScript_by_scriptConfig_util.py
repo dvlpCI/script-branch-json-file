@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-07-06 15:10:29
+LastEditTime: 2023-09-27 11:51:03
 FilePath: src/dealScript_by_scriptConfig_util.py
 Description: 打包-输入
 '''
@@ -338,15 +338,28 @@ def __getChooseParamMapFromFile(operateHomeMap, pack_input_params_file_path):
     # ③如果是选择，选择项有哪些，然后提示进行"选择"输入(只需要输入)
     operateDes = operateHomeMap['des']
     operateChooseMaps = operateHomeMap['chooseValues']
+    # ④选择的结果给谁用
+    if 'resultForParam' not in operateHomeMap:
+        operateResultForParam = ""
+    else:
+        operateResultForParam = operateHomeMap['resultForParam']
+
     for i, chooseMap in enumerate(operateChooseMaps):
-        chooseName = chooseMap['name']
+        chooseName = chooseMap['des'] #这里只是打印此字段的值，便于选择
         if chooseName:
             print(f"{i+1}. {chooseName}")
         else:
-            print(f"未找到id为{YELLOW}{chooseName}的用户{NC}")
+            print(f"{YELLOW}{chooseMap}缺失 {BLUE}des {YELLOW}值，请后续补充，以便区分用途{NC}")
 
+    # 如果可选项只有一项，则直接选中
     if len(operateChooseMaps) == 1:
         chooseValueMap = operateChooseMaps[0]
+        if 'value' not in chooseValueMap:
+            print(f"{RED}发生错误:{BLUE}{pack_input_params_file_path} {RED}的\n{BLUE}{operateHomeMap}\n{RED}中的 {RED}的\n{BLUE}{chooseValueMap}\n{RED}不存在key为 {BLUE}.value {RED}的值，请先检查补充")
+            return None
+        else:
+            resultValue = chooseValueMap["value"]
+        
     else:
         while True:
             person_input = input("请%s%s编号（自定义请填0,退出q/Q）：" % (operateActionTypeDes, operateDes))
@@ -358,29 +371,29 @@ def __getChooseParamMapFromFile(operateHomeMap, pack_input_params_file_path):
                 continue
 
             if person_input == "0":
-                personName=input("请输入%s名（退出q/Q）：" % (operateDes))
-                if personName == "q" or personName == "Q":
+                resultValue=input("请输入%s名（退出q/Q）：" % (operateDes))
+                if resultValue == "q" or resultValue == "Q":
                     exit()
                 break
 
+            # 如果输入的数字，继续判断是否超过范围
             index = int(person_input) - 1
             if index >= len(operateChooseMaps):
-                continue
+                continue # 输入的数字超过范围，请重新输入
             else:
                 chooseValueMap = operateChooseMaps[index]
+                if 'value' not in chooseValueMap:
+                    print(f"{RED}发生错误:{BLUE}{pack_input_params_file_path} {RED}的\n{BLUE}{operateHomeMap}\n{RED}中的 {RED}的\n{BLUE}{chooseValueMap}\n{RED}不存在key为 {BLUE}.value {RED}的值，请先检查补充。")
+                    return None
+                else:
+                    resultValue = chooseValueMap["value"]
                 break
-
-
-    personName = chooseValueMap["name"]
-    print(f"您{operateActionTypeDes}的{operateDes}：{YELLOW}{personName}{NC}")
-
-
-    # ④选择的结果给谁用
-    resultForParam = operateHomeMap['resultForParam']
+    
+    print(f"您{operateActionTypeDes}的{operateDes}：{YELLOW}{resultValue}{NC}")        
 
     return {
-        "resultForParam": resultForParam,
-        "resultValue": personName,
+        "resultForParam": operateResultForParam,
+        "resultValue": resultValue,
     }
 
 
@@ -390,17 +403,17 @@ def __getInputParamMapFromFile(operateHomeMap):
     operateActionTypeDes="输入"
     operateDes = operateHomeMap['des']
     while True:
-        personName = input("请%s%s名（退出q/Q）：" % (operateActionTypeDes, operateDes))
-        if personName == "q" or personName == "Q":
+        resultValue = input("请%s%s名（退出q/Q）：" % (operateActionTypeDes, operateDes))
+        if resultValue == "q" or resultValue == "Q":
             exit()
         break
 
-    print(f"您{operateActionTypeDes}的{operateDes}：{YELLOW}{personName}{NC}")
+    print(f"您{operateActionTypeDes}的{operateDes}：{YELLOW}{resultValue}{NC}")
 
     # ④选择的结果给谁用
     resultForParam = operateHomeMap['resultForParam']
 
     return {
         "resultForParam": resultForParam,
-        "resultValue": personName,
+        "resultValue": resultValue,
     }
