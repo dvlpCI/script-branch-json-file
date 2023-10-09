@@ -65,8 +65,8 @@ if [ $? != 0 ]; then
 fi
 
 
-# 获取dSYM文件
-get_xcarchive_output_dir() {
+# 获取必备的dSYM文件路径
+get_requisite_dsym_file_path() {
     app_pack_params_map=$(cat ${app_info_abspath} | jq -r ".")
     dSYM_file_path_rel_home_dir=$(echo ${app_pack_params_map} | jq -r ".package_url_result.package_local_dSYM_file_path")
     dSYM_file_path=$(joinFullPath_checkExsit "$home_abspath" $dSYM_file_path_rel_home_dir)
@@ -86,8 +86,9 @@ get_xcarchive_output_dir() {
         return 1
     fi
 
-    DWARF_DSYM_FOLDER_PATH=$dSYM_file_path
-    printf "${BLUE}符号表dSYM文件为:%s${NC}\n" "${DWARF_DSYM_FOLDER_PATH}"
+    DWARF_DSYM_FILE_PATH=$dSYM_file_path
+    DWARF_DSYM_FOLDER_PATH=${DWARF_DSYM_FILE_PATH%/*} # 使用此方法可以避免路径上有..
+    printf "${BLUE}必备的符号表dSYM文件为:%s${NC}\n" "${DWARF_DSYM_FILE_PATH}"
 }
 
 
@@ -95,7 +96,7 @@ get_xcarchive_output_dir() {
 checkShouldContinue() {
     shouldContinue=false
     while [ "$shouldContinue" = false ]; do
-        read -r -p "请确认所要上传的符号表dSYM文件是否正确(正确并进行上传请输入y，若要退出请输入Q|q) : " option
+        read -r -p "请确认所要上传的必备符号表dSYM文件是否正确，上传时候将上传其所在的整个文件夹(正确并进行上传请输入y，若要退出请输入Q|q) : " option
 
         if [ "${option}" == q ] || [ "${option}" == "Q" ]; then
             printf "${BLUE}放弃上传${NC}"
@@ -109,25 +110,56 @@ checkShouldContinue() {
     done
 }
 
-get_xcarchive_output_dir
+# 请选择要上传到的位置
+chooseUploadPostion() {
+    while [ "$shouldContinue" = false ]; do
+        read -r -p "请选择您要上传到的位置(1bugly、2volcegine，若要退出请输入Q|q) : " input_uploadPosition
+
+        if [ "${input_uploadPosition}" == q ] || [ "${input_uploadPosition}" == "Q" ]; then
+            printf "${BLUE}放弃上传${NC}"
+            return 1
+        elif [[ "$input_uploadPosition" == [12] ]]; then
+            break
+        else
+            echo "无此选项，请重新输入。"
+        fi
+    done
+}
+
+function upload_dsym_to_bugly() {
+    buglyqq_upload_symbol_rel_home_dir=$(echo ${project_path_map} | jq -r ".dsym_path_rel_home.buglyqq_upload_symbol")
+    buglyqq_upload_symbol=$(joinFullPath_checkExsit "$home_abspath" $buglyqq_upload_symbol_rel_home_dir)
+    if [ $? != 0 ]; then
+        printf "${RED}buglyqq_upload_symbol路径不存在，请检查 ${buglyqq_upload_symbol}${NC}\n"
+        exit_script
+    fi
+
+    if [ "$verbose" = true ]; then
+        printf "正在执行命令(获取bugly配置，并进行上传):《 sh ${CurrentDIR_Script_Absolute}/base_bugly_upload.sh -appBuglyConfigF \"${bugly_config_file_path}\" appBuglyScriptF \"${buglyqq_upload_symbol}\" -appVersionInfoF \"${app_info_abspath}\" -appDSYMF \"${DWARF_DSYM_FOLDER_PATH}\" \n》"
+    fi
+    sh ${CurrentDIR_Script_Absolute}/base_bugly_upload.sh -appBuglyConfigF "${bugly_config_file_path}" -appBuglyScriptF "${buglyqq_upload_symbol}" -appVersionInfoF "${app_info_abspath}" -appDSYMF "${DWARF_DSYM_FOLDER_PATH}"
+}
+
+
+function get_dsym_for_volcengine() {
+    if [ "$verbose" = true ]; then
+        printf "正在执行命令(获取上传到火山引擎的符号表压缩文件):《 sh ${CurrentDIR_Script_Absolute}/get_dsym_for_volcengine.sh -appDSYMDir \"${DWARF_DSYM_FOLDER_PATH}\" \n》"
+    fi
+    sh ${CurrentDIR_Script_Absolute}/get_dsym_for_volcengine.sh -appDSYMDir "${DWARF_DSYM_FOLDER_PATH}"
+}
+
+get_requisite_dsym_file_path
 
 checkShouldContinue
 if [ $? != 0 ]; then
     exit 1
 fi
 
+chooseUploadPostion
 
-
-
-
-buglyqq_upload_symbol_rel_home_dir=$(echo ${project_path_map} | jq -r ".dsym_path_rel_home.buglyqq_upload_symbol")
-buglyqq_upload_symbol=$(joinFullPath_checkExsit "$home_abspath" $buglyqq_upload_symbol_rel_home_dir)
-if [ $? != 0 ]; then
-    printf "${RED}buglyqq_upload_symbol路径不存在，请检查 ${buglyqq_upload_symbol}${NC}\n"
-    exit_script
+if [ "$input_uploadPosition" == 2 ]; then # 上传到火山引擎
+    get_dsym_for_volcengine
+else 
+    upload_dsym_to_bugly
 fi
 
-if [ "$verbose" = true ]; then
-  printf "正在执行命令(获取bugly配置，并进行上传):《 sh ${CurrentDIR_Script_Absolute}/base_bugly_upload.sh -appBuglyConfigF \"${bugly_config_file_path}\" appBuglyScriptF \"${buglyqq_upload_symbol}\" -appVersionInfoF \"${app_info_abspath}\" -appDSYMF \"${DWARF_DSYM_FOLDER_PATH}\" \n》"
-fi
-sh ${CurrentDIR_Script_Absolute}/base_bugly_upload.sh -appBuglyConfigF "${bugly_config_file_path}" -appBuglyScriptF "${buglyqq_upload_symbol}" -appVersionInfoF "${app_info_abspath}" -appDSYMF "${DWARF_DSYM_FOLDER_PATH}"

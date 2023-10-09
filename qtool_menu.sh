@@ -332,7 +332,7 @@ evalActionByInput() {
 }
 
 uploadDSYMAction() {
-    sh ${qtoolScriptDir_Absolute}/dsym/bugly_upload.sh "${verboseParam}"
+    sh ${qtoolScriptDir_Absolute}/dsym/dsym_get_and_upload.sh "${verboseParam}"
     checkResultCode $?
 }
 
