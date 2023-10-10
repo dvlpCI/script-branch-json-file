@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-10-09 11:54:08
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-10-09 15:24:37
+ # @LastEditTime: 2023-10-10 23:24:45
  # @Description: 
 ### 
 
@@ -34,16 +34,17 @@ output_single_zip_folder="${DWARF_DSYM_FOLDER_PATH}/dsymZip"
 mkdir -p "$output_single_zip_folder"
 
 # 遍历dSYM文件夹中的所有.dSYM文件
-for file in "$DWARF_DSYM_FOLDER_PATH"/*.dSYM; do
-  if [ -d "$file" ]; then # dSYM 是文件夹，而不是文件，不要判断错了
+find $DWARF_DSYM_FOLDER_PATH -name "*.dSYM" | while read -r file; do 
     # 获取文件名（不包含扩展名）
     filename=$(basename "$file" .dSYM)
-    # 压缩文件为.zip格式
-    # zip -r "$output_single_zip_folder/$filename.zip" "$file"
-    # 将dSYM目录下的所有文件和子目录，但会排除掉以.DS_Store结尾的文件和名为__MACOSX的子目录。
-    zip -r "$output_single_zip_folder/$filename.zip" "$file" -x "*.DS_Store" -x "__MACOSX"
-    echo "压缩 $file 完成"
-  fi
+    # 将dSYM目录下的所有文件和子目录压缩文件为.zip格式，但会排除掉以.DS_Store结尾的文件和名为__MACOSX的子目录。
+    # 区别于 -r ，通过在 zip 命令中添加 -j 选项，它将忽略源文件的路径信息，并将文件仅保存为 ZIP 文件中的文件名。这样生成的 ZIP 文件中将只包含文件名，而不会有深层的目录结构。
+    zip -j "$output_single_zip_folder/$filename.zip" "$file" # -x "*.DS_Store" -x "__MACOSX"
+    if [ $? != 0 ]; then
+      echo "${RED}压缩 $((++count)) $file 失败${NC}"
+    # else
+    #   echo "${GREEN}压缩 $((++count)) $file 完成${NC}"
+    fi
 done
 
 
