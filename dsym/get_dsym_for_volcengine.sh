@@ -35,7 +35,7 @@ mkdir -p "$output_single_zip_folder"
 
 # 遍历dSYM文件夹中的所有.dSYM文件
 for file in "$DWARF_DSYM_FOLDER_PATH"/*.dSYM; do
-  if [ -f "$file" ]; then
+  if [ -d "$file" ]; then # dSYM 是文件夹，而不是文件，不要判断错了
     # 获取文件名（不包含扩展名）
     filename=$(basename "$file" .dSYM)
     # 压缩文件为.zip格式
@@ -56,4 +56,7 @@ mkdir -p "$output_all_zip_folder"
 # 将所有.zip文件整体压缩成一个all.zip文件
 output_all_zip_file="$output_all_zip_folder/all.zip"
 zip -j "$output_all_zip_file" "$output_single_zip_folder"/*.zip
-echo "${GREEN}整体压缩完成,地址为${BLUE} ${output_all_zip_file} ${GREEN}。请在页面 符号表管理 https://console.volcengine.com/apmplus/app/mapping?aid=502194&org_id=2100483024&os=iOS 上进行提交。${NC}"
+volcengine="https://console.volcengine.com/apmplus/app/mapping?aid=502194&org_id=2100483024&os=iOS"
+echo "${GREEN}整体压缩完成,地址为${BLUE} ${output_all_zip_file} ${GREEN}。请在页面 符号表管理${BLUE} $volcengine ${GREEN}上进行提交。${NC}"
+open "$output_all_zip_folder" # 为你打开 ${output_all_zip_file} 所在的文件夹
+open "$volcengine" # 为你打开火山引擎符号表的上传网页

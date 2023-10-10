@@ -112,7 +112,7 @@ checkShouldContinue() {
 
 # 请选择要上传到的位置
 chooseUploadPostion() {
-    while [ "$shouldContinue" = false ]; do
+    while true ; do
         read -r -p "请选择您要上传到的位置(1bugly、2volcegine，若要退出请输入Q|q) : " input_uploadPosition
 
         if [ "${input_uploadPosition}" == q ] || [ "${input_uploadPosition}" == "Q" ]; then
