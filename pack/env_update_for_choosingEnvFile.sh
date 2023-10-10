@@ -111,4 +111,5 @@ BUILD="${cur_date_month}${cur_date_day}${cur_date_hour}${cur_date_minute}" # 022
 if [ -n "$BUILD" ]; then
     # sed -i '' "s/package unknow buildNumber/${BUILD}/g" ${AppEnvFilePath}
     sh ${qbase_update_json_file_singleString_script_path} -jsonF ${AppEnvFilePath} -k 'BUILD_NUMBER' -v "${BUILD}"
+    open "${AppEnvFilePath}"
 fi
