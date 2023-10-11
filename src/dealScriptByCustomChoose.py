@@ -50,10 +50,10 @@ if pack_input_params_file_path == None:
 result = subprocess.run('qbase -path execScript_by_configJsonFile', shell=True, capture_output=True, text=True)
 # 检查命令执行结果
 if result.returncode != 0:
-    print(result.stderr)    # 打印错误信息
+    print(f"result.stderr={result.stderr}")    # 打印错误信息
     exit(1)
-else:
-    print(result.stdout)    # 打印命令输出
+# else:
+#     print(f"result.stdout={result.stdout}")    # 打印命令输出
 sript_file_absPath=result.stdout.strip()  # 去除字符串两端的空白字符（避免多出个换行符）
 # print(f"{GREEN}要执行的脚本是 {BLUE}{sript_file_absPath} {GREEN}。{NC}")
 
