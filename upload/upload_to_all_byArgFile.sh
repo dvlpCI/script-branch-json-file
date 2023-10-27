@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-06-16 16:06:35
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-10-27 20:01:21
+ # @LastEditTime: 2023-10-28 02:12:17
  # @Description: 上传ipa到各个平台,平台参数来源于文件
 ### 
 
@@ -34,16 +34,21 @@ function debug_log() {
     fi
 }
 
-exit_with_message() { # 退出脚本的方法，省去当某个步骤失败后，还去继续多余的执行其他操作
-    printf "%s" "$1"
+exit_with_response_error_message() { # 退出脚本的方法，省去当某个步骤失败后，还去继续多余的执行其他操作
+    if [ -z "${responseJsonString}" ]; then
+        responseJsonString='{
+            
+        }'
+    fi
+    uploadFailureTotalMessage=$(printf "%s" "${responseJsonString}" | jq -r '.uploadFailureTotalMessage')
+    uploadFailureTotalMessage+=$1
+
+    responseJsonString=$(printf "%s" "$responseJsonString" | jq --arg uploadFailureTotalMessage "$uploadFailureTotalMessage" '. + { "uploadFailureTotalMessage": $uploadFailureTotalMessage }')
+    printf "%s" "${responseJsonString}"
     exit 1
 }
 
-
 # shell 参数具名化
-show_usage="args: [-envInfoF, -ipa]\
-                                  [--environment-json-file=, --ipa-file-path=]"
-
 while [ -n "$1" ]
 do
         case "$1" in
@@ -87,70 +92,69 @@ CosResultHostUrl=$(printf "%s" "${PackageResultMap}" | ${JQ_EXEC} -r ".cos.hostU
 Transporter_USERNAME=$(printf "%s" "${PackageResultMap}" | ${JQ_EXEC} -r ".testFlight.username")
 Transporter_PASSWORD=$(printf "%s" "${PackageResultMap}" | ${JQ_EXEC} -r ".testFlight.password")
 
-responseJsonString='{
-  "existingKey": "existingValue",
-  "pgyer": {
-    "code": "0",
-    "message": "上传成功",
-    "appNetworkUrl": "https://www.xcxwo.com/app/qrcodeHistory/xxxx"
-  },
-  "cos": {
-    "code": "0",
-    "message": "Success: /Users/qian/Project/CQCI/script-qbase/upload_app/App1Enterprise/App1Enterprise.ipa 文件上传cos成功，路径为https://images.xxx.com//mcms/download/app/App1Enterprise.ipa",
-    "appNetworkUrl": "https://images.xxx.com//mcms/download/app/App1Enterprise.ipa"
-  },
-  "code": "0",
-  "message": "",
-  "log": "温馨提示：您的此iOS包不会上传到AppStore。（因为您设置用来上传ipa的 Transporter 用户名和密码缺失，请先补充，所以此次无法自动上传。附:Transporter_USERNAME= Transporter_PASSWORD= )。"
-}'
-# responseJsonString=$(sh ${qbase_upload_app_to_all_script_path} -ipa "${ipa_file_path}" \
-#     -updateDesString "${updateDesString}" -updateDesFromFilePath "${updateDesFromFilePath}" -updateDesFromFileKey "${updateDesFromFileKey}" \
-#     -pgyerHelpOwner "${pgyerOwner}" -pgyerHelpChannelKey "${pgyerChannelKey}" \
-#     -pgyerApiKey "${pgyerApiKey}" -pgyerChannelShortcut "${pgyerChannelShortcut}" -pgyerShouldUploadFast "${pgyerShouldUploadFast}" \
-#     -CosREGION "${CosUploadToREGION}" -CosBUCKETName "${CosUploadToBUCKETName}" -CosBUCKETDir "${CosUploadToBUCKETDir}" -CosResultHostUrl "${CosResultHostUrl}" \
-#     -TransporterUserName "${Transporter_USERNAME}" -TransporterPassword "${Transporter_PASSWORD}" \
-#     -LogPostToRobotUrl "${LogPostToRobotUrl}" -LogPostTextHeader "${LogPostTextHeader}" \
-#     )
+# responseJsonString='{
+#   "existingKey": "existingValue",
+#   "pgyer": {
+#     "code": "0",
+#     "message": "上传 pgyer 成功",
+#     "appNetworkUrl": "https://www.xcxwo.com/app/qrcodeHistory/xxxx"
+#   },
+#   "cos": {
+#     "code": "0",
+#     "message": "Success: /Users/qian/Project/CQCI/script-qbase/upload_app/App1Enterprise/App1Enterprise.ipa 文件上传cos成功，路径为https://images.xxx.com/mcms/download/app/App1Enterprise.ipa",
+#     "appNetworkUrl": "https://images.xxx.com/mcms/download/app/App1Enterprise.ipa"
+#   },
+#   "uploadSuccessTypes": "pgyer cos",
+#   "uploadFailureTypes": "",
+#   "message": "",
+#   "log": "温馨提示：您的此iOS包不会上传到AppStore。（因为您设置用来上传ipa的 Transporter 用户名和密码缺失，请先补充，所以此次无法自动上传。附:Transporter_USERNAME= Transporter_PASSWORD= )。"
+# }'
+responseJsonString=$(sh ${qbase_upload_app_to_all_script_path} -ipa "${ipa_file_path}" \
+    -updateDesString "${updateDesString}" -updateDesFromFilePath "${updateDesFromFilePath}" -updateDesFromFileKey "${updateDesFromFileKey}" \
+    -pgyerHelpOwner "${pgyerOwner}" -pgyerHelpChannelKey "${pgyerChannelKey}" \
+    -pgyerApiKey "${pgyerApiKey}" -pgyerChannelShortcut "${pgyerChannelShortcut}" -pgyerShouldUploadFast "${pgyerShouldUploadFast}" \
+    -CosREGION "${CosUploadToREGION}" -CosBUCKETName "${CosUploadToBUCKETName}" -CosBUCKETDir "${CosUploadToBUCKETDir}" -CosResultHostUrl "${CosResultHostUrl}" \
+    -TransporterUserName "${Transporter_USERNAME}" -TransporterPassword "${Transporter_PASSWORD}" \
+    -LogPostToRobotUrl "${LogPostToRobotUrl}" -LogPostTextHeader "${LogPostTextHeader}" \
+    )
 if [ $? != 0 ]; then
-    exit_with_message "${RED}上传ipa到各个平台失败的结果显示如下:${BLUE} ${responseJsonString} ${BLUE}。${NC}"
-fi
-
-uploadResultCode=$(printf "%s" "${responseJsonString}" | jq -r '.code')
-if [ "${uploadResultCode}" != "0" ]; then
-    uploadResultMessage=$(printf "%s" "${responseJsonString}" | jq -r '.message')
-    exit_with_message "${RED}上传ipa到各个平台失败的具体原因显示如下:${BLUE} ${uploadResultMessage} ${BLUE}。${NC}"
+    exit_with_response_error_message "${responseJsonString}"
 fi
 
 
 
-# 上传成功后更新地址到
-function tryUpdateAppNetworkUrlForCompontentKey() {
-    compontentKey=$1
-    # 上传成功，并更新地址给文件
+uploadSuccessTypesString=$(printf "%s" "${responseJsonString}" | jq -r ".uploadSuccessTypes")
+if [ "${uploadSuccessTypesString}" == "null" ]; then
+    uploadSuccessTypesString=""
+fi
+uploadSuccessTypeArray=(${uploadSuccessTypesString})
+uploadSuccessCount=${#uploadSuccessTypeArray[@]}
+debug_log "${PURPLE} 上传结果成功 ${uploadSuccessCount} 个平台，分别为: ${uploadSuccessTypeArray[*]} ${PURPLE} 。${NC}"
+uploadFailureTypesString=$(printf "%s" "${responseJsonString}" | jq -r ".uploadFailureTypes")
+if [ "${uploadFailureTypesString}" == "null" ]; then
+    uploadFailureTypesString=""
+fi
+uploadFailureTypeArray=(${uploadFailureTypesString})
+uploadFailureCount=${#uploadFailureTypeArray[@]}
+debug_log "${PURPLE} 上传结果失败 ${uploadFailureCount} 个平台，分别为: ${uploadFailureTypeArray[*]} ${PURPLE} 。${NC}"
+
+
+# 成功的信息
+updateAppNetworkUrlToFile_errorMessage=""
+for compontentKey in "${uploadSuccessTypeArray[@]}"; do
     compontentAppNetworkUrl=$(printf "%s" "${responseJsonString}" | jq -r ".${compontentKey}.appNetworkUrl")
-    if [ -z "${compontentAppNetworkUrl}" ] || [ "${compontentAppNetworkUrl}" == "null" ]; then
-        return 0
-    fi
-    
+    debug_log "${GREEN}上传ipa到 ${compontentKey}/${uploadSuccessTypeArray[*]} 成功，地址为 ${compontentAppNetworkUrl} .${NC}"
     sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadPlatformArgsFilePath} -k "package_url_result.package_${compontentKey}_url" -v "${compontentAppNetworkUrl}"
     if [ $? != 0 ]; then
-        compontentResultMessage="更新要上传的 ${compontentKey} 地址失败，地址为 ${compontentAppNetworkUrl} 。"
-        return 1
+        updateAppNetworkUrlToFile_errorMessage+="更新 ${compontentKey} 的地址值 ${compontentAppNetworkUrl} 到文件 ${UploadPlatformArgsFilePath} 失败。"
     fi
-}
-
-tryUpdateAppNetworkUrlForCompontentKey "pgyer"
-if [ $? != 0 ]; then
-    exit_with_message "${compontentResultMessage}"
+done
+if [ -n "${updateAppNetworkUrlToFile_errorMessage}" ]; then
+    exit_with_response_error_message "${updateAppNetworkUrlToFile_errorMessage}"
 fi
 
-tryUpdateAppNetworkUrlForCompontentKey "cos"
-if [ $? != 0 ]; then
-    exit_with_message "${compontentResultMessage}"
-fi
 
-tryUpdateAppNetworkUrlForCompontentKey "testFlight"
-if [ $? != 0 ]; then
-    exit_with_message "${compontentResultMessage}"
+if [ "${uploadFailureCount}" != "0" ]; then
+    printf "%s" "${responseJsonString}"
+    exit 1
 fi
-

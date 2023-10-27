@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-06-16 16:06:35
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-10-27 20:12:23
+ # @LastEditTime: 2023-10-28 02:15:50
  # @Description: 测试上传ipa到各个平台,平台参数来源于文件
 ### 
 
@@ -33,10 +33,10 @@ ipa_file_path="/Users/qian/Project/CQCI/script-qbase/upload_app/App1Enterprise/A
 
 
 # updateDesString="测试蒲公英上传到指定位置，请勿下载"
-updateDesFromFilePath="${CurrentDIR_Script_Absolute}/example_upload_app_to_pgyer.json"
-updateDesFromFileKey=".package_des.chinese"
+updateDesFromFilePath="${CurrentDIR_Script_Absolute}/example_upload_to_all_byArgFile.json"
+updateDesFromFileKey="package_des.chinese"
 
-UploadPlatformArgsFilePath="${CurrentDIR_Script_Absolute}/example_upload_app_to_pgyer.json"
+UploadPlatformArgsFilePath="${CurrentDIR_Script_Absolute}/example_upload_to_all_byArgFile.json"
 UploadPlatformArgsFileKey="package_platform_arg"
 
 
@@ -47,13 +47,13 @@ LogPostTextHeader="这是上传过程中对日志进行补充的标题"
 
 # 示例
 log_title "上传ipa到各个平台,平台参数来源于文件"
-uploadErrorMessage=$(sh ${CommonFun_HomeDir_Absolute}/upload_to_all_byArgFile.sh -ipa "${ipa_file_path}" \
+responseJsonString=$(sh ${CommonFun_HomeDir_Absolute}/upload_to_all_byArgFile.sh -ipa "${ipa_file_path}" \
     -updateDesString "${updateDesString}" -updateDesFromFilePath "${updateDesFromFilePath}" -updateDesFromFileKey "${updateDesFromFileKey}" \
     -uploadArgsFPath "${UploadPlatformArgsFilePath}" -uploadArgsFKey "${UploadPlatformArgsFileKey}" \
     -LogPostToRobotUrl "${LogPostToRobotUrl}" -LogPostTextHeader "${LogPostTextHeader}" \
     )
 if [ $? != 0 ]; then
-    echo "${RED}上传ipa到各个平台失败的结果显示如下:${BLUE} ${uploadErrorMessage} ${BLUE}。${NC}"
+    echo "${RED}Error❌:上传ipa到各个平台,平台参数来源于文件的错误信息如下:\n${BLUE} ${responseJsonString} ${RED}。${NC}"
     exit 1
 fi
 
