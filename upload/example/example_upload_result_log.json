@@ -1,0 +1,36 @@
+{
+  "upload_result": {
+    "local": {
+      "origin_url": "/User/qian/Project/package/xxx.ipa",
+      "backup_dir": "/User/qian/Project/package/backup/"
+    },
+    "pgyer": {
+      "official_url": "https://www.pgyer.com/xxxx/yyyy.ipa",
+      "download_url": "https://www.pgyer.com/xxxx/yyyy.ipa"
+    },
+    "cos": {
+      "official_url": "https://www.cos.com/xxxx/yyyy.ipa",
+      "download_url": "https://www.cos.com/xxxx/yyyy.ipa"
+    },
+    "testFlight": {
+      "uploadSupplement": [
+        {
+          "title": "1.后续操作：\n请确认包是否已自动上传到苹果TestFlight后台，若失败，请下载cos地址手动上传，若成功则。",
+          "step": [
+            "①请从电脑登录https://appstoreconnect.apple.com，进入'我的app'->XXX应用->顶部'TestFlight'->左侧'构建版本'",
+            "②操作想要发布的版本",
+            "③请版本检查更新人员更新最新的版本号、构件号、下载地址三要素"
+          ]
+        },
+        {
+          "title": "2.发布后检查(新版本下载方法也是如此):",
+          "step": [
+            "①请在iPhone上通过浏览器打开https://testflight.apple.com/join/TRKtWdEe，进入后跳到TestFlight即可看到应用",
+            "②打开旧版app，查看是否弹出后台指定的新版本更新提示",
+            "③官网下载也顺便看下"
+          ]
+        }
+      ]
+    }
+  }
+}

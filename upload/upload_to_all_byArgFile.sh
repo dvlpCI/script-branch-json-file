@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-06-16 16:06:35
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-10-28 02:12:17
+ # @LastEditTime: 2023-10-29 03:37:20
  # @Description: 上传ipa到各个平台,平台参数来源于文件
 ### 
 
@@ -58,8 +58,9 @@ do
                 -updateDesFromFilePath|--updateDesFromFilePath) updateDesFromFilePath=$2; shift 2;; # 说明文案使用来源于哪个文件
                 -updateDesFromFileKey|--updateDesFromFileKey) updateDesFromFileKey=$2; shift 2;; # 说明文案使用来源于文件的哪个key
 
-                -uploadArgsFPath|--upload-args-file) UploadPlatformArgsFilePath=$2; shift 2;;
+                -uploadArgsFPath|--upload-args-file-path) UploadPlatformArgsFilePath=$2; shift 2;;
                 -uploadArgsFKey|--upload-args-file-key) UploadPlatformArgsFileKey=$2; shift 2;;
+                -uploadResultFKey|--upload-result-file-key) UploadResult_FILE_Key=$2; shift 2;;
 
                 -LogPostToRobotUrl|--Log-PostTo-RobotUrl) LogPostToRobotUrl=$2; shift 2;; # 上传过程中的日志发送到哪个机器人
                 -LogPostTextHeader|--Log-Post-TextHeader) LogPostTextHeader=$2; shift 2;; # 上传过程中对日志进行补充的标题
@@ -144,8 +145,10 @@ updateAppNetworkUrlToFile_errorMessage=""
 for compontentKey in "${uploadSuccessTypeArray[@]}"; do
     compontentAppNetworkUrl=$(printf "%s" "${responseJsonString}" | jq -r ".${compontentKey}.appNetworkUrl")
     debug_log "${GREEN}上传ipa到 ${compontentKey}/${uploadSuccessTypeArray[*]} 成功，地址为 ${compontentAppNetworkUrl} .${NC}"
-    sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadPlatformArgsFilePath} -k "package_url_result.package_${compontentKey}_url" -v "${compontentAppNetworkUrl}"
+    sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadPlatformArgsFilePath} -k "${UploadResult_FILE_Key}.${compontentKey}.download_url" -v "${compontentAppNetworkUrl}"
     if [ $? != 0 ]; then
+        echo "${RED}执行更新文案到文件出错:《${BLUE} sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadPlatformArgsFilePath} -k \"${UploadResult_FILE_Key}.${compontentKey}.download_url\" -v \"${compontentAppNetworkUrl}\" ${RED}》${NC}"
+        exit 1
         updateAppNetworkUrlToFile_errorMessage+="更新 ${compontentKey} 的地址值 ${compontentAppNetworkUrl} 到文件 ${UploadPlatformArgsFilePath} 失败。"
     fi
 done

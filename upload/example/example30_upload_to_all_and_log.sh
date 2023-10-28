@@ -3,8 +3,8 @@
  # @Author: dvlproad
  # @Date: 2023-06-16 16:06:35
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-10-28 02:15:50
- # @Description: 测试上传ipa到各个平台,平台参数来源于文件
+ # @LastEditTime: 2023-10-29 04:06:41
+ # @Description: 测试上传ipa到各个平台,平台参数来源于文件。并在上传结束,获取安装包的各种路径信息
 ### 
 
 
@@ -30,14 +30,15 @@ function error_exit_script() { # 退出脚本的方法，省去当某个步骤�
 
 # ipa_file_path="${CurrentDIR_Script_Absolute}/App1Enterprise/App1Enterprise.ipa"
 ipa_file_path="/Users/qian/Project/CQCI/script-qbase/upload_app/App1Enterprise/App1Enterprise.ipa"
-
+TEST_JSON_FILE="${CurrentDIR_Script_Absolute}/example30_upload_to_all_and_log.json"
 
 # updateDesString="测试蒲公英上传到指定位置，请勿下载"
-updateDesFromFilePath="${CurrentDIR_Script_Absolute}/example_upload_to_all_byArgFile.json"
+updateDesFromFilePath=${TEST_JSON_FILE}
 updateDesFromFileKey="package_des.chinese"
 
-UploadPlatformArgsFilePath="${CurrentDIR_Script_Absolute}/example_upload_to_all_byArgFile.json"
+UploadPlatformArgsFilePath=${TEST_JSON_FILE}
 UploadPlatformArgsFileKey="package_platform_arg"
+UploadResult_FILE_PATH=${TEST_JSON_FILE}
 UploadResult_FILE_Key="upload_result"
 
 
@@ -55,7 +56,8 @@ log_title "上传ipa到各个平台,平台参数来源于文件"
 #     exit
 responseJsonString=$(sh ${CommonFun_HomeDir_Absolute}/upload_to_all_byArgFile.sh -ipa "${ipa_file_path}" \
     -updateDesString "${updateDesString}" -updateDesFromFilePath "${updateDesFromFilePath}" -updateDesFromFileKey "${updateDesFromFileKey}" \
-    -uploadArgsFPath "${UploadPlatformArgsFilePath}" -uploadArgsFKey "${UploadPlatformArgsFileKey}" -uploadResultFKey "${UploadResult_FILE_Key}" \
+    -uploadArgsFPath "${UploadPlatformArgsFilePath}" -uploadArgsFKey "${UploadPlatformArgsFileKey}" \
+    -uploadResultFPath "${UploadResult_FILE_PATH}" -uploadResultFKey "${UploadResult_FILE_Key}" \
     -LogPostToRobotUrl "${LogPostToRobotUrl}" -LogPostTextHeader "${LogPostTextHeader}" \
     )
 if [ $? != 0 ]; then
