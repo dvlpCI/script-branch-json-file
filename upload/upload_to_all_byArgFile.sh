@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-06-16 16:06:35
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-10-29 03:37:20
+ # @LastEditTime: 2023-10-29 22:51:13
  # @Description: 上传ipa到各个平台,平台参数来源于文件
 ### 
 
@@ -140,16 +140,25 @@ uploadFailureCount=${#uploadFailureTypeArray[@]}
 debug_log "${PURPLE} 上传结果失败 ${uploadFailureCount} 个平台，分别为: ${uploadFailureTypeArray[*]} ${PURPLE} 。${NC}"
 
 
-# 成功的信息
+# 将成功的信息写入文件的 ${UploadResult_FILE_Key} 键中
 updateAppNetworkUrlToFile_errorMessage=""
 for compontentKey in "${uploadSuccessTypeArray[@]}"; do
     compontentAppNetworkUrl=$(printf "%s" "${responseJsonString}" | jq -r ".${compontentKey}.appNetworkUrl")
     debug_log "${GREEN}上传ipa到 ${compontentKey}/${uploadSuccessTypeArray[*]} 成功，地址为 ${compontentAppNetworkUrl} .${NC}"
     sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadPlatformArgsFilePath} -k "${UploadResult_FILE_Key}.${compontentKey}.download_url" -v "${compontentAppNetworkUrl}"
     if [ $? != 0 ]; then
-        echo "${RED}执行更新文案到文件出错:《${BLUE} sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadPlatformArgsFilePath} -k \"${UploadResult_FILE_Key}.${compontentKey}.download_url\" -v \"${compontentAppNetworkUrl}\" ${RED}》${NC}"
-        exit 1
-        updateAppNetworkUrlToFile_errorMessage+="更新 ${compontentKey} 的地址值 ${compontentAppNetworkUrl} 到文件 ${UploadPlatformArgsFilePath} 失败。"
+        # echo "${RED}执行出错的命令如下:《${BLUE} sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadPlatformArgsFilePath} -k \"${UploadResult_FILE_Key}.${compontentKey}.download_url\" -v \"${compontentAppNetworkUrl}\" ${RED}》${NC}"
+        updateAppNetworkUrlToFile_errorMessage+="执行更新更新 ${compontentKey} 的地址值 ${compontentAppNetworkUrl} 到文件 ${UploadPlatformArgsFilePath} 失败。"
+    fi
+done
+# 将失败的信息也写入文件的 ${UploadResult_FILE_Key} 键中，而不是上传失败和没有上传都不知道。
+for compontentKey in "${uploadFailureTypeArray[@]}"; do
+    compontentAppNetworkUrl=$(printf "%s" "${responseJsonString}" | jq -r ".${compontentKey}.appNetworkUrl")
+    debug_log "${GREEN}上传ipa到 ${compontentKey}/${uploadSuccessTypeArray[*]} 失败，信息为 ${compontentAppNetworkUrl} .${NC}"
+    sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadPlatformArgsFilePath} -k "${UploadResult_FILE_Key}.${compontentKey}.download_url" -v "${compontentAppNetworkUrl}"
+    if [ $? != 0 ]; then
+        # echo "${RED}执行出错的命令如下:《${BLUE} sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadPlatformArgsFilePath} -k \"${UploadResult_FILE_Key}.${compontentKey}.download_url\" -v \"${compontentAppNetworkUrl}\" ${RED}》${NC}"
+        updateAppNetworkUrlToFile_errorMessage+="执行更新更新 ${compontentKey} 的地址值 ${compontentAppNetworkUrl} 到文件 ${UploadPlatformArgsFilePath} 失败。"
     fi
 done
 if [ -n "${updateAppNetworkUrlToFile_errorMessage}" ]; then
@@ -157,7 +166,4 @@ if [ -n "${updateAppNetworkUrlToFile_errorMessage}" ]; then
 fi
 
 
-if [ "${uploadFailureCount}" != "0" ]; then
-    printf "%s" "${responseJsonString}"
-    exit 1
-fi
+printf "%s" "${responseJsonString}"

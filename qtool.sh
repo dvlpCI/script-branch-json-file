@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-08-03 20:55:49
+ # @LastEditTime: 2023-10-29 23:26:55
  # @Description: 
 ### 
 
@@ -91,13 +91,18 @@ fi
 # echo "${qtargetScript_curVersion_homedir_abspath}"
 
 function get_path() {
+    if [ -z "$1" ]; then
+        echo "$qtool_homedir_abspath"
+        return
+    fi
+
     if [ "$1" == "home" ]; then
         echo "$qtool_homedir_abspath"
     else
-        echo "$qtool_homedir_abspath"
+        # echo "qbase -package \"qtool\" -path \"$1\""
+        echo $(qbase -package "qtool" -path "$1")
     fi
 }
-
 
 # 如果是获取版本号
 versionCmdStrings=("--version" "-version" "-v" "version")
@@ -105,6 +110,7 @@ if echo "${versionCmdStrings[@]}" | grep -wq "$1" &>/dev/null; then
     echo "${qtool_latest_version}"
 elif [ "$1" == "-path" ]; then
     get_path "$2"
+    exit
 else
     echo "${qtool_latest_version}"
 fi

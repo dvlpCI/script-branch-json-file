@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-06-16 16:06:35
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-10-29 04:06:41
+ # @LastEditTime: 2023-10-29 21:42:18
  # @Description: 测试上传ipa到各个平台,平台参数来源于文件。并在上传结束,获取安装包的各种路径信息
 ### 
 
@@ -54,15 +54,14 @@ log_title "上传ipa到各个平台,平台参数来源于文件"
 #     -uploadArgsFPath "${UploadPlatformArgsFilePath}" -uploadArgsFKey "${UploadPlatformArgsFileKey}" -uploadResultFKey "${UploadResult_FILE_Key}" \
 #     -LogPostToRobotUrl "${LogPostToRobotUrl}" -LogPostTextHeader "${LogPostTextHeader}"
 #     exit
-responseJsonString=$(sh ${CommonFun_HomeDir_Absolute}/upload_to_all_byArgFile.sh -ipa "${ipa_file_path}" \
+responseJsonString=$(sh ${CommonFun_HomeDir_Absolute}/upload_to_all_and_log.sh -ipa "${ipa_file_path}" \
     -updateDesString "${updateDesString}" -updateDesFromFilePath "${updateDesFromFilePath}" -updateDesFromFileKey "${updateDesFromFileKey}" \
     -uploadArgsFPath "${UploadPlatformArgsFilePath}" -uploadArgsFKey "${UploadPlatformArgsFileKey}" \
     -uploadResultFPath "${UploadResult_FILE_PATH}" -uploadResultFKey "${UploadResult_FILE_Key}" \
     -LogPostToRobotUrl "${LogPostToRobotUrl}" -LogPostTextHeader "${LogPostTextHeader}" \
     )
 if [ $? != 0 ]; then
-    echo "${RED}Error❌:上传ipa到各个平台,平台参数来源于文件的错误信息如下:\n${BLUE} ${responseJsonString} ${RED}。${NC}"
+    echo "${responseJsonString}" # 此时值为错误信息
     exit 1
 fi
-
-echo "${GREEN}上传ipa到各个平台成功。信息如下：${BLUE} \n$(cat "${UploadPlatformArgsFilePath}" | jq ".${UploadResult_FILE_Key}") ${GREEN}。\n更多详情请查看: ${UploadPlatformArgsFilePath} ${NC}"
+echo "${GREEN}上传ipa到各个平台的脚本执行成功，结果如下:${BLUE}\n${responseJsonString} \n${GREEN}更多详情请查看: ${UploadPlatformArgsFilePath} ${NC}"

@@ -1,35 +1,34 @@
 {
-    "package_des": {
-      "english": "[v1.6.8_1031]dev_test2_iOSV1.22.27(22271659)",
-      "chinese": "会直接发布的iOSdevtest2包"
+  "package_des": {
+    "english": "[v1.6.8_1031]dev_test2_iOSV1.22.27(22271659)",
+    "chinese": "会直接发布的iOSdevtest2包"
+  },
+  "package_platform_arg": {
+    "shoudUploadToPgyerOwner": "xxxx@qq.com",
+    "shoudUploadToPgyerKey": "da2bc35c7943aa78e66ee9c94fdd0824",
+    "pgyer_branch_config": {
+      "uploadChannelShortcut": "fzgy",
+      "uploadChannelKey": "uploadChannelKey",
+      "downloadChannelShortcut": "fzgy",
+      "downloadChannelKey": "downloadChannelKey"
     },
-    "package_platform_arg": {
-      "shoudUploadToPgyerOwner": "xxxx@qq.com",
-      "shoudUploadToPgyerKey": "da2bc35c7943aa78e66ee9c94fdd0824",
-      "pgyer_branch_config": {
-        "uploadChannelShortcut": "fzgy",
-        "uploadChannelKey": "uploadChannelKey",
-        "downloadChannelShortcut": "fzgy",
-        "downloadChannelKey": "downloadChannelKey"
-      },
-      "cos": {
-        "region": "ap-shanghai",
-        "bucketName": "prod-xhw-image-1302324914",
-        "bucketDir": "/mcms/download/app",
-        "hostUrl": "https://images.xihuanwu.com"
-      },
-      "testFlight": {
-        "username": "",
-        "password": ""
-      }
+    "cos": {
+      "region": "ap-shanghai",
+      "bucketName": "prod-xhw-image-1302324914",
+      "bucketDir": "/mcms/download/app",
+      "hostUrl": "https://images.xihuanwu.com"
     },
-    "upload_result": {
-      "pgyer": {
-        "download_url": "package pgyer url"
-      },
-      "cos": {
-        "download_url": "package cos url"
-      }
+    "testFlight": {
+      "username": "",
+      "password": ""
+    }
+  },
+  "upload_result": {
+    "pgyer": {
+      "download_url": "package pgyer url"
+    },
+    "cos": {
+      "download_url": "package cos url"
     }
   }
-  
+}

@@ -3,11 +3,9 @@
  # @Author: dvlproad
  # @Date: 2023-08-03 11:44:37
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-10-29 03:59:25
+ # @LastEditTime: 2023-10-29 21:49:30
  # @Description: 上传ipa到各个平台,平台参数来源于文件。并在上传结束,获取安装包的各种路径信息
 ### 
-#sh all_packing_upload.sh -envInfoF "${Package_Environment_FILE_PATH}" -ipa "${ipa_file_path}"
-#sh all_packing_upload.sh -envInfoF "../example_packing_info/app_info.json" -ipa "~/Desktop/dianzan.svg"
 
 # 本地地址：/Users/linzehual.jenkins/workspace/wish_android_生产_蒲公英/wish/build/app/outputs/apk/release/
 # Android_product_dev_dev_publish_in_1.18.01(18012051).apk
@@ -16,6 +14,13 @@
 # 官网：https://www.pgyer.com/bjprowishA(实际：https://www.pgyer.com/bjwishproAdown）
 # 只是打包2
 
+function debug_log() {
+    # 只有直接执行本脚本的时候才能够输出日志，不然如果是形如 echo $(sh xx.sh) 的时候会导致结果值不对
+    # is_Directly_execute_this_script=true
+    if [ "${is_Directly_execute_this_script}" == true ]; then
+        echo "$1"
+    fi
+}
 
 # 当前【shell脚本】的工作目录
 # $PWD代表获取当前路径，当cd后，$PWD也会跟着更新到新的cd路径。这个和在终端操作是一样的道理的
@@ -69,7 +74,8 @@ responseJsonString=$(sh ${qtool_upload_to_all_byArgFile_scriptPath} -ipa "${ipa_
     -LogPostToRobotUrl "${LogPostToRobotUrl}" -LogPostTextHeader "${LogPostTextHeader}" \
     )
 if [ $? != 0 ]; then
-    echo "${RED}Error❌:上传ipa到各个平台,平台参数来源于文件的错误信息如下:\n${BLUE} ${responseJsonString} ${RED}。${NC}"
+    echo "${RED}Error❌:上传ipa到各个平台,平台参数来源于文件的结果错误信息如下:\n${BLUE} ${responseJsonString} ${RED}。${NC}"
+    # echo "${RED}执行错误的命令如下:《${BLUE} sh ${qtool_upload_to_all_byArgFile_scriptPath} -ipa \"${ipa_file_path}\" -updateDesString \"${updateDesString}\" -updateDesFromFilePath \"${updateDesFromFilePath}\" -updateDesFromFileKey \"${updateDesFromFileKey}\" -uploadArgsFPath \"${UploadPlatformArgsFilePath}\" -uploadArgsFKey \"${UploadPlatformArgsFileKey}\" -uploadResultFKey \"${UploadResult_FILE_Key}\" -LogPostToRobotUrl \"${LogPostToRobotUrl}\" -LogPostTextHeader \"${LogPostTextHeader}\" ${RED}》${NC}"
     exit 1
 fi
 # echo "${GREEN}上传ipa到各个平台成功。信息如下：\n${BLUE} $(cat "${UploadPlatformArgsFilePath}" | jq '.package_url_result') ${GREEN}。\n更多详情请查看: ${UploadPlatformArgsFilePath} ${NC}"
@@ -78,7 +84,7 @@ fi
 # 2.上传完成后，将各种路径信息日志返回给log
 uploadResultLog=$(sh ${qtool_upload_result_log_scriptPath} -uploadResultFPath "${UploadResult_FILE_PATH}" -uploadResultFKey "${UploadResult_FILE_Key}")
 if [ $? != 0 ]; then
-    echo "${RED}Error❌:上传ipa到各个平台,平台参数来源于文件的错误信息如下:\n${BLUE} ${uploadResultLog} ${RED}。${NC}"
+    echo "${RED}Error❌:上传ipa到各个平台,上传完成后，将各种路径信息日志返回给log的错误信息如下:\n${BLUE} ${uploadResultLog} ${RED}。${NC}"
     exit 1
 fi
 # echo "${GREEN}上传结束后安装包的各种路径信息：${BLUE}\n${uploadResultLog} ${GREEN}。\n更多详情请查看: ${UploadResult_FILE_PATH} ${NC}"

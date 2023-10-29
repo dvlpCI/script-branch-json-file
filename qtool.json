@@ -1,0 +1,19 @@
+{
+    "quickCmd": [
+        
+    ],
+    "support_script_path": [
+        {
+            "type": "upload",
+            "des": "上传",
+            "values": [
+                {
+                    "des": "上传安装包到 各个平台(pgyer、cos、testFlight),平台参数来源于文件。并在上传结束,获取安装包的各种路径信息",
+                    "key": "upload_to_all_and_log",
+                    "value": "./upload/upload_to_all_and_log.sh",
+                    "example": "responseJsonString=$(sh xxx/upload_to_all_and_log.sh -ipa \"${ipa_file_path}\" -updateDesString \"${updateDesString}\" -updateDesFromFilePath \"${updateDesFromFilePath}\" -updateDesFromFileKey \"${updateDesFromFileKey}\" -uploadArgsFPath \"${UploadPlatformArgsFilePath}\" -uploadArgsFKey \"${UploadPlatformArgsFileKey}\" -uploadResultFPath \"${UploadResult_FILE_PATH}\" -uploadResultFKey \"${UploadResult_FILE_Key}\" -LogPostToRobotUrl \"${LogPostToRobotUrl}\" -LogPostTextHeader \"${LogPostTextHeader}\")"
+                }
+            ]
+        }
+    ]
+}
