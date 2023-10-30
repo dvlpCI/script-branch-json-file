@@ -42,11 +42,15 @@ find $DWARF_DSYM_FOLDER_PATH -name "*.dSYM" | while read -r file; do
     zip -j "$output_single_zip_folder/$filename.zip" "$file" # -x "*.DS_Store" -x "__MACOSX"
     if [ $? != 0 ]; then
       echo "${RED}压缩 $((++count)) $file 失败，将退出执行火山dsym所需压缩文件的获取脚本。执行的命令是《${BLUE} zip -j \"$output_single_zip_folder\/$filename.zip\" \"$file\" ${RED}》${NC}"
-      exit 1
+      exit 1 # 这里的 exit 1 只会退出当前的子进程（即 while 循环），而不会直接退出整个 Shell 脚本。
     # else
     #   echo "${GREEN}压缩 $((++count)) $file 完成${NC}"
     fi
 done
+# 判断前面的循环是否有错误，如果有错则退出脚本
+if [ $? != 0 ]; then
+    exit 1
+fi
 
 
 # 指定整体压缩后的文件放置的目录
