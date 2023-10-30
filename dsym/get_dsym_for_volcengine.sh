@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-10-09 11:54:08
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-10-10 23:24:45
+ # @LastEditTime: 2023-10-30 15:40:14
  # @Description: 
 ### 
 
@@ -41,7 +41,8 @@ find $DWARF_DSYM_FOLDER_PATH -name "*.dSYM" | while read -r file; do
     # 区别于 -r ，通过在 zip 命令中添加 -j 选项，它将忽略源文件的路径信息，并将文件仅保存为 ZIP 文件中的文件名。这样生成的 ZIP 文件中将只包含文件名，而不会有深层的目录结构。
     zip -j "$output_single_zip_folder/$filename.zip" "$file" # -x "*.DS_Store" -x "__MACOSX"
     if [ $? != 0 ]; then
-      echo "${RED}压缩 $((++count)) $file 失败${NC}"
+      echo "${RED}压缩 $((++count)) $file 失败，将退出执行火山dsym所需压缩文件的获取脚本。执行的命令是《${BLUE} zip -j \"$output_single_zip_folder\/$filename.zip\" \"$file\" ${RED}》${NC}"
+      exit 1
     # else
     #   echo "${GREEN}压缩 $((++count)) $file 完成${NC}"
     fi
@@ -57,6 +58,10 @@ mkdir -p "$output_all_zip_folder"
 # 将所有.zip文件整体压缩成一个all.zip文件
 output_all_zip_file="$output_all_zip_folder/all.zip"
 zip -j "$output_all_zip_file" "$output_single_zip_folder"/*.zip
+if [ $? != 0 ]; then
+      echo "${RED}进一步压缩 $output_single_zip_folder 下的所有zip文件为 $output_all_zip_file 失败，将退出执行火山dsym所需压缩文件的获取脚本。执行的命令是《${BLUE} zip -j \"$output_all_zip_file\" \"$output_single_zip_folder\"\/*.zip ${RED}》${NC}"
+      exit 1
+fi
 volcengine="https://console.volcengine.com/apmplus/app/mapping?aid=502194&org_id=2100483024&os=iOS"
 echo "${GREEN}整体压缩完成,地址为${BLUE} ${output_all_zip_file} ${GREEN}。请在页面 符号表管理${BLUE} $volcengine ${GREEN}上进行提交。${NC}"
 open "$output_all_zip_folder" # 为你打开 ${output_all_zip_file} 所在的文件夹

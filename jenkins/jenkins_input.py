@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
-LastEditTime: 2023-04-18 15:58:20
+LastEditTime: 2023-10-30 15:15:33
 FilePath: jenkins_input.py
 Description: Jenkins打包-输入
 '''
@@ -73,14 +73,14 @@ def chooseOptionForPack():
 
     return getAndSavePackParamStringToFileForOption(data['jenkins'], option)
 
-def getChangeLog(jobUseParamType):
+def getCustomInputForKey(paramKey):
     while True:
-        changelog_input = input("请输入更新说明（退出q/Q）：")
-        if changelog_input == "q" or changelog_input == "Q":
+        keyValue_input = input(f"请输入jenkin的 {paramKey} 参数（退出q/Q）：")
+        if keyValue_input == "q" or keyValue_input == "Q":
             exit(2)
         else:
             break
-    return changelog_input
+    return keyValue_input
     
     output = subprocess.check_output(["git", "log", "-1", "--pretty=format:%an %s"])
     change_log = output.decode("utf-8").strip()
@@ -98,13 +98,11 @@ def getAndSavePackParamStringToFileForOption(jenkins_data, option):
     networkParams=param[jobUseParamType]
     print(json.dumps(networkParams, indent=2))
     
-    if "CHANGE_LOG" not in networkParams:
-        print(f"{networkParams}中不存在key为 CHNAGE_LOG 的值，请手动输入")
-        change_log=getChangeLog(jobUseParamType)
-    else:
-        change_log = networkParams['CHANGE_LOG']
-        # print('CHANGE_LOG 的值为：', change_log)
-    networkParams['ChangeLog'] = change_log
+    for key, value in networkParams.items():  # 遍历字典的键和值
+        if value == "custom_input":
+            print(f"{networkParams}中不存在key为 {key} 的值，请手动输入")
+            user_input=getCustomInputForKey(key)
+            networkParams[key] = user_input
     
     query_string = urllib.parse.urlencode(networkParams)
 
