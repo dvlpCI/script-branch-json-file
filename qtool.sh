@@ -99,8 +99,8 @@ function get_path() {
     if [ "$1" == "home" ]; then
         echo "$qtool_homedir_abspath"
     else
-        # echo "qbase -package \"qtool\" -path \"$1\""
-        echo $(qbase -package "qtool" -path "$1")
+        # echo "qbase -package \"qtool\" -packageCodeDirName lib -path \"$1\""
+        echo $(qbase -package "qtool" -packageCodeDirName lib -path "$1")
     fi
 }
 
