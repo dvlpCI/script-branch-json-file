@@ -1,0 +1,56 @@
+[
+    {
+        "network": "product",
+        "des": "生产包",
+        "allowBranchConfig": [
+            {
+                "branchRegulars" : ["v*"],
+                "branchNames" : ["dev_publish_in", "dev_publish_out", "develop", "master"],
+                "mustContainBranchNameArray":  []
+            }
+        ]
+    },
+    {
+        "network": "preproduct",
+        "des": "预生产包",
+        "allowBranchConfig": [
+            {
+                "branchRegulars" : ["v*"],
+                "branchNames" : ["dev_publish_in"],
+                "mustContainBranchNameArray":  ["dev_publish_out"]
+            }
+        ]
+    },
+    {
+        "network": "test1",
+        "des": "测试包",
+        "allowBranchConfig": [
+            {
+                "branchRegulars" : ["v*"],
+                "branchNames" : ["dev_all"],
+                "mustContainBranchNameArray":  ["dev_in_pgyer"]
+            }
+        ]
+    },
+    {
+        "network": "test2",
+        "des": "测试包",
+        "allowBranchConfig": [
+            {
+                "branchRegulars" : ["v*"],
+                "branchNames" : ["dev_all"],
+                "mustContainBranchNameArray":  ["dev_in_pgyer"]
+            }
+        ]
+    },
+    {
+        "network": "develop1",
+        "des": "开发1包",
+        "allowBranchConfig": [
+            {
+                "branchRegulars" : ["v*"],
+                "branchNames" : []
+            }
+        ]
+    }
+]

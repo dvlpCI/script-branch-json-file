@@ -1,0 +1,26 @@
+[
+    {
+        "uid": "lichaoqian",
+        "jenkin_name": "qian",
+        "git_name": "qian",
+        "wechat_id": "lichaoqian"
+    },
+    {
+        "uid": "zhangsan",
+        "jenkin_name": "张三",
+        "git_name": "zhangsan",
+        "wechat_id": "zhangsan"
+    },
+    {
+        "uid": "lisi",
+        "jenkin_name": "李四",
+        "git_name": "lisi",
+        "wechat_id": "lisi"
+    },
+    {
+        "uid": "wangwu",
+        "jenkin_name": "王五",
+        "git_name": "wangwu",
+        "wechat_id": "wangwu"
+    }
+]
