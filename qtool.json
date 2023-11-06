@@ -1,6 +1,29 @@
 {
     "quickCmd": [
-        
+        {
+            "type": "branchCheck",
+            "des": "分支的检查(打包使用的分支名、必须包含的分支、相对上次缺失的分支）",
+            "values": [
+                {
+                    "des": "检查指定的分支能否打包指定的环境",
+                    "cmd": "branchCheck_selfName",
+                    "cmd_script": "./branch/branch_check_self_name.sh",
+                    "value": "qtool -quick branchCheck_selfName"
+                },
+                {
+                    "des": "检查指定的分支有没有合入其必须合入的所有分支",
+                    "cmd": "branchCheck_missing_by_must",
+                    "cmd_script": "./branch/branch_check_missing_by_must.sh",
+                    "value": "qtool -quick branchCheck_missing_by_must"
+                },
+                {
+                    "des": "检查本分支的本次打包是否漏掉本分支上次打包的分支",
+                    "cmd": "branchCheck_missing_diff_old",
+                    "cmd_script": "./branch/branch_check_missing_diff_old.sh",
+                    "value": "qtool -quick branchCheck_missing_diff_old"
+                }
+            ]
+        }
     ],
     "support_script_path": [
         {

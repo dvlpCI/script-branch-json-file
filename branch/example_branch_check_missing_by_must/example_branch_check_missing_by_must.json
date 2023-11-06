@@ -1,0 +1,6 @@
+{
+  "dev_all": {
+    "mustContain_branchNames": ["dev_in_pgyer", "master"],
+    "mustContain_reasonText": "测试包目前必须包含蒲公英dev_in_pgyer功能."
+  }
+}

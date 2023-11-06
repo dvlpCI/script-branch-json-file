@@ -2,11 +2,25 @@
 ###
  # @Author: dvlproad dvlproad@163.com
  # @Date: 2023-11-04 02:01:01
- # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2023-11-04 02:40:03
- # @FilePath: /AutoPackage-CommitInfo/bulidScriptCommon/branchs_can_pack/example/example_branch_check_missing_diff_old.sh
- # @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ # @LastEditors: dvlproad
+ # @LastEditTime: 2023-11-06 14:42:37
+ # @FilePath: example_branch_check_missing_diff_old.sh
+ # @Description: 测试
 ### 
+
+# 定义颜色常量
+NC='\033[0m' # No Color
+RED='\033[31m'
+GREEN='\033[32m'
+YELLOW='\033[33m'
+BLUE='\033[34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+
+function log_title() {
+    echo "${PURPLE}------------------ $1 ------------------${NC}"
+}
+
 # 当前【shell脚本】的工作目录
 # $PWD代表获取当前路径，当cd后，$PWD也会跟着更新到新的cd路径。这个和在终端操作是一样的道理的
 CurrentDIR_Script_Absolute="$( cd "$( dirname "$0" )" && pwd )"

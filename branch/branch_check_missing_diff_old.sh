@@ -1,13 +1,19 @@
 #!/bin/bash
+###
+ # @Author: dvlproad
+ # @Date: 2023-02-27 19:02:53
+ # @LastEditors: dvlproad
+ # @LastEditTime: 2023-11-06 15:50:58
+ # @Description: 检查本分支的本次打包是否漏掉本分支上次打包的分支
+### 
 :<<!
-检查本分支的本次打包是否漏掉本分支上次打包的分支
 # 主要是为了处理情况1：某个版本分支一直打包，但突然该版本分支合入错误，需要删除掉重新rebase再重新合入所有功能分支。
 # 分支打包文件 version/v1.2.3_1009.json \ master.json
 # 所以，分支的比较不能先以 rebase 时间判断是不是新版本的第一次打包
 checkHasMissingBranchDiffOld
 !
 
-JQ_EXEC=`which jq`
+JQ_EXEC=$(which jq)
 
 function debug_log() {
     # 只有直接执行本脚本的时候才能够输出日志，不然如果是形如 echo $(sh xx.sh) 的时候会导致结果值不对

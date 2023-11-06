@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-10-29 23:26:55
+ # @LastEditTime: 2023-11-06 15:32:28
  # @Description: 
 ### 
 
@@ -104,13 +104,28 @@ function get_path() {
     fi
 }
 
+function _logQuickCmd() {
+    qpackageJsonF="$qtool_homedir_abspath/qtool.json"
+    cat "$qpackageJsonF" | jq '.quickCmd'
+}
+
+
+firstArg=$1 # 去除第一个参数之前，先保留下来
+shift 1  # 去除前一个参数
+allArgsExceptFirstArg="$@"  # 将去除前一个参数，剩余的参数赋值给新变量
+
 # 如果是获取版本号
 versionCmdStrings=("--version" "-version" "-v" "version")
-if echo "${versionCmdStrings[@]}" | grep -wq "$1" &>/dev/null; then
+if echo "${versionCmdStrings[@]}" | grep -wq "${firstArg}" &>/dev/null; then
     echo "${qtool_latest_version}"
-elif [ "$1" == "-path" ]; then
-    get_path "$2"
+elif [ "${firstArg}" == "-path" ]; then
+    get_path $allArgsExceptFirstArg
     exit
+elif [ "${firstArg}" == "-quick" ]; then
+    sh $qtool_homedir_abspath/qtool_quickcmd.sh $allArgsExceptFirstArg
+    if [ $? -ne 0 ]; then
+        _logQuickCmd
+    fi
 else
     echo "${qtool_latest_version}"
 fi

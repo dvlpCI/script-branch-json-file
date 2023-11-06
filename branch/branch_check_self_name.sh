@@ -1,4 +1,11 @@
 #!/bin/bash
+###
+ # @Author: dvlproad
+ # @Date: 2023-02-27 19:02:53
+ # @LastEditors: dvlproad
+ # @LastEditTime: 2023-11-06 14:55:41
+ # @Description: 检查指定的分支能否打包指定的环境
+### 
 
 # 定义颜色常量
 NC='\033[0m' # No Color
