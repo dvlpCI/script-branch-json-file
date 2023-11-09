@@ -21,6 +21,12 @@
                     "cmd": "branchCheck_missing_diff_old",
                     "cmd_script": "./branch/branch_check_missing_diff_old.sh",
                     "value": "qtool -quick branchCheck_missing_diff_old"
+                },
+                {
+                    "des": "检查本分支：1能否打包指定的环境、2本次打包有没有合入其必须合入的所有分支、3本次打包是否漏掉本分支上次打包的分支",
+                    "cmd": "branchCheck_all",
+                    "cmd_script": "./branch/branch_check_all.sh",
+                    "value": "qtool -quick branch_check_all"
                 }
             ]
         }

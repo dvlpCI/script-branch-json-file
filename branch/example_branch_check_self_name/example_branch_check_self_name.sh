@@ -28,28 +28,13 @@ CategoryFun_HomeDir_Absolute=${Example_HomeDir_Absolute%/*} # 使用 %/* 方法�
 
 
 branch_check_self_name_scriptPath="${CategoryFun_HomeDir_Absolute}/branch_check_self_name.sh"
-branch_check_missing_diff_old_scriptPath="${CategoryFun_HomeDir_Absolute}/branch_check_missing_diff_old.sh"
 
 
 CHECK_BRANCH_NAME="development"
 CHECK_IN_NETWORK_TYPE="test1"
-CHECK_BY_JSON_FILE="${Example_HomeDir_Absolute}/branch_check_self_name.json"
+CHECK_BY_JSON_FILE="${Example_HomeDir_Absolute}/example_branch_check_self_name.json"
 sh ${branch_check_self_name_scriptPath} -checkBranchName "${CHECK_BRANCH_NAME}" -checkInNetwork "${CHECK_IN_NETWORK_TYPE}" -checkByJsonFile "${CHECK_BY_JSON_FILE}"
-if [ $? -eq 0 ]; then
-    exit 1
-fi
-
-
-BRANCHLASTPACK_BRANCHINFO_FILE_PATH="${Example_HomeDir_Absolute}/example_branch_check_missing_diff_old_lastPack.json"
-BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH="${Example_HomeDir_Absolute}/example_branch_check_missing_diff_old_currentPack.json"
-PACKED_BRANCHINFO_IN_KEY="package_merger_branchs"
-LAST_ONLINE_VERSION_JSON_FILE="${Example_HomeDir_Absolute}/example_branch_check_missing_diff_old_lastPack.json"
-ONLINE_BRANCHINFO_IN_KEY="online_brances"
-Personnel_FILE_PATH="${Example_HomeDir_Absolute}/example_branch_check_missing_diff_old_personel.json"
-sh ${branch_check_missing_diff_old_scriptPath} -branchLastPackJsonF "${BRANCHLASTPACK_BRANCHINFO_FILE_PATH}" -branchCurPackJsonF "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" -packBranchInfoInKey "${PACKED_BRANCHINFO_IN_KEY}" \
-    -lastOnlineJsonF "${LAST_ONLINE_VERSION_JSON_FILE}" -onlineBranchInfoInKey "${ONLINE_BRANCHINFO_IN_KEY}" \
-    -peoJsonF "${Personnel_FILE_PATH}"
-if [ $? -eq 0 ]; then
+if [ $? != 0 ]; then
     exit 1
 fi
 

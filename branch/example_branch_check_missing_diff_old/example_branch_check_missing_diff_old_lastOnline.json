@@ -1,450 +1,99 @@
 {
-    "history_record_time": "02.16",
-    "history_versions": [
+  "version": "1.02.16",
+  "online_time": "02.16",
+  "online_brances": [
+    {
+      "create_time": "02.09",
+      "submit_test_time": "02.09",
+      "pass_test_time": "2.16",
+      "merger_pre_time": "2.16",
+      "type": "hotfix",
+      "name": "dev_login",
+      "des": "详见outlines",
+      "outlines": [
         {
-            "version": "1.02.16",
-            "online_time": "02.16",
-            "online_brances": [
-                {
-                    "create_time": "02.09",
-                    "submit_test_time": "02.09",
-                    "pass_test_time": "2.16",
-                    "merger_pre_time": "2.16",
-                    "type": "hotfix",
-                    "name": "dev_login_err",
-                    "des": "详见outlines",
-                    "outlines": [
-                        {"title": "登录失败错误提示"}
-                    ],
-                    "answer": {
-                        "name": "product1"
-                    },
-                    "tester": {
-                        "name": "tester"
-                    }
-                },
-                {
-                    "create_time": "01.30",
-                    "submit_test_time": "01.30",
-                    "pass_test_time": "02.07",
-                    "merger_pre_time": "02.07",
-                    "type": "other",
-                    "name": "dev_js_demo",
-                    "des": "详见outlines",
-                    "outlines": [
-                        {
-                            "title": "h5调用app刷新网页到新地址"
-                        },
-                        {
-                            "title": "webNavPage支持入参，确保打开游戏不等待、游戏全屏显示"
-                        },
-                        {
-                            "title": "我的农场点击避免打开多次"
-                        },
-                        {
-                            "title": "修复farmGamePage打开的农场添加的额外参数丢失问题(邀请码等)"
-                        },
-                        {
-                            "title": "h5调用app跳转任意app页面的JS"
-                        },
-                        {
-                            "title": "h5调用app分享内容到微信"
-                        },
-                        {
-                            "title": "h5调用app发送IM文本消息"
-                        },
-                        {
-                            "title": "h5调用app限制键盘弹出时候是否自动调整界面大小"
-                        },
-                        {
-                            "title": "h5调用app刷新网页到新地址"
-                        },
-                        {
-                            "title": "新增可直接进行指定网页测试(含游戏)"
-                        },
-                        {
-                            "title": "桥接方法示例增加参数说明"
-                        }
-                    ],
-                    "answer": {
-                        "name": "qian"
-                    },
-                    "tester": {
-                        "name": "qian"
-                    }
-                },
-                {
-                    "create_time": "12.26",
-                    "submit_test_time": "12.26",
-                    "pass_test_time": "12.27",
-                    "merger_pre_time": "12.27",
-                    "type": "other",
-                    "name": "dev_script_pack",
-                    "des": "详见outlines",
-                    "outlines": [
-                        {
-                            "title": "隔年了，修复Android的能否升级取决于build是否变大(iOS虽不用，但保持同步)"
-                        },
-                        {
-                            "title": "脚本优化"
-                        }
-                    ],
-                    "answer": {
-                        "name": "qian"
-                    },
-                    "tester": {
-                        "name": "qian"
-                    }
-                }
-            ]
-        },
-        {
-            "version": "1.13.18",
-            "online_time": "13.18",
-            "online_brances": [
-                {
-                  "create_time": "12.19",
-                  "submit_test_time": "12.19",
-                  "pass_test_time": "12.26",
-                  "merger_pre_time": "12.26",
-                  "name": "dev_android_push",
-                  "des": "新增安卓厂商推送通道(OPPO、Vivo、小米、华为、荣耀)",
-                  "type": "feature",
-                  "answer": {
-                    "name": "developer3"
-                  },
-                  "tester": {
-                    "name": "tester"
-                  }
-                },
-                {
-                    "create_time": "12.28",
-                    "submit_test_time": "12.28",
-                    "pass_test_time": "01.13",
-                    "merger_pre_time": "01.13",
-                    "type": "other",
-                    "name": "dev_js_demo",
-                    "des": "详见outlines",
-                    "outlines": [
-                        {"title": "h5调用app跳转任意app页面的JS"},
-                        {"title": "h5调用app分享内容到微信"},
-                        {"title": "h5调用app发送IM文本消息"},
-                        {"title": "h5调用app限制键盘弹出时候是否自动调整界面大小"},
-                        {"title": "新增可直接进行指定网页测试(含游戏)"},
-                        {"title": "桥接方法示例增加参数说明"}
-                    ],
-                    "answer": {
-                        "name": "qian"
-                    },
-                    "tester": {
-                        "name": "qian"
-                    }
-                },
-                {
-                    "create_time": "12.13",
-                    "submit_test_time": "12.13",
-                    "pass_test_time": "01.17",
-                    "merger_pre_time": "01.17",
-                    "name": "dev_wishlist_err",
-                    "type": "optimize",
-                    "des": "详见outlines",
-                    "outlines": [
-                        {"title": "推荐/热单/关注 新增错误兜底页"},
-                        {"title": "愿望单列表UI布局变量化计算"}
-                    ],
-                    "answer": {
-                        "name": "developer2"
-                    },
-                    "tester": {
-                        "name": "tester"
-                    }
-                },
-                {
-                    "create_time": "01.04",
-                    "submit_test_time": "01.05",
-                    "pass_test_time": "01.17",
-                    "merger_pre_time": "01.17",
-                    "type": "optimize",
-                    "name": "dev_ui_home",
-                    "des": "详见outlines",
-                    "outlines": [
-                        {"title": "UI主页、首页等改版"},
-                        {"title": "商城UI改版"},
-                        {"title": "商城顶部布局重构"},
-                        {"title": "新增商品返豆比例显示"},
-                        {"title": "统一所有商品模型"},
-                        {"title": "消息页UI改版"},
-                        {"title": "我的UI改版"},
-                        {"title": "我的顶部布局高度计算改为自动化"},
-                        {"title": "主题色统一"}
-                    ],
-                    "answer": {
-                        "name": "producter3"
-                    },
-                    "tester": {
-                        "name": "tester1"
-                    }
-                },
-                {
-                    "create_time": "12.26",
-                    "submit_test_time": "12.26",
-                    "pass_test_time": "12.27",
-                    "merger_pre_time": "12.27",
-                    "type": "other",
-                    "name": "dev_script_pack",
-                    "des": "详见outlines",
-                    "outlines": [
-                        {"title": "脚本优化"}
-                    ],
-                    "answer": {
-                        "name": "qian"
-                    },
-                    "tester": {
-                        "name": "qian"
-                    }
-                }
-            ]
-        },
-        {
-            "version": "1.12.23",
-            "online_time": "12.23",
-            "online_brances": [
-                {
-                  "create_time": "12.21",
-                  "submit_test_time": "12.21",
-                  "pass_test_time": "12.23",
-                  "merger_pre_time": "12.23",
-                  "type": "hotfix",
-                  "name": "dev_hing_fix",
-                  "des": "详见outlines",
-                  "outlines": [
-                    {
-                      "title": "确认订单众筹支付金额计算错误bug修复"
-                    },
-                    {
-                      "title": "请TA买，创建失败话术修改"
-                    }
-                  ],
-                  "answer": {
-                    "name": "刘璟"
-                  },
-                  "tester": {
-                    "name": "tester2"
-                  }
-                },
-                {
-                  "create_time": "12.22",
-                  "submit_test_time": "12.22",
-                  "pass_test_time": "12.22",
-                  "merger_pre_time": "12.23",
-                  "type": "hotfix",
-                  "name": "dev_fix_power",
-                  "des": "修复修改愿望单权限后，再次进入编辑权限页为更新问题",
-                  "answer": {
-                    "name": "tester1"
-                  },
-                  "tester": {
-                    "name": "tester"
-                  }
-                },
-                {
-                  "create_time": "12.15",
-                  "submit_test_time": "12.15",
-                  "pass_test_time": "12.19",
-                  "merger_pre_time": "12.19",
-                  "type": "hotfix",
-                  "name": "dev_fix",
-                  "des": "修复商品详情页返豆信息显示错误",
-                  "answer": {
-                    "name": "developer3"
-                  },
-                  "tester": {
-                    "name": "林尚挺"
-                  }
-                },
-                {
-                  "create_time": "12.20",
-                  "submit_test_time": "12.21",
-                  "pass_test_time": "12.23",
-                  "merger_pre_time": "12.23",
-                  "type": "feature",
-                  "name": "dev_msg_focus",
-                  "des": "互动消息列表",
-                  "tester": {
-                    "name": "tester"
-                  }
-                },
-                {
-                  "create_time": "12.20",
-                  "submit_test_time": "12.22",
-                  "pass_test_time": "12.23",
-                  "merger_pre_time": "12.23",
-                  "type": "feature",
-                  "name": "dev_message_jump",
-                  "des": "愿望单详情评论定位",
-                  "tester": {
-                    "name": "tester"
-                  }
-                },
-                {
-                  "create_time": "12.21",
-                  "submit_test_time": "12.21",
-                  "pass_test_time": "12.22",
-                  "merger_pre_time": "12.22",
-                  "type": "feature",
-                  "name": "dev_video_goods",
-                  "des": "视频商品突出https://www.tapd.cn/69657442/prong/stories/view/1169657442001003380",
-                  "answer": {
-                    "name": "王毅"
-                  },
-                  "tester": {
-                    "name": "林尚挺"
-                  }
-                },
-                {
-                  "create_time": "12.14",
-                  "submit_test_time": "12.14",
-                  "pass_test_time": "12.21",
-                  "merger_pre_time": "12.21",
-                  "type": "feature",
-                  "name": "dev_goods_evaluate_label",
-                  "des": "商品评价新增标签",
-                  "answer": {
-                    "name": "producter3"
-                  },
-                  "tester": {
-                    "name": "tester"
-                  }
-                },
-                {
-                  "create_time": "12.09",
-                  "submit_test_time": "12.12",
-                  "pass_test_time": "12.23",
-                  "merger_pre_time": "12.23",
-                  "type": "feature",
-                  "name": "dev_goods_unrepeatable",
-                  "des": "新增愿望单添加商品不可重复，新增发布愿望单商品数量、SKU数量限制动态配置",
-                  "answer": {
-                    "name": "developer3"
-                  },
-                  "tester": {
-                    "name": "tester"
-                  }
-                },
-                {
-                  "create_time": "12.15",
-                  "submit_test_time": "12.15",
-                  "pass_test_time": "12.20",
-                  "merger_pre_time": "12.20",
-                  "type": "feature",
-                  "name": "dev_order_ui",
-                  "des": "订单列表、订单详情新版UI",
-                  "answer": {
-                    "name": "ui1"
-                  },
-                  "tester": {
-                    "name": "tester2"
-                  }
-                },
-                {
-                  "create_time": "12.20",
-                  "submit_test_time": "12.20",
-                  "pass_test_time": "12.20",
-                  "merger_pre_time": "12.20",
-                  "name": "dev_buried_point",
-                  "des": "新增点击埋点计时字段、修复account_id未传问题",
-                  "type": "feature",
-                  "answer": {
-                    "name": "developer3"
-                  },
-                  "tester": {
-                    "name": "tester3"
-                  }
-                },
-                {
-                  "create_time": "12.14",
-                  "submit_test_time": "12.14",
-                  "pass_test_time": "12.22",
-                  "merger_pre_time": "12.22",
-                  "type": "optimize",
-                  "name": "dev_dokit",
-                  "des": "Flutter升级3.3.9(Button、PrimaryScrollControllerWrapper已升级)",
-                  "answer": {
-                    "name": "qian"
-                  },
-                  "tester": {
-                    "name": "tester1"
-                  }
-                },
-                {
-                  "create_time": "12.16",
-                  "submit_test_time": "12.16",
-                  "pass_test_time": "12.16",
-                  "merger_pre_time": "12.20",
-                  "type": "other",
-                  "name": "dev_script_pack",
-                  "des": "详见outlines",
-                  "outlines": [
-                    {
-                      "title": "版本管理显示及分类优化"
-                    },
-                    {
-                      "title": "修复日志中的json字符串空map时候多打印的}"
-                    },
-                    {
-                      "title": "蒲公英支持上传和下载的地址不同"
-                    },
-                    {
-                      "title": "蒲公英支持不同生产分支上传到同一个地址下"
-                    },
-                    {
-                      "title": "支持可直接上传到下载位置或只上传到上传位置"
-                    },
-                    {
-                      "title": "历史版本文件从总文件中抽离独立降低耦合"
-                    },
-                    {
-                      "title": "分支信息改成数组，以备支持日志中链接地址"
-                    }
-                  ],
-                  "answer": {
-                    "name": "qian"
-                  },
-                  "tester": {
-                    "name": "qian"
-                  }
-                },
-                {
-                  "create_time": "12.19",
-                  "submit_test_time": "12.19",
-                  "pass_test_time": "12.22",
-                  "merger_pre_time": "12.22",
-                  "type": "other",
-                  "name": "dev_ssb_fix",
-                  "des": "①版本升级暂不更新控制调整;②buildHaveNewVersion有值时候直接显示/不显示弹窗不管版本是不是低了，null时候才根据版本判断",
-                  "answer": {
-                    "name": "product1"
-                  },
-                  "tester": {
-                    "name": "tester"
-                  }
-                },
-                {
-                  "create_time": "12.09",
-                  "submit_test_time": "12.09",
-                  "pass_test_time": "12.22",
-                  "merger_pre_time": "12.22",
-                  "type": "other",
-                  "name": "dev_fix_game",
-                  "des": "添加开关，可以打开网页的边距，方便游戏排查问题",
-                  "answer": {
-                    "name": "developer2"
-                  },
-                  "tester": {
-                    "name": "developer2"
-                  }
-                }
-            ]
+          "title": "登录失败错误提示"
         }
-    ]
+      ],
+      "answer": {
+        "name": "product1"
+      },
+      "tester": {
+        "name": "tester"
+      }
+    },
+    {
+      "create_time": "01.30",
+      "submit_test_time": "01.30",
+      "pass_test_time": "02.07",
+      "merger_pre_time": "02.07",
+      "type": "other",
+      "name": "dev_js_demo",
+      "des": "详见outlines",
+      "outlines": [
+        {
+          "title": "h5调用app刷新网页到新地址"
+        },
+        {
+          "title": "webNavPage支持入参，确保打开游戏不等待、游戏全屏显示"
+        },
+        {
+          "title": "我的农场点击避免打开多次"
+        },
+        {
+          "title": "修复farmGamePage打开的农场添加的额外参数丢失问题(邀请码等)"
+        },
+        {
+          "title": "h5调用app跳转任意app页面的JS"
+        },
+        {
+          "title": "h5调用app分享内容到微信"
+        },
+        {
+          "title": "h5调用app发送IM文本消息"
+        },
+        {
+          "title": "h5调用app限制键盘弹出时候是否自动调整界面大小"
+        },
+        {
+          "title": "h5调用app刷新网页到新地址"
+        },
+        {
+          "title": "新增可直接进行指定网页测试(含游戏)"
+        },
+        {
+          "title": "桥接方法示例增加参数说明"
+        }
+      ],
+      "answer": {
+        "name": "qian"
+      },
+      "tester": {
+        "name": "qian"
+      }
+    },
+    {
+      "create_time": "12.26",
+      "submit_test_time": "12.26",
+      "pass_test_time": "12.27",
+      "merger_pre_time": "12.27",
+      "type": "other",
+      "name": "dev_script_pack",
+      "des": "详见outlines",
+      "outlines": [
+        {
+          "title": "隔年了，修复Android的能否升级取决于build是否变大(iOS虽不用，但保持同步)"
+        },
+        {
+          "title": "脚本优化"
+        }
+      ],
+      "answer": {
+        "name": "qian"
+      },
+      "tester": {
+        "name": "qian"
+      }
+    }
+  ]
 }

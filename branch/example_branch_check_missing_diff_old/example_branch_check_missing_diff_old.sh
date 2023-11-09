@@ -35,12 +35,12 @@ BRANCHLASTPACK_BRANCHINFO_FILE_PATH="${Example_HomeDir_Absolute}/example_branch_
 BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH="${Example_HomeDir_Absolute}/example_branch_check_missing_diff_old_currentPack.json"
 PACKED_BRANCHINFO_IN_KEY="package_merger_branchs"
 PACKED_DATESTRING_IN_KEY="package_merger_branchs_searchFromDateString"
-LAST_ONLINE_VERSION_JSON_FILE="${Example_HomeDir_Absolute}/example_branch_check_missing_diff_old_lastPack.json"
+LAST_ONLINE_VERSION_JSON_FILE="${Example_HomeDir_Absolute}/example_branch_check_missing_diff_old_lastOnline.json"
 ONLINE_BRANCHINFO_IN_KEY="online_brances"
 Personnel_FILE_PATH="${Example_HomeDir_Absolute}/example_branch_check_missing_diff_old_personel.json"
 sh ${branch_check_missing_diff_old_scriptPath} -branchLastPackJsonF "${BRANCHLASTPACK_BRANCHINFO_FILE_PATH}" -branchCurPackJsonF "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" -packBranchInfoInKey "${PACKED_BRANCHINFO_IN_KEY}" -packDateStringInKey "${PACKED_DATESTRING_IN_KEY}" \
     -lastOnlineJsonF "${LAST_ONLINE_VERSION_JSON_FILE}" -onlineBranchInfoInKey "${ONLINE_BRANCHINFO_IN_KEY}" \
     -peoJsonF "${Personnel_FILE_PATH}"
-if [ $? -eq 0 ]; then
+if [ $? != 0 ]; then
     exit 1
 fi

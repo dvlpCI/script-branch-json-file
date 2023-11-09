@@ -46,7 +46,7 @@ do
     case "$1" in
         -checkBranchName|--check-branch-name) CHECK_BRANCH_NAME=$2; shift 2;;
         -hasContainBranchNames|--check-branch-has-contain) HAS_CONTAIN_BRANCH_NAMES=$2; shift 2;;
-        -mustContainByJsonFile|--check-by-json-file) MUST_CONTAIN_BY_JSON_FILE=$2; shift 2;;
+        -mustContainByJsonFile|--check-must-by-json-file) MUST_CONTAIN_BY_JSON_FILE=$2; shift 2;;
         --) break ;;
         *) break ;;
     esac

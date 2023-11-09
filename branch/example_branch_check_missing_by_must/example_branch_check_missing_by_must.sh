@@ -37,6 +37,6 @@ HAS_CONTAIN_BRANCH_NAMES=("feature/login_wechat" "optimize/mall_goodsdetail")
 MUST_CONTAIN_BY_JSON_FILE="${Example_HomeDir_Absolute}/example_branch_check_missing_by_must.json"
 echo "${YELLOW}正在执行命令(检查分支是否包含应该包含的分支):《${BLUE} sh ${branch_check_missing_by_must_scriptPath} -checkBranchName \"${CHECK_BRANCH_NAME}\" -hasContainBranchNames \"${HAS_CONTAIN_BRANCH_NAMES[*]}\" -mustContainByJsonFile \"${MUST_CONTAIN_BY_JSON_FILE}\" ${YELLOW}》。${NC}"
 sh ${branch_check_missing_by_must_scriptPath} -checkBranchName "${CHECK_BRANCH_NAME}" -hasContainBranchNames "${HAS_CONTAIN_BRANCH_NAMES[*]}" -mustContainByJsonFile "${MUST_CONTAIN_BY_JSON_FILE}"
-if [ $? -eq 0 ]; then
+if [ $? != 0 ]; then
     exit 1
 fi
