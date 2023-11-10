@@ -45,13 +45,11 @@ exit_response_with_code_message() { # 退出脚本的方法，省去当某个步
 while [ -n "$1" ]
 do
     case "$1" in
-        -branchLastPackJsonF|--branch-lastPack-branchInfo-json-file) BRANCHLASTPACK_BRANCHINFO_FILE_PATH=$2; shift 2;; # 本分支最后一个打包的分支信息
-        -branchCurPackJsonF|--branch-curPack-branchInfo-json-file) BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH=$2; shift 2;; # 本分支当前打包的分支信息
-        -packBranchInfoInKey|--packed-branchInfo-in-key) PACKED_BRANCHINFO_IN_KEY=$2; shift 2;; # 打包生成的分支信息在文件中的哪个key
-        -packDateStringInKey|--packed-dateString-in-key) PACKED_DATESTRING_IN_KEY=$2; shift 2;; # 打包时间在文件中的哪个key
-
-        -lastOnlineJsonF|--last-online-package-json-file) LAST_ONLINE_VERSION_JSON_FILE=$2; shift 2;; # 当前线上最有一个版本的分支信息文件
-        -onlineBranchInfoInKey|--online-branchInfo-in-key) ONLINE_BRANCHINFO_IN_KEY=$2; shift 2;; # 上线版本的分支信息在文件中的哪个key
+        -curPackBranchNames|--curPack-branchNames) CURRENT_PACK_BRANCH_NAMES=$2; shift 2;; # 本分支【当前打包】的所有分支名数组字符串
+        -curPackFromDate|--curPack-fromDateString) CURRENT_PACK_FROM_DATE=$2; shift 2;; # 本分支【当前打包】的所获得的所有分支名数组是从哪个时间点开始获取来的
+        -lastPackBranchNames|--lastPack-branchNames) LAST_PACK_BRANCH_NAMES=$2; shift 2;; # 本分支【上次打包】的所有分支名数组字符串
+        -lastPackFromDate|--lastPack-fromDateString) LAST_PACK_FROM_DATE=$2; shift 2;; # 本分支【上次打包】的所获得的所有分支名数组是从哪个时间点开始获取来的
+        -lastOnlineBranchNames|--lastOnline-branchNames) LAST_ONLINE_BRANCH_NAMES=$2; shift 2;; # 本分支【上次上线】的所有分支名数组字符串
 
         -peoJsonF|--product-personnel-json-file) Personnel_FILE_PATH=$2; shift 2;; # 可选：人物文件，用来当有缺失时候，获取该分支谁负责
         --) break ;;
@@ -59,76 +57,34 @@ do
     esac
 done
 
-if [ -z "${BRANCHLASTPACK_BRANCHINFO_FILE_PATH}" ]; then
-    echo "缺少 -branchLastPackJsonF 参数，请补充"
+
+
+if [ -z "${CURRENT_PACK_BRANCH_NAMES}" ]; then
+    echo "缺少 -curPackBranchNames 参数，请补充"
     exit 1
 fi
+CURRENT_PACK_BRANCH_NAMES=($CURRENT_PACK_BRANCH_NAMES) # 此时才是真正的数组
+debug_log "本分支【本次打包】包含的分支功能BRANCH_NAMES_PACK_CURRENT值如下:\n${CURRENT_PACK_BRANCH_NAMES[*]}\n"
 
-if [ -z "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" ]; then
-    echo "缺少 -branchCurPackJsonF 参数，请补充"
-    exit 1
+
+if [ -z "${LAST_PACK_BRANCH_NAMES}" ]; then
+    exit_response_with_code_message -code 0 -message "您的 -lastPackBranchNames 参数值为空，代表当前包是上线包之后的第一次打包"
 fi
-
-if [ -z "${PACKED_BRANCHINFO_IN_KEY}" ]; then
-    echo "缺少 -packBranchInfoInKey 参数，请补充"
-    exit 1
-fi
-if [ -z "${PACKED_DATESTRING_IN_KEY}" ]; then
-    echo "缺少 -packDateStringInKey 参数，请补充"
-    exit 1
-fi
-
-
-if [ -z "${LAST_ONLINE_VERSION_JSON_FILE}" ]; then
-    echo "缺少 -lastOnlineJsonF 参数，请补充"
-    exit 1
-fi
-
-if [ -z "${ONLINE_BRANCHINFO_IN_KEY}" ]; then
-    echo "缺少 -onlineBranchInfoInKey 参数，请补充"
-    exit 1
-fi
+LAST_PACK_BRANCH_NAMES=($LAST_PACK_BRANCH_NAMES) # 此时才是真正的数组
+debug_log "您的 -lastPackBranchNames 参数值不为空，即代表当前分支已经有打过其他打包记录，所以要检查下新的包是否都包含了之前的包的需求功能，防止漏掉出现测试bug重新打开问题"
+debug_log "下面将验证本分支此次打包应是否至少包含本分支【上次打包】包含的如下所有分支功能:\n${LAST_PACK_BRANCH_NAMES[*]}\n"
 
 
 
-    
-allContainBranchArray=$(cat "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" | ${JQ_EXEC} ".${PACKED_BRANCHINFO_IN_KEY}") # -r 去除字符串引号
-#echo "allContainBranchArray=${allContainBranchArray}"
-if [ -z "${allContainBranchArray}" ] || [ "${allContainBranchArray}" == "null" ]; then
-    allContainBranchArray="" # null" 也设置成空字符串
-    exit_response_with_code_message -code 1 -message "❌Error:未找到当前分支合入的其他分支信息，将退出allContainBranchArray=${allContainBranchArray}"
-fi
-allContainBranchNames=$(cat "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" | ${JQ_EXEC} ".${PACKED_BRANCHINFO_IN_KEY}" | ${JQ_EXEC} -r '.[].name') # -r 去除字符串引号
-allContainBranchNames=($allContainBranchNames) # 此时才是真正的数组
-debug_log "本分支【本次打包】包含的分支功能allContainBranchNames值如下:\n${allContainBranchNames[*]}\n"
 
-if [ ! -f "${BRANCHLASTPACK_BRANCHINFO_FILE_PATH}" ]; then # BRANCHLASTPACK_BRANCHINFO_FILE_PATH 加引号，避免名称中有空格，导致的错误
-    exit_response_with_code_message -code 0 -message "您的 ${BRANCHLASTPACK_BRANCHINFO_FILE_PATH} 文件不存在，代表当前包是上线包之后的第一次打包"
-fi
-debug_log "本分支最后一个打包的分支信息的文件存在，即代表当前包在上线包之后已经有打过包了，所以要检查下新的包是否都包含了之前的包的需求功能，防止漏掉出现测试bug重新打开问题"
-
-#[在shell脚本中验证JSON文件的语法](https://qa.1r1g.com/sf/ask/2966952551/)
-lastPackageInfoFileJsonString=$(cat "${BRANCHLASTPACK_BRANCHINFO_FILE_PATH}" | json_pp) # 文件名加引号，加引号，避免名称中有空格，导致的错误
-#echo "lastPackageInfoFileJsonString=${lastPackageInfoFileJsonString}"
-lastPackageInfoFileJsonLength=${#lastPackageInfoFileJsonString}
-#echo "lastPackageInfoFileJsonLength=${#lastPackageInfoFileJsonLength}"
-if [ ${lastPackageInfoFileJsonLength} == 0 ]; then
-    exit_response_with_code_message -code 1 -message "您的 ${BRANCHLASTPACK_BRANCHINFO_FILE_PATH} 不是标准的json格式，弃用，本次忽略检查新包是否包含旧包"
-fi
-
-
-lastFeatureBranceNamesArray=$(cat "${BRANCHLASTPACK_BRANCHINFO_FILE_PATH}" | ${JQ_EXEC} ".${PACKED_BRANCHINFO_IN_KEY}" | ${JQ_EXEC} -r '.[].name') # -r 去除字符串引号
-lastFeatureBranceNamesArray=($lastFeatureBranceNamesArray) # 此时才是真正的数组
-debug_log "下面将验证本分支此次打包应是否至少包含本分支【上次打包】包含的如下所有分支功能:\n${lastFeatureBranceNamesArray[*]}\n"
-
-lastFeatureBranceNameCount=${#lastFeatureBranceNamesArray[@]}
+lastFeatureBranceNameCount=${#LAST_PACK_BRANCH_NAMES[@]}
 for ((i=0;i<lastFeatureBranceNameCount;i++))
 do
-    devBranchName=${lastFeatureBranceNamesArray[i]}
+    devBranchName=${LAST_PACK_BRANCH_NAMES[i]}
     if [ ${i} -gt 0 ]; then
         debug_log "\n"
     fi
-    if [[ "${allContainBranchNames[*]}" =~ ${devBranchName} ]]; then
+    if [[ "${CURRENT_PACK_BRANCH_NAMES[*]}" =~ ${devBranchName} ]]; then
         debug_log "恭喜:新包包含旧包的${devBranchName}"
     else
         debug_log "抱歉❌:新包缺失旧包的${devBranchName}"
@@ -143,27 +99,20 @@ fi
 
 
 # 发现了可能丢失的分支，比如所有版本的测试包都用 dev_all 分支打包，则会出现缺失了某些功能，但实际上是因为上线后rebase了
-mayMissingWarningMessage="您当前打包的需求较上次有所缺失，缺失分支${#missingContainBranchNameArray[@]}个,如下:${missingContainBranchNameArray[*]} 。"
+mayMissingWarningMessage="您当前打包的需求较上次打包有所缺失(此时还未判断缺失的是不是因为上线)，缺失分支${#missingContainBranchNameArray[@]}个,如下:${missingContainBranchNameArray[*]} 。"
 
-current_searchFromDateString=$(cat ${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH} | ${JQ_EXEC} -r ".${PACKED_DATESTRING_IN_KEY}")
-old_searchFromDateString=$(cat ${BRANCHLASTPACK_BRANCHINFO_FILE_PATH} | ${JQ_EXEC} -r ".${PACKED_DATESTRING_IN_KEY}")
-debug_log "old_searchFromDateString=${old_searchFromDateString}"
-debug_log "current_searchFromDateString=${current_searchFromDateString}"
-if [ "${current_searchFromDateString}" != "${old_searchFromDateString}" ]; then # BRANCHLASTPACK_BRANCHINFO_FILE_PATH 加引号，避免名称中有空格，导致的错误
-    debug_log "$mayMissingWarningMessage 但由于此次打包是上次上线代码合并${current_searchFromDateString}后的第一次打包，所以会进一步检查所漏分支是不是因为已经上线。(排查方法:所漏分支在最后一个版本里)"
+
+debug_log "LAST_PACK_FROM_DATE=${LAST_PACK_FROM_DATE}"
+debug_log "CURRENT_PACK_FROM_DATE=${CURRENT_PACK_FROM_DATE}"
+if [ "${CURRENT_PACK_FROM_DATE}" != "${LAST_PACK_FROM_DATE}" ]; then
+    debug_log "$mayMissingWarningMessage 但由于此次打包是上次上线代码合并${CURRENT_PACK_FROM_DATE}后的第一次打包，所以会进一步检查所漏分支是不是因为已经上线。(排查方法:所漏分支在最后一个版本里)"
     
-    lastVersionFeatureBranceArray=$(cat "${LAST_ONLINE_VERSION_JSON_FILE}" | ${JQ_EXEC} ".${ONLINE_BRANCHINFO_IN_KEY}") # -r 去除字符串引号
-    if [ $? != 0 ] || [ "${lastVersionFeatureBranceArray}" == "null" ]; then
-        exit_response_with_code_message -code 1 -message "您的 ${LAST_ONLINE_VERSION_JSON_FILE} 文件中没有找到 ${ONLINE_BRANCHINFO_IN_KEY} 字段，请检查是不是其不存在或者位置不对。"
+    if [ -z "${LAST_ONLINE_BRANCH_NAMES}" ]; then
+        exit_response_with_code_message -code 1 -message "Error:缺少的分支要检查是不是因为已经上线，但却因缺少最后上线所含的分支 -lastOnlineBranchNames 而无法比较"
     fi
-
-    lastVersionFeatureBranceNamesArray=$(printf "%s" "${lastVersionFeatureBranceArray}" | ${JQ_EXEC} -r '.[].name') # -r 去除字符串引号
-    if [ $? != 0 ]; then
-        exit_response_with_code_message -code 1 -message "您的 ${LAST_ONLINE_VERSION_JSON_FILE} 文件中 ${ONLINE_BRANCHINFO_IN_KEY} 数组字段值不对，请检查。"
-    fi
-    lastVersionFeatureBranceNamesArray=($lastVersionFeatureBranceNamesArray) # 此时才是真正的数组
-    lastVersionFeatureBranceNamesCount=${#lastVersionFeatureBranceNamesArray[@]}
-    debug_log "最后上线的版本有${lastVersionFeatureBranceNamesCount}个分支,分别如下lastVersionFeatureBranceNamesArray=${lastVersionFeatureBranceNamesArray[*]}"
+    LAST_ONLINE_BRANCH_NAMES=($LAST_ONLINE_BRANCH_NAMES) # 此时才是真正的数组
+    lastVersionFeatureBranceNamesCount=${#LAST_ONLINE_BRANCH_NAMES[@]}
+    debug_log "最后上线的版本有${lastVersionFeatureBranceNamesCount}个分支,分别如下lastVersionFeatureBranceNamesArray=${LAST_ONLINE_BRANCH_NAMES[*]}"
     
     missingContainBranchNameCount=${#missingContainBranchNameArray[@]}
     for ((i=0;i<missingContainBranchNameCount;i++))
@@ -172,7 +121,7 @@ if [ "${current_searchFromDateString}" != "${old_searchFromDateString}" ]; then 
         if [ ${i} -gt 0 ]; then
             debug_log "\n"
         fi
-        if [[ "${lastVersionFeatureBranceNamesArray[*]}" =~ ${mayMissingBranchName} ]]; then
+        if [[ "${LAST_ONLINE_BRANCH_NAMES[*]}" =~ ${mayMissingBranchName} ]]; then
             debug_log "恭喜:新包相比旧包丢失的${mayMissingBranchName}已上线"
         else
             debug_log "抱歉:新包相比旧包丢失的${mayMissingBranchName}未上线"
@@ -181,7 +130,7 @@ if [ "${current_searchFromDateString}" != "${old_searchFromDateString}" ]; then 
     done
     
 else
-    debug_log "$mayMissingWarningMessage 且由于此次打包不是上次上线代码合并${current_searchFromDateString}后的第一次打包，所以不会进一步检查所漏分支是不是因为已经上线。(排查方法:所漏分支在最后一个版本里)"
+    debug_log "$mayMissingWarningMessage 且由于此次打包不是上次上线代码合并${CURRENT_PACK_FROM_DATE}后的第一次打包，所以不会进一步检查所漏分支是不是因为已经上线。(排查方法:所漏分支在最后一个版本里)"
     realMissingContainBranchNameArray=${missingContainBranchNameArray}
 fi
 
@@ -193,7 +142,7 @@ fi
 # 确实有缺失的分支
 PackageErrorMessage="您当前打包的需求较上次有所缺失，请先补全，再打包，缺失分支${#realMissingContainBranchNameArray[@]}个,如下:${realMissingContainBranchNameArray[*]} 。"
 PackageErrorMessage+="\n可能原因如下:这些分支未合并进来，或者是其有新的提交也会造成这个问题。"
-PackageErrorMessage+="\n具体信息如下:\n之前分支功能有 ${lastFeatureBranceNamesArray[*]} 。\n而现在的分支是 ${allContainBranchNames[*]} 。"
+PackageErrorMessage+="\n具体信息如下:\n之前分支功能有 ${LAST_PACK_BRANCH_NAMES[*]} 。\n而现在的分支是 ${CURRENT_PACK_BRANCH_NAMES[*]} 。"
 PackageErrorMessage+="\n【附：如果某个分支已确实不需要使用。可以前往 ${BRANCHLASTPACK_BRANCHINFO_FILE_PATH} 将你的分支从 .package_merger_branchs 字段中删除】"
 ## 获取缺失的分支是谁负责的
 realMissingContainBranchNameCount=${#realMissingContainBranchNameArray[@]}

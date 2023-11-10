@@ -38,8 +38,13 @@ PACKED_DATESTRING_IN_KEY="package_merger_branchs_searchFromDateString"
 LAST_ONLINE_VERSION_JSON_FILE="${Example_HomeDir_Absolute}/example_branch_check_missing_diff_old_lastOnline.json"
 ONLINE_BRANCHINFO_IN_KEY="online_brances"
 Personnel_FILE_PATH="${Example_HomeDir_Absolute}/example_branch_check_missing_diff_old_personel.json"
-sh ${branch_check_missing_diff_old_scriptPath} -branchLastPackJsonF "${BRANCHLASTPACK_BRANCHINFO_FILE_PATH}" -branchCurPackJsonF "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" -packBranchInfoInKey "${PACKED_BRANCHINFO_IN_KEY}" -packDateStringInKey "${PACKED_DATESTRING_IN_KEY}" \
-    -lastOnlineJsonF "${LAST_ONLINE_VERSION_JSON_FILE}" -onlineBranchInfoInKey "${ONLINE_BRANCHINFO_IN_KEY}" \
+
+CURRENT_PACK_BRANCH_NAMES=$(cat "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" | jq ".${PACKED_BRANCHINFO_IN_KEY}" | jq -r '.[].name') # -r 去除字符串引号
+CURRENT_PACK_FROM_DATE=$(cat ${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH} | jq -r ".${PACKED_DATESTRING_IN_KEY}")
+LAST_PACK_BRANCH_NAMES=$(cat "${BRANCHLASTPACK_BRANCHINFO_FILE_PATH}" | jq ".${PACKED_BRANCHINFO_IN_KEY}" | jq -r '.[].name') # -r 去除字符串引号
+LAST_PACK_FROM_DATE=$(cat ${BRANCHLASTPACK_BRANCHINFO_FILE_PATH} | jq -r ".${PACKED_DATESTRING_IN_KEY}")
+LAST_ONLINE_BRANCH_NAMES=$(cat "${LAST_ONLINE_VERSION_JSON_FILE}" | jq ".${ONLINE_BRANCHINFO_IN_KEY}" | jq -r '.[].name') # -r 去除字符串引号
+sh ${branch_check_missing_diff_old_scriptPath} -curPackBranchNames "${CURRENT_PACK_BRANCH_NAMES}" -curPackFromDate "${CURRENT_PACK_FROM_DATE}" -lastPackBranchNames "${LAST_PACK_BRANCH_NAMES}" -lastPackFromDate "${LAST_PACK_FROM_DATE}" -lastOnlineBranchNames "${LAST_ONLINE_BRANCH_NAMES}" \
     -peoJsonF "${Personnel_FILE_PATH}"
 if [ $? != 0 ]; then
     exit 1

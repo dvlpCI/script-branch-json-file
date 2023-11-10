@@ -63,17 +63,17 @@ do
         -hasContainBranchNames|--check-branch-has-contain) HAS_CONTAIN_BRANCH_NAMES=$2; shift 2;;
         -mustContainByJsonFile|--check-must-by-json-file) MUST_CONTAIN_BY_JSON_FILE=$2; shift 2;;
         # branch_check_missing_diff_old
-        -branchLastPackJsonF|--branch-lastPack-branchInfo-json-file) BRANCHLASTPACK_BRANCHINFO_FILE_PATH=$2; shift 2;; # 本分支最后一个打包的分支信息
-        -branchCurPackJsonF|--branch-curPack-branchInfo-json-file) BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH=$2; shift 2;; # 本分支当前打包的分支信息
-        -packBranchInfoInKey|--packed-branchInfo-in-key) PACKED_BRANCHINFO_IN_KEY=$2; shift 2;; # 打包生成的分支信息在文件中的哪个key
-        -packDateStringInKey|--packed-dateString-in-key) PACKED_DATESTRING_IN_KEY=$2; shift 2;; # 打包时间在文件中的哪个key
-
-        -lastOnlineJsonF|--last-online-package-json-file) LAST_ONLINE_VERSION_JSON_FILE=$2; shift 2;; # 当前线上最有一个版本的分支信息文件
-        -onlineBranchInfoInKey|--online-branchInfo-in-key) ONLINE_BRANCHINFO_IN_KEY=$2; shift 2;; # 上线版本的分支信息在文件中的哪个key
+        -curPackBranchNames|--curPack-branchNames) CURRENT_PACK_BRANCH_NAMES=$2; shift 2;; # 本分支【当前打包】的所有分支名数组字符串
+        -curPackFromDate|--curPack-fromDateString) CURRENT_PACK_FROM_DATE=$2; shift 2;; # 本分支【当前打包】的所获得的所有分支名数组是从哪个时间点开始获取来的
+        -lastPackBranchNames|--lastPack-branchNames) LAST_PACK_BRANCH_NAMES=$2; shift 2;; # 本分支【上次打包】的所有分支名数组字符串
+        -lastPackFromDate|--lastPack-fromDateString) LAST_PACK_FROM_DATE=$2; shift 2;; # 本分支【上次打包】的所获得的所有分支名数组是从哪个时间点开始获取来的
+        -lastOnlineBranchNames|--lastOnline-branchNames) LAST_ONLINE_BRANCH_NAMES=$2; shift 2;; # 本分支【上次上线】的所有分支名数组字符串
 
         -peoJsonF|--product-personnel-json-file) Personnel_FILE_PATH=$2; shift 2;; # 可选：人物文件，用来当有缺失时候，获取该分支谁负责
         
         # check map
+        -checkBranchMapsInJsonF|--branch-maps-json-file) BranchMaps_JsonFilePath=$2; shift 2;; # 要检查的maps在哪个文件
+        -checkBranchMapsInJsonK|--branch-maps-json-key) BranchMapsInJsonKey=$2; shift 2;; # 要检查的maps在文件的哪个key
         -ignoreCheckBranchNames|--ignoreCheck-branchNameArray) ignoreCheckBranchNameArray=$2; shift 2;;
         
         --) break ;;
@@ -82,34 +82,52 @@ do
     esac
 done
 
-
+echo "\n---------- check_self_name ----------"
 if [ ! -f "${CHECK_BY_JSON_FILE}" ]; then
-    echo "${YELLOW}您用于【检查分支名】合规的配置文件不存在，所以此次不会检查，请检查${BLUE} ${CHECK_BY_JSON_FILE} ${YELLOW}。${NC}"
+    echo "${YELLOW}您用于【检查分支名】合规的配置文件不存在，所以此次不会检查，请检查 -checkByJsonFile 的参数值${BLUE} ${CHECK_BY_JSON_FILE} ${YELLOW}。${NC}"
 else
+    check_self_name_SkipTip="${YELLOW}附：若不想进行此分支名自身检查，请勿设置${BLUE} -checkByJsonFile ${YELLOW}即可。${NC}"
     check_self_name_responseJsonString=$(sh ${branch_check_self_name_scriptPath} -checkBranchName "${CHECK_BRANCH_NAME}" -checkInNetwork "${CHECK_IN_NETWORK_TYPE}" -checkByJsonFile "${CHECK_BY_JSON_FILE}")
     if [ $? != 0 ]; then
-        echo "$check_self_name_responseJsonString" # 此时是错误信息
+        echo "${RED} $check_self_name_responseJsonString\n${check_self_name_SkipTip} ${NC}" # 此时是错误信息
         exit 1
     fi
+    check_self_name_responseCode=$(printf "%s" "$check_self_name_responseJsonString" | jq -r '.code') # jq -r 去除双引号
+    check_self_name_responseMessage=$(printf "%s" "$check_self_name_responseJsonString" | jq -r '.message')
+    if [ "${check_self_name_responseCode}" != 0 ]; then
+        echo "${RED} ${check_self_name_responseMessage}\n${check_self_name_SkipTip} ${NC}"
+        exit 1
+    fi
+    echo "$check_self_name_responseMessage"
 fi
 
+
+echo "\n---------- check_missing_by_must ----------"
 if [ ! -f "${MUST_CONTAIN_BY_JSON_FILE}" ]; then
-    echo "${YELLOW}您用于【检查分支必须包含的分支】合规的配置文件不存在，所以此次不会检查，请检查${BLUE} ${MUST_CONTAIN_BY_JSON_FILE} ${YELLOW}。${NC}"
+    echo "${YELLOW}您用于【检查分支必须包含的分支】合规的配置文件不存在，所以此次不会检查，请检查 -mustContainByJsonFile 的参数值 ${BLUE} ${MUST_CONTAIN_BY_JSON_FILE} ${YELLOW}。${NC}"
 else
+    check_missing_by_must_SkipTip="${YELLOW}附：若不想进行此分支必须包含检查，请勿设置${BLUE} -mustContainByJsonFile ${YELLOW}即可。${NC}"
     # echo "${YELLOW}正在执行命令(检查分支是否包含应该包含的分支):《${BLUE} sh ${branch_check_missing_by_must_scriptPath} -checkBranchName \"${CHECK_BRANCH_NAME}\" -hasContainBranchNames \"${HAS_CONTAIN_BRANCH_NAMES[*]}\" -mustContainByJsonFile \"${MUST_CONTAIN_BY_JSON_FILE}\" ${YELLOW}》。${NC}"
     check_missing_by_must_responseJsonString=$(sh ${branch_check_missing_by_must_scriptPath} -checkBranchName "${CHECK_BRANCH_NAME}" -hasContainBranchNames "${HAS_CONTAIN_BRANCH_NAMES[*]}" -mustContainByJsonFile "${MUST_CONTAIN_BY_JSON_FILE}")
     if [ $? != 0 ]; then
-        echo "$check_missing_by_must_responseJsonString" # 此时是错误信息
+        echo "${RED} $check_missing_by_must_responseJsonString\n${check_missing_by_must_SkipTip} ${NC}" # 此时是错误信息
         exit 1
     fi
+    check_missing_by_must_responseCode=$(printf "%s" "$check_missing_by_must_responseJsonString" | jq -r '.code') # jq -r 去除双引号
+    check_missing_by_must_responseMessage=$(printf "%s" "$check_missing_by_must_responseJsonString" | jq -r '.message')
+    if [ "${check_missing_by_must_responseCode}" != 0 ]; then
+        echo "${RED} ${check_missing_by_must_responseMessage}\n${check_missing_by_must_SkipTip} ${NC}"
+        exit 1
+    fi
+    echo "$check_missing_by_must_responseMessage"
 fi
 
 
-if [ ! -f "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" ]; then
-    echo "${YELLOW}您要检查的【本分支当前打包的分支信息】文件不存在，所以此次不会检查，请检查${BLUE} ${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH} ${YELLOW}。${NC}"
+echo "\n---------- check_missing_diff_old ----------"
+if [ -z "${CURRENT_PACK_BRANCH_NAMES}" ]; then
+    echo "${YELLOW}您要检查的【本分支当前打包的分支名】 -curPackBranchNames 的参数值未设置，所以此次不会检查，请留意并且其他检查将继续。${NC}"
 else
-    check_missing_diff_old_responseJsonString=$(sh ${branch_check_missing_diff_old_scriptPath} -branchLastPackJsonF "${BRANCHLASTPACK_BRANCHINFO_FILE_PATH}" -branchCurPackJsonF "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" -packBranchInfoInKey "${PACKED_BRANCHINFO_IN_KEY}" -packDateStringInKey "${PACKED_DATESTRING_IN_KEY}" \
-        -lastOnlineJsonF "${LAST_ONLINE_VERSION_JSON_FILE}" -onlineBranchInfoInKey "${ONLINE_BRANCHINFO_IN_KEY}" \
+    check_missing_diff_old_responseJsonString=$(sh ${branch_check_missing_diff_old_scriptPath} -curPackBranchNames "${CURRENT_PACK_BRANCH_NAMES}" -curPackFromDate "${CURRENT_PACK_FROM_DATE}" -lastPackBranchNames "${LAST_PACK_BRANCH_NAMES}" -lastPackFromDate "${LAST_PACK_FROM_DATE}" -lastOnlineBranchNames "${LAST_ONLINE_BRANCH_NAMES}" \
         -peoJsonF "${Personnel_FILE_PATH}")
     if [ $? != 0 ]; then
         exit 1
@@ -118,20 +136,20 @@ else
     check_missing_diff_old_responseCode=$(printf "%s" "$check_missing_diff_old_responseJsonString" | jq -r '.code') # jq -r 去除双引号
     if [ "${check_missing_diff_old_responseCode}" != 0 ]; then
         check_missing_diff_old_responseMessage=$(printf "%s" "$check_missing_diff_old_responseJsonString" | jq -r '.message')
-        echo "${check_missing_diff_old_responseMessage}"
+        echo "${RED} ${check_missing_diff_old_responseMessage}\n${YELLOW}附：若不想进行此分支遗漏检查，请勿设置${BLUE} -curPackBranchNames ${YELLOW}即可。${NC}"
         exit 1
     fi
 fi
 
 
+echo "\n---------- check_map ----------"
 PackageNetworkType=$CHECK_IN_NETWORK_TYPE
-# echo "--------------------------${ignoreCheckBranchNameArray[*]}"
-if [ "${ignoreCheckBranchNameArray[*]}" == "ignoreAll" ]; then
-    echo "${YELLOW}您的 -ignoreCheckBranchNames 参数值为 ignoreAll ，所以【将不会进行map的属性在${BLUE} ${PackageNetworkType} ${YELLOW}环境下的检查】。若只想忽略部分，可设置要忽略检查的数组。${NC}"
+if [  ! -f "${BranchMaps_JsonFilePath}" ]; then
+    echo "${YELLOW}您的 -checkBranchMapsInJsonF 参数值为 ${BranchMaps_JsonFilePath} 指向的文件不存在 ，所以【将不会进行map的属性在${BLUE} ${PackageNetworkType} ${YELLOW}环境下的检查】。${NC}"
 else
-    errorMessage=$(sh $(qbase -path branchMapsFile_checkMap) -branchMapsJsonF "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" -ignoreCheckBranchNames "${ignoreCheckBranchNameArray[*]}" -pn "${PackageNetworkType}")
+    errorMessage=$(sh $(qbase -path branchMapsFile_checkMap) -branchMapsJsonF "${BranchMaps_JsonFilePath}" -branchMapsJsonK "${BranchMapsInJsonKey}" -ignoreCheckBranchNames "${ignoreCheckBranchNameArray[*]}" -pn "${PackageNetworkType}")
     if [ $? != 0 ]; then
-        echo "${RED}${errorMessage}${NC}"
+        echo "${RED}${errorMessage}${NC}\n${YELLOW}附：若不想进行此分支文件map哥属性的检查，请勿设置${BLUE} -checkBranchMapsInJsonF ${YELLOW}即可。${NC}"
         exit 1
     fi
     echo "${GREEN}恭喜：检查branchMaps通过，在 ${PackageNetworkType} 环境下未缺失信息。${NC}"

@@ -33,7 +33,7 @@ ExampleCheckMissingDiffOld_HomeDir_Absolute=${CategoryFun_HomeDir_Absolute}/exam
 branch_all_scriptPath="${CategoryFun_HomeDir_Absolute}/branch_check_all.sh"
 
 # check self name
-CHECK_BRANCH_NAME="development"
+CHECK_BRANCH_NAME="dev_all"
 CHECK_IN_NETWORK_TYPE="product"
 CHECK_BY_JSON_FILE="${ExampleCheckSelfName_HomeDir_Absolute}/example_branch_check_self_name.json"
 # check missing by must
@@ -51,16 +51,23 @@ LAST_ONLINE_VERSION_JSON_FILE="${ExampleCheckMissingDiffOld_HomeDir_Absolute}/ex
 ONLINE_BRANCHINFO_IN_KEY="online_brances"
 Personnel_FILE_PATH="${ExampleCheckMissingDiffOld_HomeDir_Absolute}/example_branch_check_missing_diff_old_personel.json"
 
+CURRENT_PACK_BRANCH_NAMES=$(cat "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" | jq ".${PACKED_BRANCHINFO_IN_KEY}" | jq -r '.[].name') # -r 去除字符串引号
+CURRENT_PACK_FROM_DATE=$(cat ${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH} | jq -r ".${PACKED_DATESTRING_IN_KEY}")
+LAST_PACK_BRANCH_NAMES=$(cat "${BRANCHLASTPACK_BRANCHINFO_FILE_PATH}" | jq ".${PACKED_BRANCHINFO_IN_KEY}" | jq -r '.[].name') # -r 去除字符串引号
+LAST_PACK_FROM_DATE=$(cat ${BRANCHLASTPACK_BRANCHINFO_FILE_PATH} | jq -r ".${PACKED_DATESTRING_IN_KEY}")
+LAST_ONLINE_BRANCH_NAMES=$(cat "${LAST_ONLINE_VERSION_JSON_FILE}" | jq ".${ONLINE_BRANCHINFO_IN_KEY}" | jq -r '.[].name') # -r 去除字符串引号
+
+
+BranchMaps_JsonFilePath=${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}
+BranchMapsInJsonKey="package_merger_branchs"
 ignoreCheckBranchNameArray="(master development)"
-# ignoreCheckBranchNameArray="ignoreAll"
 
 sh ${branch_all_scriptPath} \
     -checkBranchName "${CHECK_BRANCH_NAME}" -checkInNetwork "${CHECK_IN_NETWORK_TYPE}" -checkByJsonFile "${CHECK_BY_JSON_FILE}" \
     -hasContainBranchNames "${HAS_CONTAIN_BRANCH_NAMES[*]}" -mustContainByJsonFile "${MUST_CONTAIN_BY_JSON_FILE}" \
-    -branchLastPackJsonF "${BRANCHLASTPACK_BRANCHINFO_FILE_PATH}" -branchCurPackJsonF "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" -packBranchInfoInKey "${PACKED_BRANCHINFO_IN_KEY}" -packDateStringInKey "${PACKED_DATESTRING_IN_KEY}" \
-    -lastOnlineJsonF "${LAST_ONLINE_VERSION_JSON_FILE}" -onlineBranchInfoInKey "${ONLINE_BRANCHINFO_IN_KEY}" \
+    -curPackBranchNames "${CURRENT_PACK_BRANCH_NAMES}" -curPackFromDate "${CURRENT_PACK_FROM_DATE}" -lastPackBranchNames "${LAST_PACK_BRANCH_NAMES}" -lastPackFromDate "${LAST_PACK_FROM_DATE}" -lastOnlineBranchNames "${LAST_ONLINE_BRANCH_NAMES}" \
     -peoJsonF "${Personnel_FILE_PATH}" \
-    -ignoreCheckBranchNames "${ignoreCheckBranchNameArray[*]}"
+    -checkBranchMapsInJsonF "${BranchMaps_JsonFilePath}" -checkBranchMapsInJsonK "${BranchMapsInJsonKey}" -ignoreCheckBranchNames "${ignoreCheckBranchNameArray[*]}"
 if [ $? != 0 ]; then
     exit 1
 fi

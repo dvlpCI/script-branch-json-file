@@ -24,7 +24,7 @@ function debug_log() {
 responseJsonString='{
 
 }'
-exit_response_with_code_message() { # 退出脚本的方法，省去当某个步骤失败后，还去继续多余的执行其他操作
+update_response_with_code_message() { # 退出脚本的方法，省去当某个步骤失败后，还去继续多余的执行其他操作
     while [ -n "$1" ]; do
         case "$1" in
             -code|--code) code=$2; shift 2;;
@@ -36,7 +36,6 @@ exit_response_with_code_message() { # 退出脚本的方法，省去当某个步
     responseJsonString=$(printf "%s" "$responseJsonString" | jq --arg code "$code" '. + { "code": $code }')
     responseJsonString=$(printf "%s" "$responseJsonString" | jq --arg message "$message" '. + { "message": $message }')
     printf "%s" "${responseJsonString}"
-    exit "$code"
 }
 
 
@@ -65,7 +64,7 @@ debug_log "====要检查本分支是否包含以下分支 HAS_CONTAIN_BRANCH_NAM
 
 
 if [ -z "${MUST_CONTAIN_BY_JSON_FILE}" ]; then
-    echo "缺少 -mustContainByJsonFile 参数，此次进行必须包含的检查"
+    update_response_with_code_message -code 0 -message "缺少 -mustContainByJsonFile 参数，此次将不会进行必须包含的检查"
     exit 0
 fi
 
@@ -78,7 +77,7 @@ mustContainReasonText=$(printf "%s" "${mustContainMap}" | ${JQ_EXEC} '.mustConta
 debug_log "mustContainBranchNames=${mustContainBranchNames[*]}"
 #echo "mustContainReasonText=${mustContainReasonText}"
 if [ -z "${mustContainBranchNames}" ] || [ "${mustContainBranchNames}" == "null" ]; then
-    echo "友情提示：您的${CHECK_BRANCH_NAME}分支没有必须合入的分支。"
+    update_response_with_code_message -code 0 -message "友情提示：您的${CHECK_BRANCH_NAME}分支没有必须合入的分支。"
     exit 0
 fi
 
@@ -98,19 +97,19 @@ do
     fi
 done
 
-echo "${missingMustContainBranchNameArray[*]}"
+# echo "${missingMustContainBranchNameArray[*]}"
 if [ ${#missingMustContainBranchNameArray[@]} == 0 ]; then
-    echo "恭喜，您的${CHECK_BRANCH_NAME}分支包含所有必须合入的分支。即包含 ${mustContainBranchNames[*]} "
+    update_response_with_code_message -code 0 -message "恭喜，您的${CHECK_BRANCH_NAME}分支包含所有必须合入的分支。即包含 ${mustContainBranchNames[*]} "
     exit 0
 fi
 
 
-PackageErrorMessage="本分支${CHECK_BRANCH_NAME}不能缺少${missingMustContainBranchNameArray[*]}分支上的代码，请检查是否合入且全部合入"
+PackageErrorMessage="本分支${CHECK_BRANCH_NAME}不能缺少${missingMustContainBranchNameArray[*]}分支上的代码，请检查是否合入且全部合入。"
 if [ -n "${mustContainReasonText}" ]; then
-    PackageErrorMessage+="${mustContainReasonText}"
+    PackageErrorMessage+="（修复帮助：${mustContainReasonText}）"
 fi
-printf "%s" "${PackageErrorMessage}"
-exit 1
+update_response_with_code_message -code 1 -message "${PackageErrorMessage}"
+exit 0
 
 
 
