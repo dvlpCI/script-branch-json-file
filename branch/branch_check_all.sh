@@ -72,6 +72,10 @@ do
         -onlineBranchInfoInKey|--online-branchInfo-in-key) ONLINE_BRANCHINFO_IN_KEY=$2; shift 2;; # 上线版本的分支信息在文件中的哪个key
 
         -peoJsonF|--product-personnel-json-file) Personnel_FILE_PATH=$2; shift 2;; # 可选：人物文件，用来当有缺失时候，获取该分支谁负责
+        
+        # check map
+        -ignoreCheckBranchNames|--ignoreCheck-branchNameArray) ignoreCheckBranchNameArray=$2; shift 2;;
+        
         --) break ;;
 
         *) break ;;
@@ -104,10 +108,34 @@ fi
 if [ ! -f "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" ]; then
     echo "${YELLOW}您要检查的【本分支当前打包的分支信息】文件不存在，所以此次不会检查，请检查${BLUE} ${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH} ${YELLOW}。${NC}"
 else
-    sh ${branch_check_missing_diff_old_scriptPath} -branchLastPackJsonF "${BRANCHLASTPACK_BRANCHINFO_FILE_PATH}" -branchCurPackJsonF "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" -packBranchInfoInKey "${PACKED_BRANCHINFO_IN_KEY}" -packDateStringInKey "${PACKED_DATESTRING_IN_KEY}" \
+    check_missing_diff_old_responseJsonString=$(sh ${branch_check_missing_diff_old_scriptPath} -branchLastPackJsonF "${BRANCHLASTPACK_BRANCHINFO_FILE_PATH}" -branchCurPackJsonF "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" -packBranchInfoInKey "${PACKED_BRANCHINFO_IN_KEY}" -packDateStringInKey "${PACKED_DATESTRING_IN_KEY}" \
         -lastOnlineJsonF "${LAST_ONLINE_VERSION_JSON_FILE}" -onlineBranchInfoInKey "${ONLINE_BRANCHINFO_IN_KEY}" \
-        -peoJsonF "${Personnel_FILE_PATH}"
+        -peoJsonF "${Personnel_FILE_PATH}")
     if [ $? != 0 ]; then
         exit 1
     fi
+
+    check_missing_diff_old_responseCode=$(printf "%s" "$check_missing_diff_old_responseJsonString" | jq -r '.code') # jq -r 去除双引号
+    if [ "${check_missing_diff_old_responseCode}" != 0 ]; then
+        check_missing_diff_old_responseMessage=$(printf "%s" "$check_missing_diff_old_responseJsonString" | jq -r '.message')
+        echo "${check_missing_diff_old_responseMessage}"
+        exit 1
+    fi
 fi
+
+
+PackageNetworkType=$CHECK_IN_NETWORK_TYPE
+# echo "--------------------------${ignoreCheckBranchNameArray[*]}"
+if [ "${ignoreCheckBranchNameArray[*]}" == "ignoreAll" ]; then
+    echo "${YELLOW}您的 -ignoreCheckBranchNames 参数值为 ignoreAll ，所以【将不会进行map的属性在${BLUE} ${PackageNetworkType} ${YELLOW}环境下的检查】。若只想忽略部分，可设置要忽略检查的数组。${NC}"
+else
+    errorMessage=$(sh $(qbase -path branchMapsFile_checkMap) -branchMapsJsonF "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" -ignoreCheckBranchNames "${ignoreCheckBranchNameArray[*]}" -pn "${PackageNetworkType}")
+    if [ $? != 0 ]; then
+        echo "${RED}${errorMessage}${NC}"
+        exit 1
+    fi
+    echo "${GREEN}恭喜：检查branchMaps通过，在 ${PackageNetworkType} 环境下未缺失信息。${NC}"
+fi
+
+
+

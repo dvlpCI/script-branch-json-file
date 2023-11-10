@@ -191,10 +191,10 @@ if [ -z "${realMissingContainBranchNameArray}" ]; then
 fi
 
 # 确实有缺失的分支
-PackageErrorMessage="您当前打包的需求较上次有所缺失，请先补全，再打包，缺失分支${#realMissingContainBranchNameArray[@]}个,如下:${realMissingContainBranchNameArray[*]}。"
-PackageErrorMessage+="可能原因如下:这些分支未合并进来，或者是其有新的提交也会造成这个问题。"
-PackageErrorMessage+="具体信息如下:之前分支功能有${lastFeatureBranceNamesArray[*]}。而现在功能是${allContainBranchNames[*]}。"
-PackageErrorMessage+="【附：如果某个分支已确实不需要使用。可以前往${BRANCHLASTPACK_BRANCHINFO_FILE_PATH}删除.package_merger_branchs中的那个分支】"
+PackageErrorMessage="您当前打包的需求较上次有所缺失，请先补全，再打包，缺失分支${#realMissingContainBranchNameArray[@]}个,如下:${realMissingContainBranchNameArray[*]} 。"
+PackageErrorMessage+="\n可能原因如下:这些分支未合并进来，或者是其有新的提交也会造成这个问题。"
+PackageErrorMessage+="\n具体信息如下:\n之前分支功能有 ${lastFeatureBranceNamesArray[*]} 。\n而现在的分支是 ${allContainBranchNames[*]} 。"
+PackageErrorMessage+="\n【附：如果某个分支已确实不需要使用。可以前往 ${BRANCHLASTPACK_BRANCHINFO_FILE_PATH} 将你的分支从 .package_merger_branchs 字段中删除】"
 ## 获取缺失的分支是谁负责的
 realMissingContainBranchNameCount=${#realMissingContainBranchNameArray[@]}
 

@@ -34,7 +34,7 @@ branch_all_scriptPath="${CategoryFun_HomeDir_Absolute}/branch_check_all.sh"
 
 # check self name
 CHECK_BRANCH_NAME="development"
-CHECK_IN_NETWORK_TYPE="test1"
+CHECK_IN_NETWORK_TYPE="product"
 CHECK_BY_JSON_FILE="${ExampleCheckSelfName_HomeDir_Absolute}/example_branch_check_self_name.json"
 # check missing by must
 # CHECK_BRANCH_NAME="dev_all"
@@ -51,13 +51,16 @@ LAST_ONLINE_VERSION_JSON_FILE="${ExampleCheckMissingDiffOld_HomeDir_Absolute}/ex
 ONLINE_BRANCHINFO_IN_KEY="online_brances"
 Personnel_FILE_PATH="${ExampleCheckMissingDiffOld_HomeDir_Absolute}/example_branch_check_missing_diff_old_personel.json"
 
+ignoreCheckBranchNameArray="(master development)"
+# ignoreCheckBranchNameArray="ignoreAll"
 
 sh ${branch_all_scriptPath} \
     -checkBranchName "${CHECK_BRANCH_NAME}" -checkInNetwork "${CHECK_IN_NETWORK_TYPE}" -checkByJsonFile "${CHECK_BY_JSON_FILE}" \
     -hasContainBranchNames "${HAS_CONTAIN_BRANCH_NAMES[*]}" -mustContainByJsonFile "${MUST_CONTAIN_BY_JSON_FILE}" \
     -branchLastPackJsonF "${BRANCHLASTPACK_BRANCHINFO_FILE_PATH}" -branchCurPackJsonF "${BRANCHCURRENTPACK_BRANCHINFO_FILE_PATH}" -packBranchInfoInKey "${PACKED_BRANCHINFO_IN_KEY}" -packDateStringInKey "${PACKED_DATESTRING_IN_KEY}" \
     -lastOnlineJsonF "${LAST_ONLINE_VERSION_JSON_FILE}" -onlineBranchInfoInKey "${ONLINE_BRANCHINFO_IN_KEY}" \
-    -peoJsonF "${Personnel_FILE_PATH}"
+    -peoJsonF "${Personnel_FILE_PATH}" \
+    -ignoreCheckBranchNames "${ignoreCheckBranchNameArray[*]}"
 if [ $? != 0 ]; then
     exit 1
 fi
