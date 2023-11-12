@@ -51,6 +51,21 @@ do
     esac
 done
 
+if [ -z "${CHECK_BRANCH_NAME}" ]; then
+    echo "缺失 -checkBranchName 参数，请检查。"
+    exit 1
+fi
+
+if [ -z "${CHECK_IN_NETWORK_TYPE}" ]; then
+    echo "缺失 -checkInNetwork 参数，请检查。"
+    exit 1
+fi
+
+if [ ! -f "${CHECK_IN_NETWORK_TYPE}" ]; then
+    echo "您的 -checkByJsonFile 的参数值指向的文件 ${CHECK_BY_JSON_FILE} 不存在，请检查。"
+    exit 1
+fi
+
 CHECK_BRANCH_NAME=${CHECK_BRANCH_NAME##*/}
 # echo "------CHECK_BRANCH_NAME=$CHECK_BRANCH_NAME"
 # echo "------CHECK_IN_NETWORK_TYPE=${CHECK_IN_NETWORK_TYPE}"

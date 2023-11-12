@@ -76,13 +76,14 @@ function _logQuickCmd() {
 
 function get_path_quickCmd() {
     specified_value=$1
-    map=$(cat "$qpackageJsonF" | jq --arg value "$specified_value" '.quickCmd[].values[] | select(.cmd == $value)')
-    if [ -z "${map}" ]; then
-        echo "${RED}error: not found specified_value: ${BLUE}$specified_value ${NC}"
-        cat "$qpackageJsonF" | jq '.quickCmd'
-        exit 1
+    
+    qbase_package_path_and_cmd_menu_scriptPath=$(qbase -path package_path_and_cmd_menu)
+    relpath=$(sh $qbase_package_path_and_cmd_menu_scriptPath -file "${qpackageJsonF}" -keyType "cmd" -key "${specified_value}")
+    if [ $? != 0 ]; then
+        echo "$relpath" # 此时此值是错误信息
+        return 1
     fi
-    relpath=$(echo "${map}" | jq -r '.cmd_script')
+    
     relpath="${relpath//.\//}"  # 去掉开头的 "./"
     echo "$qbase_homedir_abspath/$relpath"
 }
@@ -112,11 +113,11 @@ function quickCmdExec() {
     _verbose_log "✅快捷命令及其所有参数分别为${BLUE} ${quickCmdString}${BLUE}${NC}:${CYAN}${quickCmdArgs[*]} ${CYAN}。${NC}"
 
     quickCmd_script_path=$(get_path_quickCmd "${quickCmdString}")
-    if [ -f "$quickCmd_script_path" ]; then
+    if [ $? == 0 ] && [ -f "$quickCmd_script_path" ]; then
         # _verbose_log "${YELLOW}正在执行命令(根据rebase,获取分支名):《${BLUE} sh ${quickCmd_script_path} ${quickCmdArgs[*]} ${BLUE}》${NC}"
         sh ${quickCmd_script_path} ${quickCmdArgs[*]}
     else 
-        printf "${RED}抱歉：暂不支持 ${BLUE}${quickCmdString} ${RED} 快捷命令，请检查${NC}\n"
+        printf "${RED}抱歉：暂不支持${BLUE} ${quickCmdString} ${RED} 快捷命令，请检查${NC}\n"
         exit 1
     fi
 }
