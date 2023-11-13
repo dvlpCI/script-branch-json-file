@@ -61,7 +61,7 @@ if [ -z "${CHECK_IN_NETWORK_TYPE}" ]; then
     exit 1
 fi
 
-if [ ! -f "${CHECK_IN_NETWORK_TYPE}" ]; then
+if [ ! -f "${CHECK_BY_JSON_FILE}" ]; then
     echo "您的 -checkByJsonFile 的参数值指向的文件 ${CHECK_BY_JSON_FILE} 不存在，请检查。"
     exit 1
 fi

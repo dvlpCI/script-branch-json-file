@@ -51,6 +51,8 @@ do
     esac
 done
 
+
+
 if [ -z "${CHECK_BRANCH_NAME}" ]; then
     echo "缺少 -checkBranchName 参数，请补充"
     exit 1
@@ -68,12 +70,15 @@ if [ -z "${MUST_CONTAIN_BY_JSON_FILE}" ]; then
     exit 0
 fi
 
-
-mustContainMap=$(cat "${MUST_CONTAIN_BY_JSON_FILE}" | ${JQ_EXEC} ".${CHECK_BRANCH_NAME}") # -r 去除字符串引号
-
+# '[".version/v1.7.2_1114"]'
+mustContainMap=$(cat "${MUST_CONTAIN_BY_JSON_FILE}" | jq -r --arg key "$CHECK_BRANCH_NAME" '.[$key]') # -r 去除字符串引号
+if [ $? != 0 ]; then
+    echo "Error❌:执行命令(获取指定分支必须包含的值)出错:《 cat \"${MUST_CONTAIN_BY_JSON_FILE}\" | jq -r --arg key \"$CHECK_BRANCH_NAME\" '.[\$key]' 》"
+    exit 1
+fi
 # mustContainBranchNames=($mustContainBranchNames) # 外部已把数组换成了字符串
-mustContainBranchNames=$(printf "%s" "${mustContainMap}" | ${JQ_EXEC} '.mustContain_branchNames') # -r 去除字符串引号
-mustContainReasonText=$(printf "%s" "${mustContainMap}" | ${JQ_EXEC} '.mustContain_reasonText') # -r 去除字符串引号
+mustContainBranchNames=$(printf "%s" "${mustContainMap}" | jq '.mustContain_branchNames') # -r 去除字符串引号
+mustContainReasonText=$(printf "%s" "${mustContainMap}" | jq '.mustContain_reasonText') # -r 去除字符串引号
 debug_log "mustContainBranchNames=${mustContainBranchNames[*]}"
 #echo "mustContainReasonText=${mustContainReasonText}"
 if [ -z "${mustContainBranchNames}" ] || [ "${mustContainBranchNames}" == "null" ]; then
@@ -86,7 +91,7 @@ fi
 debug_log "本分支有必须要合入的分支的检查,下面开始检查=============="
 
 missingMustContainBranchNameArray=()
-mustContainBranchNameCount=$(printf "%s" "${mustContainBranchNames}" | ${JQ_EXEC} '.|length')
+mustContainBranchNameCount=$(printf "%s" "${mustContainBranchNames}" | jq '.|length')
 for ((i=0;i<mustContainBranchNameCount;i++))
 do
     mustContainBranchName=${mustContainBranchNames[i]}

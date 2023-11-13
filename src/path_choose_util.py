@@ -50,7 +50,7 @@ def show_and_choose_folder_in_dir(searchInDir, customPathType=CustomPathType.NON
     
     # 打印第一层的文件夹列表
     print(f"")
-    print(f"文件夹列表：{YELLOW}{searchInDir}{NC}目录下")
+    print(f"文件夹列表：{YELLOW} {searchInDir} {NC}目录下")
     for i, folder_name in enumerate(folder_names):
         print(f"{i+1}. {os.path.basename(folder_name)}")
 
