@@ -82,19 +82,6 @@ do
         -ignoreCheckBranchNames|--ignoreCheck-branchNameArray) ignoreCheckBranchNameArray=$2; shift 2;;
         -shouldDeleteHasCatchRequestBranchFile|--should-delete-has-catch-request-branch-file) shouldDeleteHasCatchRequestBranchFile=$2; shift 2;; # 如果脚本执行成功是否要删除掉已经捕获的文件(一般用于在版本归档时候删除就文件)
 
-        # # branchMaps_20_info/get20_branchMapsInfo_byHisJsonFile.sh
-        # -showCategoryName|--show-category-name) showCategoryName=$2; shift 2;;
-        # -showFlag|--show-branchLog-Flag) showBranchLogFlag=$2; shift 2;;
-        # -showName|--show-branchName) showBranchName=$2; shift 2;;
-        # -showTime|--show-branchTimeLog) showBranchTimeLog=$2; shift 2;;
-        # -showAt|--show-branchAtLog) showBranchAtLog=$2; shift 2;;
-        # -showTable|--show-branchTable) showBranchTable=$2; shift 2;;
-        # -shouldMD|--should-markdown) shouldMarkdown=$2; shift 2;;
-        # # -resultSaveToJsonF|--result-save-to-json-file-path) RESULT_SALE_TO_JSON_FILE_PATH=$2; shift 2;; # 为简化换行符的保真(而不是显示成换行,导致后面计算数组个数麻烦),将结果保存在的JSON文件
-        # -resultBranchKey|--result-branch-array-save-by-key) RESULT_BRANCH_ARRAY_SALE_BY_KEY=$2; shift 2;;   # 分支branch元素数组结果,用什么key保存到上述文件
-        # -resultCategoryKey|--result-category-array-save-by-key) RESULT_CATEGORY_ARRAY_SALE_BY_KEY=$2; shift 2;;   # 分类category元素数组结果,用什么key保存到上述文件
-        # -resultFullKey|--result-full-string-save-by-key) RESULT_FULL_STRING_SALE_BY_KEY=$2; shift 2;;   # 总字符串结果,用什么key保存到上述文件
-
         # 发送信息 notification/notification2wechat.sh
         -robot|--robot-url) ROBOT_URL=$2; shift 2;;
         # 注意📢：at 属性，尽在text时候有效,markdown无效。所以如果为了既要markdown又要at，则先markdown值，再at一条text信息。
@@ -139,7 +126,7 @@ else
 fi
 function printfAndNotificationErrorMessage() {
     errorMessage=$1
-    echo "${errorMessage}" # 这是错误信息，其内部已经对输出内容，添加${RED}等颜色区分了
+    printf "%s" "${errorMessage}" # 这是错误信息，其内部已经对输出内容，添加${RED}等颜色区分了
     notification2wechat_scriptPath=$(qbase -path notification2wechat)
     sh ${notification2wechat_scriptPath} -robot "${ROBOT_URL}" -content "${errorMessage}" -at "${AtMiddleBracketIdsString}" -msgtype "${msgtype}"
     if [ $? != 0 ]; then
@@ -167,10 +154,10 @@ fi
 resultBranchNames=$(printf "%s" "${resultBranchResponseJsonString}" | jq -r '.mergerRecords')
 resultBranchNames_searchFromDate=$(printf "%s" "${resultBranchResponseJsonString}" | jq -r '.searchFromDate')
 if [ -z "${resultBranchNames}" ]; then
-    echo "${RED}您当前目录($PWD)下的项目，没有新的提交记录，更不用说分支了，请检查确保cd到正确目录，或者提交了代码。${NC}"
+    echo "${RED}您当前目录${BLUE}($PWD)${RED}下的项目，没有新的提交记录，更不用说分支了，请检查确保cd到正确目录，或者提交了代码。${NC}"
     exit 1
 fi
-echo "${GREEN}恭喜：获取当前分支【在rebase指定分支后】的所有分支名的结果如下：${BLUE} $resultBranchNames ${GREEN}。${NC}"
+echo "${GREEN}恭喜：获取当前分支【在 rebase ${REBASE_BRANCH} 后】的所有分支名的结果如下：${BLUE} $resultBranchNames ${GREEN}。${NC}"
 
 
 
@@ -225,7 +212,7 @@ fi
 
 echo "\n---------- check_missing_diff_old ----------"
 if [ "${shouldCheckMissingDiffOld}" != "true" ]; then
-    echo "${YELLOW}跳过：您的 -shouldCheckMissingDiffOld 的参数值 ${shouldCheckMissingDiffOld} 不是 true ，所以此次不会分支遗漏，请留意并且其他检查将继续。${NC}"
+    echo "${YELLOW}跳过：您的 -shouldCheckMissingDiffOld 的参数值 ${shouldCheckMissingDiffOld} 不是 true ，所以此次不会进行分支遗漏的检查，请留意并且其他检查将继续。${NC}"
 else
     check_missing_diff_old_responseJsonString=$(sh ${branch_check_missing_diff_old_scriptPath} -curPackBranchNames "${CURRENT_PACK_BRANCH_NAMES}" -curPackFromDate "${CURRENT_PACK_FROM_DATE}" -lastPackBranchNames "${LAST_PACK_BRANCH_NAMES}" -lastPackFromDate "${LAST_PACK_FROM_DATE}" -lastOnlineBranchNames "${LAST_ONLINE_BRANCH_NAMES}" \
         -peoJsonF "${Personnel_FILE_PATH}")
@@ -256,56 +243,3 @@ if [ $? != 0 ]; then
     exit 1
 fi
 echo "${GREEN}恭喜：获取branchMaps成功，详情查看${BLUE} ${BranchMapAddToJsonFile} ${GREEN}。${NC}"
-
-
-# # 获取信息，作为企业微信群的通知
-# get_branch_all_detail_info_script_path="${qbase_homedir_abspath}/branchMaps_20_info/get20_branchMapsInfo_byHisJsonFile.sh"
-# Develop_Branchs_FILE_PATH=$BranchMapAddToJsonFile
-# branchMapsInKey="${BranchMapAddToKey}"
-# RESULT_SALE_TO_JSON_FILE_PATH=$BranchMapAddToJsonFile
-# RESULT_BRANCH_ARRAY_SALE_BY_KEY="branch_info_result.Notification.current.branch"
-# RESULT_CATEGORY_ARRAY_SALE_BY_KEY="branch_info_result.Notification.current.category"
-# RESULT_FULL_STRING_SALE_BY_KEY="branch_info_result.Notification.current.full"
-
-# debug_log "${YELLOW}正在执行命令(整合 branchMapsInfo)：《${BLUE} sh $get_branch_all_detail_info_script_path -branchMapsInJsonF \"${Develop_Branchs_FILE_PATH}\" -branchMapsInKey \".${branchMapsInKey}\" -showCategoryName \"${showCategoryName}\" -showFlag \"${showBranchLogFlag}\" -showName \"${showBranchName}\" -showTime \"${showBranchTimeLog}\" -showAt \"${showBranchAtLog}\" -showTable \"${showBranchTable}\" -shouldMD \"${shouldMarkdown}\" -resultSaveToJsonF \"${RESULT_SALE_TO_JSON_FILE_PATH}\" -resultBranchKey \"${RESULT_BRANCH_ARRAY_SALE_BY_KEY}\" -resultCategoryKey \"${RESULT_CATEGORY_ARRAY_SALE_BY_KEY}\" -resultFullKey \"${RESULT_FULL_STRING_SALE_BY_KEY}\" ${YELLOW}》${NC}"
-# errorMessage=$(sh $get_branch_all_detail_info_script_path -branchMapsInJsonF "${Develop_Branchs_FILE_PATH}" -branchMapsInKey ".${branchMapsInKey}" -showCategoryName "${showCategoryName}" -showFlag "${showBranchLogFlag}" -showName "${showBranchName}" -showTime "${showBranchTimeLog}" -showAt "${showBranchAtLog}" -showTable "${showBranchTable}" -shouldMD "${shouldMarkdown}" -resultSaveToJsonF "${RESULT_SALE_TO_JSON_FILE_PATH}" -resultBranchKey "${RESULT_BRANCH_ARRAY_SALE_BY_KEY}" -resultCategoryKey "${RESULT_CATEGORY_ARRAY_SALE_BY_KEY}" -resultFullKey "${RESULT_FULL_STRING_SALE_BY_KEY}")
-# if [ $? != 0 ]; then
-#     echo "${errorMessage}" # 这是错误信息，其内部已经对输出内容，添加${RED}等颜色区分了
-#     notification2wechat_scriptPath=${qbase_homedir_abspath}/notification/notification2wechat.sh
-#     sh ${notification2wechat_scriptPath} -robot "${ROBOT_URL}" -content "${errorMessage}" -at "${AtMiddleBracketIdsString}" -msgtype "${msgtype}"
-#     if [ $? != 0 ]; then
-#         exit 1
-#     fi
-#     exit 1
-# fi
-
-
-# # 发送信息
-# notification_strings_to_wechat_scriptPath=${qbase_homedir_abspath}/notification/notification_strings_to_wechat.sh
-
-# CONTENTS_JSON_FILE_PATH=${RESULT_SALE_TO_JSON_FILE_PATH}
-# CONTENTS_JSON_KEY="${RESULT_FULL_STRING_SALE_BY_KEY}_slice"
-# HEADER_TEXT=">>>>>>>>您当前打包的分支信息如下>>>>>>>>>\n"
-# # FOOTER_TEXT="未换行<<<<<<<<这是尾部<<<<<<<<<"
-# # AtMiddleBracketIdsString="[\"@all\", \"lichaoqian\"]"
-# debug_log "${YELLOW}正在执行命令(发送分支数组内容)《${BLUE} sh ${notification_strings_to_wechat_scriptPath} -robot \"${ROBOT_URL}\" -headerText \"${HEADER_TEXT}\" -contentJsonF \"${CONTENTS_JSON_FILE_PATH}\" -contentJsonKey \"${CONTENTS_JSON_KEY}\" -footerText \"${FOOTER_TEXT}\" -at \"${AtMiddleBracketIdsString}\" -msgtype \"${msgtype}\" ${YELLOW}》${NC}"
-# sh ${notification_strings_to_wechat_scriptPath} -robot "${ROBOT_URL}" -headerText "${HEADER_TEXT}" -contentJsonF "${CONTENTS_JSON_FILE_PATH}" -contentJsonKey "${CONTENTS_JSON_KEY}" -footerText "${FOOTER_TEXT}" -at "${AtMiddleBracketIdsString}" -msgtype "${msgtype}"
-# if [ $? != 0 ]; then
-#     exit 1
-# fi
-
-
-# 获取信息，作为更新文案(给 pgyer 等)
-# showCategoryName='false'
-# showBranchLogFlag='false'
-# showBranchName='false'
-# showBranchTimeLog='none'
-# showBranchAtLog='false'
-# showBranchTable='false'
-# shouldMarkdown='false'
-# lowercase_shouldMarkdown=$(echo "$shouldMarkdown" | tr '[:upper:]' '[:lower:]') # 将值转换为小写形式
-# if [[ "${lowercase_shouldMarkdown}" == "true" ]]; then # 将shouldMarkdown的值转换为小写
-#     msgtype='markdown'
-# else
-#     msgtype='text'
-# fi

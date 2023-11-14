@@ -35,7 +35,7 @@ qtool_getBranchMapsAccordingToRebaseBranch_scriptPath="${CategoryFun_HomeDir_Abs
 
 
 # branch_quickcmd/getBranchNames_accordingToRebaseBranch.sh
-REBASE_BRANCH="origin/master"
+REBASE_BRANCH="origin/main"
 add_value="1"
 # add_type=
 ONLY_NAME="false" # 名字是否只取最后部分，不为true时候为全名
@@ -50,16 +50,11 @@ MUST_CONTAIN_BY_JSON_FILE="${ExampleCheckMissingByMust_HomeDir_Absolute}/example
 
 # check missing diff old
 shouldCheckMissingDiffOld="false"
-BRANCHLASTPACK_BRANCHINFO_FILE_PATH="${ExampleCheckMissingDiffOld_HomeDir_Absolute}/example_branch_check_missing_diff_old_lastPack.json"
-PACKED_BRANCHINFO_IN_KEY="package_merger_branchs"
-LAST_PACK_BRANCH_NAMES=$(cat "${BRANCHLASTPACK_BRANCHINFO_FILE_PATH}" | jq ".${PACKED_BRANCHINFO_IN_KEY}" | jq -r '.[].name') # -r 去除字符串引号
+LAST_PACK_BRANCH_NAMES=("version/v1.7.2_1114" "feature/network_time")
+LAST_PACK_BRANCH_NAMES="${LAST_PACK_BRANCH_NAMES[*]}"
+LAST_PACK_FROM_DATE="2021-06-10 10:00:00"
 
-PACKED_DATESTRING_IN_KEY="package_merger_branchs_searchFromDateString"
-LAST_PACK_FROM_DATE=$(cat ${BRANCHLASTPACK_BRANCHINFO_FILE_PATH} | jq -r ".${PACKED_DATESTRING_IN_KEY}")
-
-LAST_ONLINE_VERSION_JSON_FILE="${ExampleCheckMissingDiffOld_HomeDir_Absolute}/example_branch_check_missing_diff_old_lastOnline.json"
-ONLINE_BRANCHINFO_IN_KEY="online_brances"
-LAST_ONLINE_BRANCH_NAMES=$(cat "${LAST_ONLINE_VERSION_JSON_FILE}" | jq ".${ONLINE_BRANCHINFO_IN_KEY}" | jq -r '.[].name') # -r 去除字符串引号
+LAST_ONLINE_BRANCH_NAMES=("version/v1.7.2_1114" "feature/network_time")
 
 Personnel_FILE_PATH="${ExampleCheckMissingDiffOld_HomeDir_Absolute}/example_branch_check_missing_diff_old_personel.json"
 

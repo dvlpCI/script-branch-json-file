@@ -123,9 +123,6 @@ elif [ "${firstArg}" == "-path" ]; then
     exit
 elif [ "${firstArg}" == "-quick" ]; then
     sh $qtool_homedir_abspath/qtool_quickcmd.sh $allArgsExceptFirstArg
-    if [ $? -ne 0 ]; then
-        _logQuickCmd
-    fi
 else
     echo "${qtool_latest_version}"
 fi
