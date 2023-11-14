@@ -27,6 +27,12 @@
                     "cmd": "branchCheck_all",
                     "cmd_script": "./branch/branch_check_all.sh",
                     "value": "qtool -quick branch_check_all"
+                },
+                {
+                    "des": "获取当前分支【在rebase指定分支后】的所有分支信息合入指定文件中，并进行整理及整理后发送通知",
+                    "cmd": "getBranchMapsAccordingToRebaseBranch",
+                    "cmd_script": "./branch_quickcmd/getBranchMapsAccordingToRebaseBranch.sh",
+                    "example": "qtool -quick getBranchMapsAccordingToRebaseBranch -rebaseBranch \"${REBASE_BRANCH}\" --add-value \"${add_value}\" -addType \"${add_type}\" -onlyName \"${ONLY_NAME}\" -checkInNetwork \"${CHECK_IN_NETWORK_TYPE}\" -checkByJsonFile \"${CHECK_BY_JSON_FILE}\" -mustContainByJsonFile \"${MUST_CONTAIN_BY_JSON_FILE}\" -shouldCheckMissingDiffOld \"${shouldCheckMissingDiffOld}\" -lastPackBranchNames \"${LAST_PACK_BRANCH_NAMES}\" -lastPackFromDate \"${LAST_PACK_FROM_DATE}\" -lastOnlineBranchNames \"${LAST_ONLINE_BRANCH_NAMES}\" -peoJsonF \"${Personnel_FILE_PATH}\" -branchMapsFromDir \"${BranceMaps_From_Directory_PATH}\" -branchMapsAddToJsonF \"${BranchMapAddToJsonFile}\" -branchMapsAddToKey \"${BranchMapAddToKey}\" -ignoreCheckBranchNames \"${ignoreCheckBranchNameArray}\" -shouldDeleteHasCatchRequestBranchFile \"${shouldDeleteHasCatchRequestBranchFile}\" -robot \"${ROBOT_URL}\" -at \"${atMiddleBracketIdsString[*]}\""
                 }
             ]
         }

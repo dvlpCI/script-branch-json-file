@@ -37,6 +37,10 @@ function debug_log() {
 CurCategoryFun_HomeDir_Absolute="$( cd "$( dirname "$0" )" && pwd )"
 qbase_homedir_abspath=${CurCategoryFun_HomeDir_Absolute%/*}   # 使用 %/* 方法可以避免路径上有..
 
+branch_check_self_name_scriptPath="${qbase_homedir_abspath}/branch/branch_check_self_name.sh"
+branch_check_missing_by_must_scriptPath="${qbase_homedir_abspath}/branch/branch_check_missing_by_must.sh"
+branch_check_missing_diff_old_scriptPath="${qbase_homedir_abspath}/branch/branch_check_missing_diff_old.sh"
+
 
 quickCmdArgs="$@"
 # echo "==========所有参数为: ${quickCmdArgs[*]}"
@@ -60,6 +64,7 @@ do
         # -hasContainBranchNames|--check-branch-has-contain) HAS_CONTAIN_BRANCH_NAMES=$2; shift 2;;
         -mustContainByJsonFile|--check-must-by-json-file) MUST_CONTAIN_BY_JSON_FILE=$2; shift 2;;
         # branch_check_missing_diff_old
+        -shouldCheckMissingDiffOld|--should-checkMissing-diffOld) shouldCheckMissingDiffOld=$2; shift 2;;
         # -curPackBranchNames|--curPack-branchNames) CURRENT_PACK_BRANCH_NAMES=$2; shift 2;; # 本分支【当前打包】的所有分支名数组字符串
         # -curPackFromDate|--curPack-fromDateString) CURRENT_PACK_FROM_DATE=$2; shift 2;; # 本分支【当前打包】的所获得的所有分支名数组是从哪个时间点开始获取来的
         -lastPackBranchNames|--lastPack-branchNames) LAST_PACK_BRANCH_NAMES=$2; shift 2;; # 本分支【上次打包】的所有分支名数组字符串
@@ -90,23 +95,23 @@ do
         # -resultCategoryKey|--result-category-array-save-by-key) RESULT_CATEGORY_ARRAY_SALE_BY_KEY=$2; shift 2;;   # 分类category元素数组结果,用什么key保存到上述文件
         # -resultFullKey|--result-full-string-save-by-key) RESULT_FULL_STRING_SALE_BY_KEY=$2; shift 2;;   # 总字符串结果,用什么key保存到上述文件
 
-        # # 发送信息 notification/notification2wechat.sh
-        # -robot|--robot-url) ROBOT_URL=$2; shift 2;;
-        # # 注意📢：at 属性，尽在text时候有效,markdown无效。所以如果为了既要markdown又要at，则先markdown值，再at一条text信息。
-        # -at|--at-middleBracket-ids-string) 
-        #     shift 1; avalue="$@"; # shift 1; 去除-at的key，然后使用 $@ 取剩余的数据，注意这个参数要放在最后，不然会取错
-        #     # 提取以 ] 结尾的值作为 AtMiddleBracketIdsString
-        #     # 在Mac的shell下，如果你希望打印$a的原始值而不是解释转义字符，你可以使用printf命令而不是echo命令。printf命令可以提供更精确的控制输出格式的能力。
-        #     AtMiddleBracketIdsString=$(printf "%s" "$avalue" | grep -o ".*\]") # 不需要写成 '".*\]"'
-        #     # 去除首尾的双引号
-        #     AtMiddleBracketIdsString=${AtMiddleBracketIdsString#\"}
-        #     AtMiddleBracketIdsString=${AtMiddleBracketIdsString%\"}
-        #     # 计算数组个数
-        #     array_count=$(echo "$bvalue" | sed 's/[^,]//g' | wc -c)
-        #     array_count=$((array_count))
-        #     # echo "AtMiddleBracketIdsString count: $array_count"
-        #     shift $array_count;;
-        # # -xxx|--xxx) xxx=$2; shift 2;;
+        # 发送信息 notification/notification2wechat.sh
+        -robot|--robot-url) ROBOT_URL=$2; shift 2;;
+        # 注意📢：at 属性，尽在text时候有效,markdown无效。所以如果为了既要markdown又要at，则先markdown值，再at一条text信息。
+        -at|--at-middleBracket-ids-string) 
+            shift 1; avalue="$@"; # shift 1; 去除-at的key，然后使用 $@ 取剩余的数据，注意这个参数要放在最后，不然会取错
+            # 提取以 ] 结尾的值作为 AtMiddleBracketIdsString
+            # 在Mac的shell下，如果你希望打印$a的原始值而不是解释转义字符，你可以使用printf命令而不是echo命令。printf命令可以提供更精确的控制输出格式的能力。
+            AtMiddleBracketIdsString=$(printf "%s" "$avalue" | grep -o ".*\]") # 不需要写成 '".*\]"'
+            # 去除首尾的双引号
+            AtMiddleBracketIdsString=${AtMiddleBracketIdsString#\"}
+            AtMiddleBracketIdsString=${AtMiddleBracketIdsString%\"}
+            # 计算数组个数
+            array_count=$(echo "$bvalue" | sed 's/[^,]//g' | wc -c)
+            array_count=$((array_count))
+            # echo "AtMiddleBracketIdsString count: $array_count"
+            shift $array_count;;
+        # -xxx|--xxx) xxx=$2; shift 2;;
         --) break ;;
         *) break ;;
     esac
@@ -132,6 +137,15 @@ if [[ "${lowercase_shouldMarkdown}" == "true" ]]; then # 将shouldMarkdown的值
 else
     msgtype='text'
 fi
+function printfAndNotificationErrorMessage() {
+    errorMessage=$1
+    echo "${errorMessage}" # 这是错误信息，其内部已经对输出内容，添加${RED}等颜色区分了
+    notification2wechat_scriptPath=$(qbase -path notification2wechat)
+    sh ${notification2wechat_scriptPath} -robot "${ROBOT_URL}" -content "${errorMessage}" -at "${AtMiddleBracketIdsString}" -msgtype "${msgtype}"
+    if [ $? != 0 ]; then
+        exit 1
+    fi
+}
 
 
 debug_log "========2.5=======✅-shouldDeleteHasCatchRequestBranchFile:${shouldDeleteHasCatchRequestBranchFile}"
@@ -142,9 +156,16 @@ debug_log "========2.5=======✅-shouldDeleteHasCatchRequestBranchFile:${shouldD
 # debug_log "========3.4=======✅-xxx:${xxx}"
 
 
-# qbase_getBranchNames_accordingToRebaseBranch_scriptPath=${qbase_homedir_abspath}/branch/getBranchNames_accordingToRebaseBranch.sh
+echo "\n---------- getBranchNamesAccordingToRebaseBranch ----------"
+# qbase_getBranchNames_accordingToRebaseBranch_scriptPath=$(qbase -path getBranchNames_accordingToRebaseBranch)
 debug_log "${YELLOW}正在执行命令(根据rebase,获取分支名):《${BLUE} qbase -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch \"${REBASE_BRANCH}\" -addValue \"${add_value}\" -addType \"${add_type}\" -onlyName \"${ONLY_NAME}\" ${YELLOW}》${NC}"
-resultBranchNames=$(qbase -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch "${REBASE_BRANCH}" -addValue "${add_value}" -addType "${add_type}" -onlyName "${ONLY_NAME}")
+resultBranchResponseJsonString=$(qbase -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch "${REBASE_BRANCH}" -addValue "${add_value}" -addType "${add_type}" -onlyName "${ONLY_NAME}")
+if [ $? != 0 ]; then
+    echo "${resultBranchResponseJsonString}"
+    exit 1
+fi
+resultBranchNames=$(printf "%s" "${resultBranchResponseJsonString}" | jq -r '.mergerRecords')
+resultBranchNames_searchFromDate=$(printf "%s" "${resultBranchResponseJsonString}" | jq -r '.searchFromDate')
 if [ -z "${resultBranchNames}" ]; then
     echo "${RED}您当前目录($PWD)下的项目，没有新的提交记录，更不用说分支了，请检查确保cd到正确目录，或者提交了代码。${NC}"
     exit 1
@@ -152,22 +173,78 @@ fi
 echo "${GREEN}恭喜：获取当前分支【在rebase指定分支后】的所有分支名的结果如下：${BLUE} $resultBranchNames ${GREEN}。${NC}"
 
 
-branch_all_scriptPath="${CurCategoryFun_HomeDir_Absolute}/branch_check_all.sh"
-CHECK_BRANCH_NAME=$(git branch --show-current) # 获取当前分支
-HAS_CONTAIN_BRANCH_NAMES=${resultBranchNames}
-CURRENT_PACK_BRANCH_NAMES=${resultBranchNames}
-# CURRENT_PACK_FROM_DATE=
-sh ${branch_all_scriptPath} \
-    -checkBranchName "${CHECK_BRANCH_NAME}" -checkInNetwork "${CHECK_IN_NETWORK_TYPE}" -checkByJsonFile "${CHECK_BY_JSON_FILE}" \
-    -hasContainBranchNames "${HAS_CONTAIN_BRANCH_NAMES[*]}" -mustContainByJsonFile "${MUST_CONTAIN_BY_JSON_FILE}" \
-    -curPackBranchNames "${CURRENT_PACK_BRANCH_NAMES}" -curPackFromDate "${CURRENT_PACK_FROM_DATE}" -lastPackBranchNames "${LAST_PACK_BRANCH_NAMES}" -lastPackFromDate "${LAST_PACK_FROM_DATE}" -lastOnlineBranchNames "${LAST_ONLINE_BRANCH_NAMES}" \
-    -peoJsonF "${Personnel_FILE_PATH}"
-if [ $? != 0 ]; then
-    exit 1
+
+    CHECK_BRANCH_NAME=$(git branch --show-current) # 获取当前分支
+
+    HAS_CONTAIN_BRANCH_NAMES=${resultBranchNames}
+
+    CURRENT_PACK_BRANCH_NAMES=${resultBranchNames}
+    CURRENT_PACK_FROM_DATE=${resultBranchNames_searchFromDate}
+
+
+echo "\n---------- check_self_name ----------"
+if [ ! -f "${CHECK_BY_JSON_FILE}" ]; then
+    echo "${YELLOW}跳过：您用于【检查分支名】合规的配置文件不存在，所以此次不会检查，请检查 -checkByJsonFile 的参数值${BLUE} ${CHECK_BY_JSON_FILE} ${YELLOW}。${NC}"
+else
+    check_self_name_SkipTip="${YELLOW}附：若不想进行此分支名自身检查，请勿设置${BLUE} -checkByJsonFile ${YELLOW}即可。${NC}"
+    check_self_name_responseJsonString=$(sh ${branch_check_self_name_scriptPath} -checkBranchName "${CHECK_BRANCH_NAME}" -checkInNetwork "${CHECK_IN_NETWORK_TYPE}" -checkByJsonFile "${CHECK_BY_JSON_FILE}")
+    if [ $? != 0 ]; then
+        echo "${RED} $check_self_name_responseJsonString\n${check_self_name_SkipTip} ${NC}" # 此时是错误信息
+        exit 1
+    fi
+    check_self_name_responseCode=$(printf "%s" "$check_self_name_responseJsonString" | jq -r '.code') # jq -r 去除双引号
+    check_self_name_responseMessage=$(printf "%s" "$check_self_name_responseJsonString" | jq -r '.message')
+    if [ "${check_self_name_responseCode}" != 0 ]; then
+        echo "${RED} ${check_self_name_responseMessage}\n${check_self_name_SkipTip} ${NC}"
+        exit 1
+    fi
+    echo "${GREEN}$check_self_name_responseMessage${NC}"
+fi
+
+
+echo "\n---------- check_missing_by_must ----------"
+if [ ! -f "${MUST_CONTAIN_BY_JSON_FILE}" ]; then
+    echo "${YELLOW}跳过：您用于【检查分支必须包含的分支】合规的配置文件不存在，所以此次不会检查，请检查 -mustContainByJsonFile 的参数值 ${BLUE} ${MUST_CONTAIN_BY_JSON_FILE} ${YELLOW}。${NC}"
+else
+    check_missing_by_must_SkipTip="${YELLOW}附：若不想进行此分支必须包含检查，请勿设置${BLUE} -mustContainByJsonFile ${YELLOW}即可。${NC}"
+    # echo "${YELLOW}正在执行命令(检查分支是否包含应该包含的分支):《${BLUE} sh ${branch_check_missing_by_must_scriptPath} -checkBranchName \"${CHECK_BRANCH_NAME}\" -hasContainBranchNames \"${HAS_CONTAIN_BRANCH_NAMES[*]}\" -mustContainByJsonFile \"${MUST_CONTAIN_BY_JSON_FILE}\" ${YELLOW}》。${NC}"
+    check_missing_by_must_responseJsonString=$(sh ${branch_check_missing_by_must_scriptPath} -checkBranchName "${CHECK_BRANCH_NAME}" -hasContainBranchNames "${HAS_CONTAIN_BRANCH_NAMES[*]}" -mustContainByJsonFile "${MUST_CONTAIN_BY_JSON_FILE}")
+    if [ $? != 0 ]; then
+        echo "${RED} $check_missing_by_must_responseJsonString\n${check_missing_by_must_SkipTip} ${NC}" # 此时是错误信息
+        exit 1
+    fi
+    check_missing_by_must_responseCode=$(printf "%s" "$check_missing_by_must_responseJsonString" | jq -r '.code') # jq -r 去除双引号
+    check_missing_by_must_responseMessage=$(printf "%s" "$check_missing_by_must_responseJsonString" | jq -r '.message')
+    if [ "${check_missing_by_must_responseCode}" != 0 ]; then
+        echo "${RED}${check_missing_by_must_responseMessage}\n${check_missing_by_must_SkipTip} ${NC}"
+        exit 1
+    fi
+    echo "${GREEN}$check_missing_by_must_responseMessage${NC}"
+fi
+
+
+echo "\n---------- check_missing_diff_old ----------"
+if [ "${shouldCheckMissingDiffOld}" != "true" ]; then
+    echo "${YELLOW}跳过：您的 -shouldCheckMissingDiffOld 的参数值 ${shouldCheckMissingDiffOld} 不是 true ，所以此次不会分支遗漏，请留意并且其他检查将继续。${NC}"
+else
+    check_missing_diff_old_responseJsonString=$(sh ${branch_check_missing_diff_old_scriptPath} -curPackBranchNames "${CURRENT_PACK_BRANCH_NAMES}" -curPackFromDate "${CURRENT_PACK_FROM_DATE}" -lastPackBranchNames "${LAST_PACK_BRANCH_NAMES}" -lastPackFromDate "${LAST_PACK_FROM_DATE}" -lastOnlineBranchNames "${LAST_ONLINE_BRANCH_NAMES}" \
+        -peoJsonF "${Personnel_FILE_PATH}")
+    if [ $? != 0 ]; then
+        exit 1
+    fi
+
+    check_missing_diff_old_responseCode=$(printf "%s" "$check_missing_diff_old_responseJsonString" | jq -r '.code') # jq -r 去除双引号
+    check_missing_diff_old_responseMessage=$(printf "%s" "$check_missing_diff_old_responseJsonString" | jq -r '.message')
+    if [ "${check_missing_diff_old_responseCode}" != 0 ]; then
+        echo "${RED}${check_missing_diff_old_responseMessage}\n${YELLOW}附：若不想进行此分支遗漏检查，请勿设置${BLUE} -shouldCheckMissingDiffOld ${YELLOW}即可。${NC}"
+        exit 1
+    fi
+    echo "${GREEN}$check_missing_diff_old_responseMessage${NC}"
 fi
 
 
 
+echo "\n---------- addBranchMaps_toJsonFile + checkMap ----------"
 qbase_addBranchMaps_toJsonFile_scriptPath=$(qbase -path addBranchMaps_toJsonFile)
 requestBranchNameArray=${resultBranchNames}
 CheckPropertyInNetworkType=${CHECK_IN_NETWORK_TYPE}
@@ -175,12 +252,7 @@ debug_log "========r.r=======✅-requestBranchNamesString:${requestBranchNameArr
 debug_log "${YELLOW}正在执行命令(获取所有指定分支名的branchMaps输出到指定文件中):《${BLUE} sh ${qbase_addBranchMaps_toJsonFile_scriptPath} -branchMapsFromDir \"${BranceMaps_From_Directory_PATH}\" -branchMapsAddToJsonF \"${BranchMapAddToJsonFile}\" -branchMapsAddToKey \"${BranchMapAddToKey}\" -requestBranchNamesString \"${requestBranchNameArray[*]}\" -checkPropertyInNetwork \"${CheckPropertyInNetworkType}\" -ignoreCheckBranchNames \"${ignoreCheckBranchNameArray}\" -shouldDeleteHasCatchRequestBranchFile \"${shouldDeleteHasCatchRequestBranchFile}\" ${YELLOW}》${NC}"
 errorMessage=$(sh ${qbase_addBranchMaps_toJsonFile_scriptPath} -branchMapsFromDir "${BranceMaps_From_Directory_PATH}" -branchMapsAddToJsonF "${BranchMapAddToJsonFile}" -branchMapsAddToKey "${BranchMapAddToKey}" -requestBranchNamesString "${requestBranchNameArray[*]}" -checkPropertyInNetwork "${CheckPropertyInNetworkType}" -ignoreCheckBranchNames "${ignoreCheckBranchNameArray}" -shouldDeleteHasCatchRequestBranchFile "${shouldDeleteHasCatchRequestBranchFile}")
 if [ $? != 0 ]; then
-    echo "${errorMessage}" # 这是错误信息，其内部已经对输出内容，添加${RED}等颜色区分了
-    notification2wechat_scriptPath=${qbase_homedir_abspath}/notification/notification2wechat.sh
-    sh ${notification2wechat_scriptPath} -robot "${ROBOT_URL}" -content "${errorMessage}" -at "${AtMiddleBracketIdsString}" -msgtype "${msgtype}"
-    if [ $? != 0 ]; then
-        exit 1
-    fi
+    printfAndNotificationErrorMessage "${errorMessage}"
     exit 1
 fi
 echo "${GREEN}恭喜：获取branchMaps成功，详情查看${BLUE} ${BranchMapAddToJsonFile} ${GREEN}。${NC}"

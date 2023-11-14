@@ -38,8 +38,6 @@ function debug_log() {
 }
 
 
-JQ_EXEC=`which jq`
-
 # 当前【shell脚本】的工作目录
 # $PWD代表获取当前路径，当cd后，$PWD也会跟着更新到新的cd路径。这个和在终端操作是一样的道理的
 CurrentDIR_Script_Absolute="$( cd "$( dirname "$0" )" && pwd )"
@@ -84,7 +82,7 @@ done
 
 echo "\n---------- check_self_name ----------"
 if [ ! -f "${CHECK_BY_JSON_FILE}" ]; then
-    echo "${YELLOW}您用于【检查分支名】合规的配置文件不存在，所以此次不会检查，请检查 -checkByJsonFile 的参数值${BLUE} ${CHECK_BY_JSON_FILE} ${YELLOW}。${NC}"
+    echo "${YELLOW}跳过：您用于【检查分支名】合规的配置文件不存在，所以此次不会检查，请检查 -checkByJsonFile 的参数值${BLUE} ${CHECK_BY_JSON_FILE} ${YELLOW}。${NC}"
 else
     check_self_name_SkipTip="${YELLOW}附：若不想进行此分支名自身检查，请勿设置${BLUE} -checkByJsonFile ${YELLOW}即可。${NC}"
     check_self_name_responseJsonString=$(sh ${branch_check_self_name_scriptPath} -checkBranchName "${CHECK_BRANCH_NAME}" -checkInNetwork "${CHECK_IN_NETWORK_TYPE}" -checkByJsonFile "${CHECK_BY_JSON_FILE}")
@@ -104,7 +102,7 @@ fi
 
 echo "\n---------- check_missing_by_must ----------"
 if [ ! -f "${MUST_CONTAIN_BY_JSON_FILE}" ]; then
-    echo "${YELLOW}您用于【检查分支必须包含的分支】合规的配置文件不存在，所以此次不会检查，请检查 -mustContainByJsonFile 的参数值 ${BLUE} ${MUST_CONTAIN_BY_JSON_FILE} ${YELLOW}。${NC}"
+    echo "${YELLOW}跳过：您用于【检查分支必须包含的分支】合规的配置文件不存在，所以此次不会检查，请检查 -mustContainByJsonFile 的参数值 ${BLUE} ${MUST_CONTAIN_BY_JSON_FILE} ${YELLOW}。${NC}"
 else
     check_missing_by_must_SkipTip="${YELLOW}附：若不想进行此分支必须包含检查，请勿设置${BLUE} -mustContainByJsonFile ${YELLOW}即可。${NC}"
     # echo "${YELLOW}正在执行命令(检查分支是否包含应该包含的分支):《${BLUE} sh ${branch_check_missing_by_must_scriptPath} -checkBranchName \"${CHECK_BRANCH_NAME}\" -hasContainBranchNames \"${HAS_CONTAIN_BRANCH_NAMES[*]}\" -mustContainByJsonFile \"${MUST_CONTAIN_BY_JSON_FILE}\" ${YELLOW}》。${NC}"
@@ -116,7 +114,7 @@ else
     check_missing_by_must_responseCode=$(printf "%s" "$check_missing_by_must_responseJsonString" | jq -r '.code') # jq -r 去除双引号
     check_missing_by_must_responseMessage=$(printf "%s" "$check_missing_by_must_responseJsonString" | jq -r '.message')
     if [ "${check_missing_by_must_responseCode}" != 0 ]; then
-        echo "${RED} ${check_missing_by_must_responseMessage}\n${check_missing_by_must_SkipTip} ${NC}"
+        echo "${RED}${check_missing_by_must_responseMessage}\n${check_missing_by_must_SkipTip} ${NC}"
         exit 1
     fi
     echo "$check_missing_by_must_responseMessage"
@@ -125,7 +123,7 @@ fi
 
 echo "\n---------- check_missing_diff_old ----------"
 if [ -z "${CURRENT_PACK_BRANCH_NAMES}" ]; then
-    echo "${YELLOW}您要检查的【本分支当前打包的分支名】 -curPackBranchNames 的参数值未设置，所以此次不会检查，请留意并且其他检查将继续。${NC}"
+    echo "${YELLOW}跳过：您要检查的【本分支当前打包的分支名】 -curPackBranchNames 的参数值未设置，所以此次不会检查，请留意并且其他检查将继续。${NC}"
 else
     check_missing_diff_old_responseJsonString=$(sh ${branch_check_missing_diff_old_scriptPath} -curPackBranchNames "${CURRENT_PACK_BRANCH_NAMES}" -curPackFromDate "${CURRENT_PACK_FROM_DATE}" -lastPackBranchNames "${LAST_PACK_BRANCH_NAMES}" -lastPackFromDate "${LAST_PACK_FROM_DATE}" -lastOnlineBranchNames "${LAST_ONLINE_BRANCH_NAMES}" \
         -peoJsonF "${Personnel_FILE_PATH}")
@@ -134,18 +132,19 @@ else
     fi
 
     check_missing_diff_old_responseCode=$(printf "%s" "$check_missing_diff_old_responseJsonString" | jq -r '.code') # jq -r 去除双引号
+    check_missing_diff_old_responseMessage=$(printf "%s" "$check_missing_diff_old_responseJsonString" | jq -r '.message')
     if [ "${check_missing_diff_old_responseCode}" != 0 ]; then
-        check_missing_diff_old_responseMessage=$(printf "%s" "$check_missing_diff_old_responseJsonString" | jq -r '.message')
-        echo "${RED} ${check_missing_diff_old_responseMessage}\n${YELLOW}附：若不想进行此分支遗漏检查，请勿设置${BLUE} -curPackBranchNames ${YELLOW}即可。${NC}"
+        echo "${RED}${check_missing_diff_old_responseMessage}\n${YELLOW}附：若不想进行此分支遗漏检查，请勿设置${BLUE} -curPackBranchNames ${YELLOW}即可。${NC}"
         exit 1
     fi
+    echo "$check_missing_diff_old_responseMessage"
 fi
 
 
 echo "\n---------- check_map ----------"
 PackageNetworkType=$CHECK_IN_NETWORK_TYPE
 if [  ! -f "${BranchMaps_JsonFilePath}" ]; then
-    echo "${YELLOW}您的 -checkBranchMapsInJsonF 参数值为 ${BranchMaps_JsonFilePath} 指向的文件不存在 ，所以【将不会进行map的属性在${BLUE} ${PackageNetworkType} ${YELLOW}环境下的检查】。${NC}"
+    echo "${YELLOW}跳过：您的 -checkBranchMapsInJsonF 参数值为 ${BranchMaps_JsonFilePath} 指向的文件不存在 ，所以【将不会进行map的属性在${BLUE} ${PackageNetworkType} ${YELLOW}环境下的检查】。${NC}"
 else
     errorMessage=$(sh $(qbase -path branchMapsFile_checkMap) -branchMapsJsonF "${BranchMaps_JsonFilePath}" -branchMapsJsonK "${BranchMapsInJsonKey}" -ignoreCheckBranchNames "${ignoreCheckBranchNameArray[*]}" -pn "${PackageNetworkType}")
     if [ $? != 0 ]; then
