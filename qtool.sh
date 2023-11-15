@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-11-06 15:32:28
+ # @LastEditTime: 2023-11-15 18:12:59
  # @Description: 
 ### 
 
@@ -17,8 +17,7 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 
 qtoolQuickCmdStrings=("cz" "help") # qtool 支持的快捷命令
-
-
+packageArg="qtool"
 
 # 本地测试
 function local_test() {
@@ -88,41 +87,40 @@ else
         exit 1
     fi
 fi
+if [ ! -d "${qtool_homedir_abspath}" ]; then
+    echo "您的 ${packageArg} 库的根目录 ${qtool_homedir_abspath} 计算错误，请检查"
+    exit 1
+fi
 # echo "${qtargetScript_curVersion_homedir_abspath}"
-
-function get_path() {
-    if [ -z "$1" ]; then
-        echo "$qtool_homedir_abspath"
-        return
-    fi
-
-    if [ "$1" == "home" ]; then
-        echo "$qtool_homedir_abspath"
-    else
-        # echo "qbase -package \"qtool\" -packageCodeDirName lib -path \"$1\""
-        echo $(qbase -package "qtool" -packageCodeDirName lib -path "$1")
-    fi
-}
 
 function _logQuickCmd() {
     qpackageJsonF="$qtool_homedir_abspath/qtool.json"
     cat "$qpackageJsonF" | jq '.quickCmd'
 }
 
+# qbase_homedir_abspath="~/Project/CQCI/script-qbase"
+qbase_homedir_abspath=$(qbase -path home)
+qbase_quickcmd_scriptPath=$qbase_homedir_abspath/qbase_quickcmd.sh
+# qbase_quickcmd_scriptPath=qbase_quickcmd.sh
 
 firstArg=$1 # 去除第一个参数之前，先保留下来
 shift 1  # 去除前一个参数
 allArgsExceptFirstArg="$@"  # 将去除前一个参数，剩余的参数赋值给新变量
 
+
 # 如果是获取版本号
 versionCmdStrings=("--version" "-version" "-v" "version")
 if echo "${versionCmdStrings[@]}" | grep -wq "${firstArg}" &>/dev/null; then
     echo "${qtool_latest_version}"
+    exit 0
 elif [ "${firstArg}" == "-path" ]; then
-    get_path $allArgsExceptFirstArg
-    exit
+    # echo "正在通过qbase调用快捷命令...《 sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg getPath $allArgsExceptFirstArg 》"
+    sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg getPath $allArgsExceptFirstArg
+    exit 0
 elif [ "${firstArg}" == "-quick" ]; then
-    sh $qtool_homedir_abspath/qtool_quickcmd.sh $allArgsExceptFirstArg
+    # echo "正在通过qbase调用快捷命令...《 sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg 》"
+    sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg
+    exit 0
 else
     echo "${qtool_latest_version}"
 fi
