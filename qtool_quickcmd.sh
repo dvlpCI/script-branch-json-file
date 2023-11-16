@@ -67,7 +67,7 @@ qbase_homedir_abspath="$(cd "$(dirname "$0")" && pwd)" # 本地测试
 packageArg="qtool"
 qpackageJsonF="$qbase_homedir_abspath/${packageArg}.json"
 if [ ! -f "${qpackageJsonF}" ]; then
-    echo "${RED}Error:您的 ${packageArg} 中缺少 json 文件，请检查。${NC}"
+    echo "${RED}❌Error:您的第二个参数 ${packageArg} 中缺少 json 文件，请检查。如果本脚本是被qtool调用的，请检查您在qtool脚本中传入的 -package 和 -packageCodeDirName 的参数值。${NC}"
     exit 1
 fi
 function _logQuickCmd() {

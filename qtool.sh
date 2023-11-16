@@ -74,15 +74,19 @@ if [ "${isTestingScript}" == true ]; then
     qtool_homedir_abspath=$(local_test) # 本地测试
 else
     qtoolScriptDir_Absolute="$(cd "$(dirname "$0")" && pwd)"
-    get_package_util_script_path=$(qbase -path "get_package_util")
-    # echo "✅✅✅✅ get_package_util_script_path = ${get_package_util_script_path}"
+    get_package_util_script_path=$(qbase -package qbase -packageCodeDirName bin -path "get_package_util")
+    if [ $? != 0 ]; then
+        echo "❌Error:执行命令(获取包的路径)《 qbase -package qbase -packageCodeDirName bin -path \"get_package_util\" 》发生错误，原因如下:"
+        echo "${get_package_util_script_path}" # 此时此值是错误信息
+        exit 1
+    fi
     # echo "正在执行命令(获取脚本包的版本号):《 sh ${get_package_util_script_path} -package \"qtool\" -param \"version\" \"${args[@]}\" 》"
     # echo "正在执行命令(获取脚本包的根路径):《 sh ${get_package_util_script_path} -package \"qtool\" -param \"homedir_abspath\" \"${args[@]}\" 》"
     qtool_latest_version=$(sh ${get_package_util_script_path} -package "qtool" -param "version" "${args[@]}")
     qtool_homedir_abspath=$(sh ${get_package_util_script_path} -package "qtool" -param "homedir_abspath" "${args[@]}")
     qtool_homedir_abspath="${qtool_homedir_abspath%/*}/lib" # 纠正路径(因为有些代码源码是放在bin，有些是放在lib)
     # echo "✅✅✅✅ qtool_latest_version=${qtool_latest_version}"
-    # echo "✅✅✅✅ qbase_homedir_abspath=${qtool_homedir_abspath}"
+    # echo "✅✅✅✅ qtool_homedir_abspath=${qtool_homedir_abspath}"
     if [ $? != 0 ]; then
         exit 1
     fi
@@ -114,11 +118,11 @@ if echo "${versionCmdStrings[@]}" | grep -wq "${firstArg}" &>/dev/null; then
     echo "${qtool_latest_version}"
     exit 0
 elif [ "${firstArg}" == "-path" ]; then
-    # echo "正在通过qbase调用快捷命令...《 sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg getPath $allArgsExceptFirstArg 》"
+    # echo "qtool正在通过qbase调用快捷命令...《 sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg getPath $allArgsExceptFirstArg 》"
     sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg getPath $allArgsExceptFirstArg
     exit 0
 elif [ "${firstArg}" == "-quick" ]; then
-    # echo "正在通过qbase调用快捷命令...《 sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg 》"
+    # echo "qtool正在通过qbase调用快捷命令...《 sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg 》"
     sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg
     exit 0
 else
