@@ -146,7 +146,7 @@ PackageNetworkType=$CHECK_IN_NETWORK_TYPE
 if [  ! -f "${BranchMaps_JsonFilePath}" ]; then
     echo "${YELLOW}跳过：您的 -checkBranchMapsInJsonF 参数值为 ${BranchMaps_JsonFilePath} 指向的文件不存在 ，所以【将不会进行map的属性在${BLUE} ${PackageNetworkType} ${YELLOW}环境下的检查】。${NC}"
 else
-    errorMessage=$(sh $(qbase -path branchMapsFile_checkMap) -branchMapsJsonF "${BranchMaps_JsonFilePath}" -branchMapsJsonK "${BranchMapsInJsonKey}" -ignoreCheckBranchNames "${ignoreCheckBranchNameArray[*]}" -pn "${PackageNetworkType}")
+    errorMessage=$(sh $(qbase -path branchMapsFile_checkMaps) -branchMapsJsonF "${BranchMaps_JsonFilePath}" -branchMapsJsonK "${BranchMapsInJsonKey}" -ignoreCheckBranchNames "${ignoreCheckBranchNameArray[*]}" -pn "${PackageNetworkType}")
     if [ $? != 0 ]; then
         echo "${RED}${errorMessage}${NC}\n${YELLOW}附：若不想进行此分支文件map哥属性的检查，请勿设置${BLUE} -checkBranchMapsInJsonF ${YELLOW}即可。${NC}"
         exit 1

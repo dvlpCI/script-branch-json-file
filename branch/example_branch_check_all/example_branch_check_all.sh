@@ -24,7 +24,7 @@ function log_title() {
 # 当前【shell脚本】的工作目录
 # $PWD代表获取当前路径，当cd后，$PWD也会跟着更新到新的cd路径。这个和在终端操作是一样的道理的
 CurrentDIR_Script_Absolute="$( cd "$( dirname "$0" )" && pwd )"
-Example_HomeDir_Absolute=${CurrentDIR_Script_Absolute} # 使用此方法可以避免路径上有..
+Example_HomeDir_Absolute=${CurrentDIR_Script_Absolute}      # 使用 %/* 方法可以避免路径上有..
 CategoryFun_HomeDir_Absolute=${Example_HomeDir_Absolute%/*} # 使用 %/* 方法可以避免路径上有..
 ExampleCheckSelfName_HomeDir_Absolute=${CategoryFun_HomeDir_Absolute}/example_branch_check_self_name
 ExampleCheckMissingByMust_HomeDir_Absolute=${CategoryFun_HomeDir_Absolute}/example_branch_check_missing_by_must
