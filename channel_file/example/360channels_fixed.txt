@@ -1,4 +1,5 @@
 CHANNEL 华为 huawei
+CHANNEL 荣耀 honro
 CHANNEL 小米 xiaomi
 CHANNEL 抖音 douyin
 CHANNEL 公交 gongjiao

@@ -16,14 +16,14 @@ CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
 
 qtool_channelFile_toJsonFile_360_scriptPath=$CurrentDIR_Script_Absolute/channelFile_toJsonFile_360.sh
 qtool_360channel_file_scriptPath=$(qbase -path 360channel_file_generate)
-
+qbase_convert_to_pinyin_scriptPath=$(qbase -path convert_to_pinyin)
 
 # shell 参数具名化
 # shell 参数具名化
 while [ -n "$1" ]
 do
     case "$1" in
-        -arrayString|--arrayString) argArrayString=$2; shift 2;;
+        -nameArrayString|--nameArrayString) argNameArrayString=$2; shift 2;;
         -fixedChannelF|--fixed-channel-file) FixedChannelFile=$2; shift 2;;
         -outputFile|--output-file-path) outputFilePath=$2; shift 2;;
         -shouldCheckOutput|--shouldCheckOutput) shouldCheckOutput=$2; shift 2;;
@@ -48,9 +48,9 @@ if [ $? != 0 ]; then
   exit 1
 fi
 # echo "✅✅✅fixedChannelJsonString=${fixedChannelJsonString}"
-# argArrayString --> argArray --> argArrayString
+# argNameArrayString --> argNameArray --> argNameArrayString
 # 使用set命令将输入字符串拆分为多个参数，并使用eval命令执行这个命令
-eval set -- "$argArrayString"
+eval set -- "$argNameArrayString"
 channelNameArray=("$@") # 使用"$@"将将拆分结果存储到数组中
 channelCount=${#channelNameArray[@]}
 
@@ -65,7 +65,7 @@ for ((i = 0; i < channelCount; i++)); do
   # echo "$((i+1)).iChannelJsonString=${iChannelJsonString}"
   if [ -z "${iChannelJsonString}" ] || [ "${iChannelJsonString}" == "null" ]; then
     # echo "您的[$iChannelName]渠道不是固定值，将自动转化。"
-    iChannelValue=$(python3 "$CurrentDIR_Script_Absolute/convert_to_pinyin.py" "$iChannelName")
+    iChannelValue=$(python3 "$qbase_convert_to_pinyin_scriptPath" -originString "$iChannelName")
     if [ $? != 0 ]; then
       happenErrorMessage="${iChannelName}" # 此时此值是错误结果
       break

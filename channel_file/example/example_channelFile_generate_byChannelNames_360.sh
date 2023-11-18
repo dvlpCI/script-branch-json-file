@@ -27,7 +27,7 @@ CYAN="\033[0;36m"
 CurrentDIR_Script_Absolute="$( cd "$( dirname "$0" )" && pwd )"
 Example_HomeDir_Absolute=${CurrentDIR_Script_Absolute}
 CategoryFun_HomeDir_Absolute=${Example_HomeDir_Absolute%/*} # 使用 %/* 方法可以避免路径上有..
-qbase_homedir_abspath=${CategoryFun_HomeDir_Absolute%/*}    # 使用 %/* 方法可以避免路径上有..
+qtool_homedir_abspath=${CategoryFun_HomeDir_Absolute%/*}    # 使用 %/* 方法可以避免路径上有..
 
 qtool_360channel_getJsonFile_scriptPath=${CategoryFun_HomeDir_Absolute}/channelFile_toJsonFile_360.sh
 qtool_360channel_file_scriptPath=${CategoryFun_HomeDir_Absolute}/channelFile_generate_byChannelNames_360.sh
@@ -44,7 +44,7 @@ if [ $? != 0 ]; then
   exit 1
 fi
 echo "✅✅✅fixedChannelJsonString=${fixedChannelJsonString}"
-iChannelName="华为"
+iChannelName="荣耀"
 # 从 fixedChannelJsonString 中获取 name 等于 iChannelName 的map
 iChannelJsonString=$(printf "%s" "${fixedChannelJsonString}" | jq -r ".[]  | select(.name==\"${iChannelName}\")") # -r 去除字符串引号
 echo "✅✅✅iChannelJsonString=${iChannelJsonString}"
@@ -52,16 +52,13 @@ echo "✅✅✅iChannelJsonString=${iChannelJsonString}"
 
 echo "\n"
 log_title "1.使用 arrayString 生成多渠道配置文件"
-# argArrayString='"CHANNEL 华为 huawei" "CHANNEL 小米 xiaomi" "CHANNEL 公交 gongjiao"'
-argArrayString="华为 小米 公交 自定义123abc✅"
-# channelsFileName="$(date +"%m%d_%H%M%S").txt"
-channelsFileName="360channels_result.txt"
-
+channelNameArrayString="华为 荣耀 小米 公交 自定义123abc✅"
 FixedChannelFile="${Example_HomeDir_Absolute}/360channels_fixed.txt"
-outputFilePath="${Example_HomeDir_Absolute}/${channelsFileName}"
+outputFilePath="${Example_HomeDir_Absolute}/$(date +"%m%d_%H%M%S").txt"
+# outputFilePath="${Example_HomeDir_Absolute}/360channels_result.txt"
 shouldCheckOutput="true"
-echo "${YELLOW}正在执行测试命令(使用 arrayString 生成多渠道配置文件):《${BLUE} sh $qtool_360channel_file_scriptPath -arrayString '${argArrayString}' -outputFile \"${outputFilePath}\" -shouldCheckOutput \"${shouldCheckOutput}\" ${YELLOW}》${NC}"
-generateResult=$(sh $qtool_360channel_file_scriptPath -arrayString "${argArrayString}" -fixedChannelF "${FixedChannelFile}" -outputFile "${outputFilePath}" -shouldCheckOutput "${shouldCheckOutput}")
+echo "${YELLOW}正在执行测试命令(使用 arrayString 生成多渠道配置文件):《${BLUE} sh $qtool_360channel_file_scriptPath -nameArrayString '${channelNameArrayString}' -outputFile \"${outputFilePath}\" -shouldCheckOutput \"${shouldCheckOutput}\" ${YELLOW}》${NC}"
+generateResult=$(sh $qtool_360channel_file_scriptPath -nameArrayString "${channelNameArrayString}" -fixedChannelF "${FixedChannelFile}" -outputFile "${outputFilePath}" -shouldCheckOutput "${shouldCheckOutput}")
 if [ $? != 0 ]; then
   echo "${RED}${generateResult}${NC}"  # 此时此值是错误信息
   exit 1
