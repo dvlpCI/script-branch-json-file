@@ -43,13 +43,36 @@ def getPersonById(persons, personId):
     else:
         return None
 
-
 def chooseAnswer():
+    return _choosePeopleByType("answer")
+
+def chooseApier():
+    return _choosePeopleByType("apier")
+
+def chooseTester():
+    return _choosePeopleByType("tester")
+
+
+def _choosePeopleByType(type):
     tool_params_file_path = os.getenv('QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH')
     with open(tool_params_file_path) as f:
         data = json.load(f)
+        
+    if type == 'answer':
+        typeName="需求方人员"
+        typeId='answerAllowId'
+    elif type == 'apier':
+        typeName="后端接口人员"
+        typeId='apiAllowId'
+    elif type == 'tester':
+        typeName="测试方人员"
+        typeId='testerAllowId'
+    else:
+        typeName="需求方人员"
+        typeId='answerAllowId'
 
-    personMaps = data['branchJsonFile']['answerAllowId']
+
+    personMaps = data['branchJsonFile']['${typeId}']
     for i, personId in enumerate(personMaps):
         person = getPersonById(data['person'], personId)  
         if person:
@@ -58,7 +81,7 @@ def chooseAnswer():
             print(f"{i+1}. 未找到id为 {RED}{personId} {NC}的用户, 详情请查看 {BLUE}{tool_params_file_path} {NC}中的 {BLUE}person {NC}字段")
 
     while True:
-        person_input = input("请输入需求方人员编号（自定义请填0,退出q/Q）：")
+        person_input = input(f"请输入${typeName}编号（自定义请填0,退出q/Q）：")
         if person_input == "q" or person_input == "Q":
             exit()
 
@@ -67,12 +90,12 @@ def chooseAnswer():
             continue
 
         if person_input == "0":
-            personName = input("请输入需求方人员姓名：")
+            personName = input(f"请输入${typeName}姓名：")
             break
 
         index = int(person_input) - 1
         if index >= len(personMaps):
-            print("请输入需求方人员编号（自定义请填0,退出q/Q）：")
+            print(f"请输入${typeName}编号（自定义请填0,退出q/Q）：")
             continue
         else:
             selectedPersonId = personMaps[index]
@@ -80,47 +103,7 @@ def chooseAnswer():
                 data['person'], selectedPersonId)["name"]
             break
 
-    print("您选择输入需求方人员名：\033[1;31m{}\033[0m\n".format(personName))
-    return personName
-
-
-def chooseTester():
-    tool_params_file_path = os.getenv('QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH')
-    with open(tool_params_file_path) as f:
-        data = json.load(f)
-
-    personMaps = data['branchJsonFile']['testerAllowId']
-    for i, personId in enumerate(personMaps):
-        person = getPersonById(data['person'], personId)
-        if person:
-            print(f"{i+1}. {person['name']}")
-        else:
-            print("未找到id为\033[1;31m{}\033[0m的用户\n".format(personId))
-
-    while True:
-        person_input = input("请输入测试方人员编号（自定义请填0,退出q/Q）：")
-        if person_input == "q" or person_input == "Q":
-            exit()
-
-        if not person_input.isnumeric():
-            print("输入的不是一个数字，请重新输入！")
-            continue
-
-        if person_input == "0":
-            personName = input("请输入需求方人员姓名：")
-            break
-
-        index = int(person_input) - 1
-        if index >= len(personMaps):
-            print("请输入测试方人员编号（自定义请填0,退出q/Q）：")
-            continue
-        else:
-            selectedPersonId = personMaps[index]
-            personName = getPersonById(
-                data['person'], selectedPersonId)["name"]
-            break
-
-    print("您选择输入测试方人员名：\033[1;31m{}\033[0m\n".format(personName))
+    print(f"您选择输入${typeName}名：{BLUE}{personName}{NC}")
     return personName
 
 
@@ -162,6 +145,8 @@ def inputOutline():
 
 def getOutline(text):
     result = {}
+    
+    result["weekSpendHours"] = ["null"]
     
     # 使用正则表达式提取标题和URL
     title_pattern = r"(.+)"

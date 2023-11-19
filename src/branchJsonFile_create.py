@@ -16,7 +16,7 @@ import re
 from path_util import joinFullPath_noCheck
 from env_util import getEnvValue_project_dir_path, getEnvValue_branch_json_file_dir_path
 from git_util import get_currentBranchFullName, get_branch_file_name, get_branch_type
-from branchJsonFile_input import inputOutline, chooseAnswer, chooseTester
+from branchJsonFile_input import inputOutline, chooseAnswer, chooseApier, chooseTester
 
 import getpass
 username = getpass.getuser()
@@ -82,8 +82,11 @@ def create(branchType, branchFullName, file_path):
 
     # 2、需求方信息
     answerName = chooseAnswer()
+    
+    # 3、开发方信息
+    apiName = chooseApier()
 
-    # 3、测试方信息
+    # 4、测试方信息
     testerName = chooseTester()
 
     json_data = {
@@ -99,6 +102,9 @@ def create(branchType, branchFullName, file_path):
         ],
         "answer": {
             "name": answerName
+        },
+        "apier": {
+            "name": apiName
         },
         "tester": {
             "name": testerName
