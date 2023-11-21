@@ -4,7 +4,7 @@ Date: 2023-04-12 22:15:22
 LastEditors: dvlproad
 LastEditTime: 2023-11-21 20:08:42
 FilePath: jenkins_input.py
-Description: Jenkins打包-输入
+Description: 对 map 进行 urlencode (array是无效的)
 '''
 import sys
 import json

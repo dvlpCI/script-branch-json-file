@@ -4,7 +4,7 @@
 # @Author: dvlproad
 # @Date: 2023-04-13 10:40:15
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-11-21 21:03:56
+ # @LastEditTime: 2023-11-21 22:30:52
 # @Description:
 ###
 # curl -X POST JENKINS_URL/job/JOB_NAME/build \
@@ -87,6 +87,16 @@ networkParams='
 ### 只有你已经在 jenkins 中定义的参数，您才能为其赋值
 ### 只有你已经在 jenkins 中定义的参数，您才能为其赋值
 ### 只有你已经在 jenkins 中定义的参数，您才能为其赋值
+
+# 📢注意：通过urlencode传递的 channelsJsonString 参数，在收到后需要执行以下代码，才能转回正常的值
+# 📢注意：通过urlencode传递的 channelsJsonString 参数，在收到后需要执行以下代码，才能转回正常的值
+# 📢注意：通过urlencode传递的 channelsJsonString 参数，在收到后需要执行以下代码，才能转回正常的值
+# echo "===========old_channelsJsonString=${channelsJsonString}"
+# channelsJsonString=$(echo "$channelsJsonString" | sed "s/'/\"/g") # 将字符串中的所有的单引号换成双引号
+# echo "===========new_channelsJsonString=${channelsJsonString}"
+# channelsJsonStringFilePath="${CurrentDIR_Script_Absolute}/channelsJsonString.json"
+# echo "$channelsJsonString" > "${channelsJsonStringFilePath}"
+# echo "===========channelsJsonStringFilePath=${channelsJsonStringFilePath}"
 
 
 # JOB_PARAM_JsonString='{"parameter": [{"name":"id", "value":"123"}, {"name":"verbosity", "value":"high"}]}'
