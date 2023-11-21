@@ -64,7 +64,7 @@ BranceMaps_From_Directory_PATH="${CurrentDIR_Script_Absolute}/featureBrances"
 BranchMapAddToJsonFile="${CurrentDIR_Script_Absolute}/app_branch_info.json"
 BranchMapAddToKey="package_merger_branchs"
 ignoreCheckBranchNameArray="(master development dev_publish_out dev_publish_in dev_all)"
-shouldDeleteHasCatchRequestBranchFile=false
+shouldDeleteHasCatchRequestBranchFile="true"
 
 ROBOT_URL="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=925776da-1ff4-417a-922a-d5ced384050e"
 atMiddleBracketIdsString="[\"@all\", \"lichaoqian\"]"
