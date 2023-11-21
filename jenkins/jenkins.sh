@@ -26,17 +26,15 @@ BLUE='\033[34m'
 PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 
-jenkinsScriptDir_Absolute=$1
-if [ ${#jenkinsScriptDir_Absolute} -eq 0 ]; then
-    echo "❌Error：请先设置jenkins脚本的绝对路径"
-    exit 1
-fi
 
-temp_reslut_file_path=$2
-if [ ${#temp_reslut_file_path} -eq 0 ]; then
-    echo "❌Error：脚本内部出错，请检查"
-    exit 1
-fi
+CurrentDIR_Script_Absolute="$( cd "$( dirname "$0" )" && pwd )"
+
+
+jenkin_input_result_saveIn_file_path=$1
+# if [ ${#jenkin_input_result_saveIn_file_path} -eq 0 ]; then
+#     echo "❌Error：脚本内部出错，请检查"
+#     exit 1
+# fi
 
 # 设置 Jenkins 服务器的地址、用户名和 API token
 JENKINS_URL="http://192.168.72.202:8080"
@@ -115,21 +113,21 @@ list_jobs() {
 # UseDoKit=true
 
 
-# echo  "正在执行命令:《 python3 ${jenkinsScriptDir_Absolute}/jenkins_input.py \"$temp_reslut_file_path\" 》"
-python3 ${jenkinsScriptDir_Absolute}/jenkins_input.py "$temp_reslut_file_path"    # 内部含需交互的输入操作，所以结果先存到临时文件中
+# echo  "正在执行命令:《 python3 ${CurrentDIR_Script_Absolute}/jenkins_input.py \"$jenkin_input_result_saveIn_file_path\" 》"
+python3 ${CurrentDIR_Script_Absolute}/jenkins_input.py "$jenkin_input_result_saveIn_file_path"    # 内部含需交互的输入操作，所以结果先存到临时文件中
 if [ $? != 0 ]; then
     exit 1
 fi
-# JENKINS_JOB_URLs=$(python3 ${jenkinsScriptDir_Absolute}/jenkins_input_result_get.py "$temp_reslut_file_path")
+# JENKINS_JOB_URLs=$(python3 ${CurrentDIR_Script_Absolute}/jenkins_input_result_get.py "$jenkin_input_result_saveIn_file_path")
 # echo "-----------JENKINS_JOB_URLs=\n${JENKINS_JOB_URLs}"
 
 # 读取temp_result.json文件中的jenkinsUrls字段的值
-# jenkinsUrls=$(cat "${temp_reslut_file_path}" | jq -r '.jenkinsUrls[]')
+# jenkinsUrls=$(cat "${jenkin_input_result_saveIn_file_path}" | jq -r '.jenkinsUrls[]')
 
 
 buildResultJobs() {
     AllInterceptArrayKey="jenkinsUrls"
-    jenkinsUrlCount=$(cat ${temp_reslut_file_path} | jq ".${AllInterceptArrayKey}" | jq ".|length")
+    jenkinsUrlCount=$(cat ${jenkin_input_result_saveIn_file_path} | jq ".${AllInterceptArrayKey}" | jq ".|length")
     # echo "=============TEST_ROBOT_CONENT_COUNT=${TEST_ROBOT_CONENT_COUNT}"
     if [ ${jenkinsUrlCount} -eq 0 ]; then
         echo "友情提醒💡💡💡：没有找到可发送的测试数据"
@@ -138,7 +136,7 @@ buildResultJobs() {
 
     happenError=false
     for (( i = 0; i < ${jenkinsUrlCount}; i++ )); do
-        jenkinsUrl=$(cat "${temp_reslut_file_path}" | jq ".${AllInterceptArrayKey}" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
+        jenkinsUrl=$(cat "${jenkin_input_result_saveIn_file_path}" | jq ".${AllInterceptArrayKey}" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
         # http://localhost:8080/job/xxx_iOS_测试/buildWithParameters? 获取job之后和buildWithParameters之前的job名
         job=${jenkinsUrl##*/job/}   # 先去掉job前面的部分
         jobName=${job%%/*}       # 再去掉buildWithParameters后面的部分
@@ -152,7 +150,7 @@ buildResultJobs() {
         printf "${GREEN}恭喜：jenkins打包任务已启动${NC}\n"
     fi
 
-    firstJenkinsUrl=$(cat "${temp_reslut_file_path}" | jq ".${AllInterceptArrayKey}" | jq -r ".[0]") # 添加 jq -r 的-r以去掉双引号
+    firstJenkinsUrl=$(cat "${jenkin_input_result_saveIn_file_path}" | jq ".${AllInterceptArrayKey}" | jq -r ".[0]") # 添加 jq -r 的-r以去掉双引号
     jenkinsBaseUrl=${firstJenkinsUrl%%/job*}
     open "${jenkinsBaseUrl}"
 }

@@ -33,8 +33,8 @@ CYAN='\033[0;36m'
 
 
 
-temp_reslut_file_path=sys.argv[1]
-# print("====保存结果的临时文件的路径为：\033[1;31m{}\033[0m\n".format(temp_reslut_file_path))
+jenkin_input_result_saveIn_file_path=sys.argv[1]
+# print("====本脚本执行完，生成的jenkins_job_url结果等下会保存到的路径为：\033[1;31m{}\033[0m\n".format(jenkin_input_result_saveIn_file_path))
 
 def getOptionById(options, optionInputId):
     # print("\033[1;32m哈哈哈{}\033[0m".format(optionInputId))
@@ -113,7 +113,7 @@ def getAndSavePackParamStringToFileForOption(jenkins_data, option):
         jenkinUrls.append(jenkinUrl)
     # print(jenkinUrls)
 
-    save_jenkins_urls_to_file(jenkinUrls, temp_reslut_file_path)
+    save_jenkins_urls_to_file(jenkinUrls, jenkin_input_result_saveIn_file_path)
 
     return jenkinUrls
 

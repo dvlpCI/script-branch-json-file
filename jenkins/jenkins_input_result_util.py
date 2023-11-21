@@ -17,14 +17,25 @@ import json
 def save_jenkins_urls_to_file(jenkins_urls, file_path):
     # 读取temp_result.json文件中的数据
     with open(file_path, 'r') as file:
-        data = json.load(file)
+        file_content = file.read()
+        if len(file_content) == 0:
+            data = {}
+        else:
+            data = json.loads(file_content)
+
+    # print(f"data={data}")
 
     # 更新jenkinsUrl字段
     data['jenkinsUrls'] = jenkins_urls
 
     # 将更新后的数据写入temp_result.json文件
-    with open(file_path, 'w') as file:
-        json.dump(data, file, indent=4, ensure_ascii=False)
+    try:
+        with open(file_path, 'w') as file:
+            json.dump(data, file, indent=4, ensure_ascii=False)
+    except IOError:
+        # 处理写入文件时的错误
+        print(f"IOError: {file_path}")
+        pass
 
 
 def load_jenkins_urls_from_file(file_path):
