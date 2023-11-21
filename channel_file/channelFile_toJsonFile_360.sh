@@ -20,6 +20,7 @@ while [ -n "$1" ]
 do
     case "$1" in
         -channelTxtF|--channel-txt-file-path) ChannelTxtFilePath=$2; shift 2;;
+        # -firstElementMustPerLine|--firstElementMustPerLine) firstElementMustPerLine=$2; shift 2;;
         --) break ;;
         *) break ;;
     esac
@@ -52,10 +53,10 @@ while IFS= read -r line; do
   fi
 
   # 检查第一个元素是否为CHANNEL
-  if [ "${elements[0]}" != "CHANNEL" ]; then
-    echo "不符合规范: 第一个元素不是CHANNEL"
-    exit 1
-  fi
+  # if [ "${elements[0]}" != "${firstElementMustPerLine}" ]; then
+  #   echo "不符合规范: 第一个元素不是${firstElementMustPerLine}"
+  #   exit 1
+  # fi
 
   # 提取最后一个元素，并检查最后一个元素是否只包含字母和数字
   last_element="${elements[2]}"

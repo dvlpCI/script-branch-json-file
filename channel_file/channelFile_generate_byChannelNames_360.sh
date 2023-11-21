@@ -15,7 +15,7 @@
 CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
 
 qtool_channelFile_toJsonFile_360_scriptPath=$CurrentDIR_Script_Absolute/channelFile_toJsonFile_360.sh
-qtool_360channel_file_scriptPath=$(qbase -path 360channel_file_generate)
+qtool_360channel_file_scriptPath=$(qbase -path channel_file_generate_360)
 qbase_convert_to_pinyin_scriptPath=$(qbase -path convert_to_pinyin)
 
 # shell 参数具名化
@@ -26,7 +26,7 @@ do
         -nameArrayString|--nameArrayString) argNameArrayString=$2; shift 2;;
         -fixedChannelF|--fixed-channel-file) FixedChannelFile=$2; shift 2;;
         -outputFile|--output-file-path) outputFilePath=$2; shift 2;;
-        -shouldCheckOutput|--shouldCheckOutput) shouldCheckOutput=$2; shift 2;;
+        -firstElementMustPerLine|--firstElementMustPerLine) firstElementMustPerLine=$2; shift 2;;  # 每行第一个元素必须使用的值，有设置即检查整个文件，不设置就整个文件不检查
         --) break ;;
         *) break ;;
     esac
@@ -58,6 +58,11 @@ channelCount=${#channelNameArray[@]}
 requestChannelLineStringArray=()
 requestChannelLineStrings=''
 happenErrorMessage=""
+
+if ! python -c "import pypinyin" >/dev/null 2>&1; then
+    echo "pypinyin module not found. Installing..."
+    pip3 install pypinyin
+fi
 for ((i = 0; i < channelCount; i++)); do
   iChannelName="${channelNameArray[$i]}"
   # 从 fixedChannelJsonString 中获取 name 等于 iChannelName 的map
@@ -105,8 +110,8 @@ argArrayString="${requestChannelLineStrings}"
 # argArrayString='"CHANNEL 华为 huawei" "CHANNEL 小米 xiaomi" "CHANNEL 公交 gongjiao"'
 # printf "%s\n" "${argArrayString}"
 # exit
-# echo "${YELLOW}正在执行命令(使用 arrayString 生成多渠道配置文件):《${BLUE} sh $qtool_360channel_file_scriptPath -arrayString '${argArrayString}' -outputFile \"${outputFilePath}\" -shouldCheckOutput \"${shouldCheckOutput}\" ${YELLOW}》${NC}"
-generateResult=$(sh $qtool_360channel_file_scriptPath -arrayString "${argArrayString}" -outputFile "${outputFilePath}" -shouldCheckOutput "${shouldCheckOutput}")
+# echo "${YELLOW}正在执行命令(使用 arrayString 生成多渠道配置文件):《${BLUE} sh $qtool_360channel_file_scriptPath -arrayString '${argArrayString}' -outputFile \"${outputFilePath}\" -firstElementMustPerLine \"${firstElementMustPerLine}\" ${YELLOW}》${NC}"
+generateResult=$(sh $qtool_360channel_file_scriptPath -arrayString "${argArrayString}" -outputFile "${outputFilePath}" -firstElementMustPerLine "${firstElementMustPerLine}")
 if [ $? != 0 ]; then
   printf "%s" "${generateResult}"  # 此时此值是错误信息
   exit 1

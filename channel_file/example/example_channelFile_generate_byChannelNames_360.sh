@@ -56,9 +56,9 @@ channelNameArrayString="华为 荣耀 小米 公交 自定义123abc✅"
 FixedChannelFile="${Example_HomeDir_Absolute}/360channels_fixed.txt"
 outputFilePath="${Example_HomeDir_Absolute}/$(date +"%m%d_%H%M%S").txt"
 # outputFilePath="${Example_HomeDir_Absolute}/360channels_result.txt"
-shouldCheckOutput="true"
-echo "${YELLOW}正在执行测试命令(使用 arrayString 生成多渠道配置文件):《${BLUE} sh $qtool_360channel_file_scriptPath -nameArrayString '${channelNameArrayString}' -outputFile \"${outputFilePath}\" -shouldCheckOutput \"${shouldCheckOutput}\" ${YELLOW}》${NC}"
-generateResult=$(sh $qtool_360channel_file_scriptPath -nameArrayString "${channelNameArrayString}" -fixedChannelF "${FixedChannelFile}" -outputFile "${outputFilePath}" -shouldCheckOutput "${shouldCheckOutput}")
+firstElementMustPerLine="CHANNEL"
+echo "${YELLOW}正在执行测试命令(使用 arrayString 生成多渠道配置文件):《${BLUE} sh $qtool_360channel_file_scriptPath -nameArrayString '${channelNameArrayString}' -outputFile \"${outputFilePath}\" -firstElementMustPerLine \"${firstElementMustPerLine}\" ${YELLOW}》${NC}"
+generateResult=$(sh $qtool_360channel_file_scriptPath -nameArrayString "${channelNameArrayString}" -fixedChannelF "${FixedChannelFile}" -outputFile "${outputFilePath}" -firstElementMustPerLine "${firstElementMustPerLine}")
 if [ $? != 0 ]; then
   echo "${RED}${generateResult}${NC}"  # 此时此值是错误信息
   exit 1
