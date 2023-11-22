@@ -81,12 +81,15 @@ def create(branchType, branchFullName, file_path):
     outlineMap = inputOutline()
 
     # 2、需求方信息
+    print(f"")
     answerName = chooseAnswer()
     
     # 3、开发方信息
+    print(f"")
     apiName = chooseApier()
 
     # 4、测试方信息
+    print(f"")
     testerName = chooseTester()
 
     json_data = {

@@ -57,6 +57,11 @@ def _choosePeopleByType(type):
     tool_params_file_path = os.getenv('QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH')
     with open(tool_params_file_path) as f:
         data = json.load(f)
+
+    if 'branchJsonFile' not in data:
+        personName="unkonw"
+        print(f"{YELLOW}您的{BLUE} {tool_params_file_path} {YELLOW}文件内容缺失{BLUE} branchJsonFile {YELLOW}字段，无法获取姓名，将临时使用{BLUE} {personName} {YELLOW}，请后续补充。{NC}")
+        return personName
         
     if type == 'answer':
         typeName="需求方人员"
@@ -72,16 +77,22 @@ def _choosePeopleByType(type):
         typeId='answerAllowId'
 
 
-    personMaps = data['branchJsonFile']['${typeId}']
-    for i, personId in enumerate(personMaps):
-        person = getPersonById(data['person'], personId)  
-        if person:
-            print(f"{i+1}. {person['name']}")
-        else:
-            print(f"{i+1}. 未找到id为 {RED}{personId} {NC}的用户, 详情请查看 {BLUE}{tool_params_file_path} {NC}中的 {BLUE}person {NC}字段")
+    if typeId not in data['branchJsonFile']:
+        personName="unkonw"
+        print(f"{YELLOW}您的{BLUE} {tool_params_file_path} {YELLOW}文件中的${BLUE} branchJsonFile {YELLOW}字段里缺失{BLUE} {typeId} {YELLOW}，无法获取姓名，将临时使用${BLUE} {personName} {YELLOW}，请后续补充。{NC}")
+        return personName
+    
+    personMaps = data['branchJsonFile'][typeId]
+    if personMaps:
+        for i, personId in enumerate(personMaps):
+            person = getPersonById(data['person'], personId)  
+            if person:
+                print(f"{i+1}. {person['name']}")
+            else:
+                print(f"{i+1}. 未找到id为 {RED}{personId} {NC}的用户, 详情请查看 {BLUE}{tool_params_file_path} {NC}中的 {BLUE}person {NC}字段")
 
     while True:
-        person_input = input(f"请输入${typeName}编号（自定义请填0,退出q/Q）：")
+        person_input = input(f"请输入{typeName}编号（自定义请填0,退出q/Q）：")
         if person_input == "q" or person_input == "Q":
             exit()
 
@@ -90,12 +101,12 @@ def _choosePeopleByType(type):
             continue
 
         if person_input == "0":
-            personName = input(f"请输入${typeName}姓名：")
+            personName = input(f"请输入{typeName}姓名：")
             break
 
         index = int(person_input) - 1
         if index >= len(personMaps):
-            print(f"请输入${typeName}编号（自定义请填0,退出q/Q）：")
+            print(f"请输入{typeName}编号（自定义请填0,退出q/Q）：")
             continue
         else:
             selectedPersonId = personMaps[index]
@@ -103,7 +114,7 @@ def _choosePeopleByType(type):
                 data['person'], selectedPersonId)["name"]
             break
 
-    print(f"您选择输入${typeName}名：{BLUE}{personName}{NC}")
+    print(f"您选择输入{typeName}名：{BLUE}{personName}{NC}")
     return personName
 
 
