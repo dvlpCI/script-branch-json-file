@@ -92,11 +92,17 @@ networkParams='
 # 📢注意：通过urlencode传递的 channelsJsonString 参数，在收到后需要执行以下代码，才能转回正常的值
 # 📢注意：通过urlencode传递的 channelsJsonString 参数，在收到后需要执行以下代码，才能转回正常的值
 # echo "===========old_channelsJsonString=${channelsJsonString}"
-# channelsJsonString=$(echo "$channelsJsonString" | sed "s/'/\"/g") # 将字符串中的所有的单引号换成双引号
+# channelsJsonStringFilePath_old="${CurrentDIR_Script_Absolute}/channelsJsonString_old.json"
+# echo "$channelsJsonString" > "${channelsJsonStringFilePath_old}"
+# echo "===========channelsJsonStringFilePath_old=${channelsJsonStringFilePath_old}"
+# echo ""
+# channelsJsonString=$(echo "${channelsJsonString}" | sed 's/^"//;s/"$//')
+# channelsJsonString=$(echo "${channelsJsonString}" | sed "s/'/\"/g") # 将字符串中的所有的单引号换成双引号
 # echo "===========new_channelsJsonString=${channelsJsonString}"
-# channelsJsonStringFilePath="${CurrentDIR_Script_Absolute}/channelsJsonString.json"
-# echo "$channelsJsonString" > "${channelsJsonStringFilePath}"
-# echo "===========channelsJsonStringFilePath=${channelsJsonStringFilePath}"
+# channelsJsonStringFilePath_new="${CurrentDIR_Script_Absolute}/channelsJsonString_new.json"
+# echo "$channelsJsonString" > "${channelsJsonStringFilePath_new}"
+# echo "===========channelsJsonStringFilePath_new=${channelsJsonStringFilePath_new}"
+    
 
 
 # JOB_PARAM_JsonString='{"parameter": [{"name":"id", "value":"123"}, {"name":"verbosity", "value":"high"}]}'
