@@ -96,7 +96,7 @@ def getAndSavePackParamStringToFileForOption(jenkins_data, option):
     # 获取 jenkins_input_option_param 中key为 jobUseParamType 的值
     param = next(filter(lambda x: jobUseParamType in x, paramMap))
     networkParams=param[jobUseParamType]
-    print(f"{CYAN}温馨提示：您的jenkin job所需参数罗列如下:{BLUE}\n{json.dumps(networkParams, indent=2)} {NC}")
+    print(f"{CYAN}温馨提示：您的jenkin job所需参数罗列如下:{BLUE}\n{json.dumps(networkParams, indent=2, ensure_ascii=False)} {NC}")
     
     for key, value in networkParams.items():  # 遍历字典的键和值
         if value == "custom_input":
