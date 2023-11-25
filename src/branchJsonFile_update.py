@@ -11,12 +11,19 @@ import json
 import subprocess
 from datetime import datetime
 
-from env_util import getEnvValue_params_file_path
 from git_util import get_branch_json_file_path_byToolParamFile
 from object_update import update_dict_value
 
 from branchJsonFile_input_base_util import chooseAnswerFromFile, chooseApierFromFile, chooseTesterFromFile, inputOutline
 
+# 定义颜色常量
+NC = '\033[0m'  # No Color
+RED = '\033[31m'
+GREEN = '\033[32m'
+YELLOW = '\033[33m'
+BLUE = '\033[34m'
+PURPLE = '\033[0;35m'
+CYAN = '\033[0;36m'
 
 # 请选择操作类型
 def chooseUpdateAction(tool_params_file_path):
@@ -32,47 +39,54 @@ def chooseUpdateAction(tool_params_file_path):
     }
     for key, value in updateAction_mapping.items():
         print(key, value)
-    print("请选择操作类型：", end="")
-    updateAction_input = input()
-    updateActionDes = updateAction_mapping[updateAction_input]
-    # print("key = {}, value = {}".format(updateAction_input, updateActionDes))
-    print("您选择操作类型：\033[1;31m{}\033[0m\n".format(updateActionDes))
     
-    if updateAction_input == "1":
-        answerName=chooseAnswerFromFile(tool_params_file_path)
-        result=change("answer.name", f"{answerName}", file_path)
-        if result == False:
-            return False  
-
-        apierName=chooseApierFromFile(tool_params_file_path)
-        result=change("apier.name", f"{apierName}", file_path)
-        if result == False:
-            return False 
+    while True:
+        updateAction_input = input(f"请选择操作类型(若要退出请输入Q|q)：")
+        if updateAction_input == "q" or updateAction_input == "Q":
+            break
         
-        testerName=chooseTesterFromFile(tool_params_file_path)
-        result=change("tester.name", f"{testerName}", file_path)
-        if result == False:
-            return False 
+        if updateAction_input == "1":
+            answerName=chooseAnswerFromFile(tool_params_file_path)
+            result=change("answer.name", f"{answerName}", file_path)
+            if result == False:
+                return False
 
-    elif updateAction_input == "2":
-        outlineMap = inputOutline()
-        addOutline(file_path, outlineMap)
+            apierName=chooseApierFromFile(tool_params_file_path)
+            result=change("apier.name", f"{apierName}", file_path)
+            if result == False:
+                return False
+            
+            testerName=chooseTesterFromFile(tool_params_file_path)
+            result=change("tester.name", f"{testerName}", file_path)
+            if result == False:
+                return False
 
-    elif updateAction_input == "3":
-        cur_date = datetime.now().strftime("%m.%d")
-        result=change("submit_test_time", f"{cur_date}", file_path)
-        if result == False:
-            return False 
+        elif updateAction_input == "2":
+            outlineMap = inputOutline()
+            addOutline(file_path, outlineMap)
 
-    elif updateAction_input == "4":
-        cur_date = datetime.now().strftime("%m.%d")
-        result=change("pass_test_time", f"{cur_date}", file_path)
-        if result == False:
-            return False 
-        result=change("merger_pre_time", f"{cur_date}", file_path)
-        if result == False:
-            return False 
+        elif updateAction_input == "3":
+            cur_date = datetime.now().strftime("%m.%d")
+            result=change("submit_test_time", f"{cur_date}", file_path)
+            if result == False:
+                return False
 
+        elif updateAction_input == "4":
+            cur_date = datetime.now().strftime("%m.%d")
+            result=change("pass_test_time", f"{cur_date}", file_path)
+            if result == False:
+                return False
+            result=change("merger_pre_time", f"{cur_date}", file_path)
+            if result == False:
+                return False
+        
+        else:
+            print("输入错误，请重新输入！")
+            continue
+
+        updateActionDes = updateAction_mapping[updateAction_input]
+        print(f"您选择操作类型：{RED}{updateActionDes}{NC}\n")
+    
     # 在 macOS 或 Linux 上打开 file_path 文件。
     # subprocess.Popen(['open', file_path])
     subprocess.Popen(['open', file_path])
@@ -104,5 +118,14 @@ def change(key, value, file_path):
 
 
 # 执行代码
-tool_params_file_path = getEnvValue_params_file_path()
+# 获取具名参数的值
+import argparse
+parser = argparse.ArgumentParser()  # 创建参数解析器
+parser.add_argument("-tool_params_file_path", "--tool_params_file_path", help="The value for argument 'tool_params_file_path'")
+args = parser.parse_args()  # 解析命令行参数
+tool_params_file_path = args.tool_params_file_path
+if tool_params_file_path is None:
+    print(f"{RED}您要获取创建分支信息的信息输入源文件 -tool_params_file_path 不能为空，请检查！{NC}")
+    exit(1)
+    
 chooseUpdateAction(tool_params_file_path)

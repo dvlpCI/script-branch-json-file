@@ -123,9 +123,15 @@ def create(branchType, branchFullName, file_path):
     subprocess.Popen(['open', file_path])
 
 
-
-
-tool_params_file_path = getEnvValue_params_file_path()
+# 获取具名参数的值
+import argparse
+parser = argparse.ArgumentParser()  # 创建参数解析器
+parser.add_argument("-tool_params_file_path", "--tool_params_file_path", help="The value for argument 'tool_params_file_path'")
+args = parser.parse_args()  # 解析命令行参数
+tool_params_file_path = args.tool_params_file_path
+if tool_params_file_path is None:
+    print(f"{RED}您要获取创建分支信息的信息输入源文件 -tool_params_file_path 不能为空，请检查！{NC}")
+    exit(1)
 
 project_dir = getProject_dir_path_byToolParamFile(tool_params_file_path)
 print("当前项目目录===========：", project_dir)
