@@ -22,7 +22,7 @@ CYAN='\033[0;36m'
 
 
 def getProject_dir_path_byToolParamFile(tool_params_file_path):
-    print(f"tool_params_file_path======={tool_params_file_path}")
+    # print(f"tool_params_file_path======={tool_params_file_path}")
     tool_params_file_data = get_json_file_data(tool_params_file_path)
     if tool_params_file_data == None:
         return None

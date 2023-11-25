@@ -14,10 +14,11 @@ from datetime import datetime
 import re
 
 from path_util import joinFullPath_noCheck
-from env_util import getEnvValue_project_dir_path, getEnvValue_branch_json_file_dir_path
+from env_util_tool import getProject_dir_path_byToolParamFile, getBranch_json_file_dir_path_fromToolParamFile
 from git_util import get_currentBranchFullName, get_branch_file_name, get_branch_type
-from branchJsonFile_input import chooseAnswer, chooseApier, chooseTester
 from branchJsonFile_input_base_util import chooseAnswerFromFile, chooseApierFromFile, chooseTesterFromFile, inputOutline
+
+from env_util import getEnvValue_params_file_path
 
 import getpass
 username = getpass.getuser()
@@ -33,14 +34,6 @@ BLUE='\033[34m'
 PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 
-
-project_dir = getEnvValue_project_dir_path()
-print("当前项目目录===========：", project_dir)
-
-
-branch_json_file_dir_path = getEnvValue_branch_json_file_dir_path()
-if branch_json_file_dir_path == None:
-    exit(1)
 
 
 def create_branch_json_file():
@@ -83,15 +76,15 @@ def create(branchType, branchFullName, file_path):
 
     # 2、需求方信息
     print(f"")
-    answerName = chooseAnswer()
+    answerName = chooseAnswerFromFile(tool_params_file_path)
     
     # 3、开发方信息
     print(f"")
-    apiName = chooseApier()
+    apiName = chooseApierFromFile(tool_params_file_path)
 
     # 4、测试方信息
     print(f"")
-    testerName = chooseTester()
+    testerName = chooseTesterFromFile(tool_params_file_path)
 
     json_data = {
         "create_time": cur_date,
@@ -130,4 +123,15 @@ def create(branchType, branchFullName, file_path):
     subprocess.Popen(['open', file_path])
 
 
+
+
+tool_params_file_path = getEnvValue_params_file_path()
+
+project_dir = getProject_dir_path_byToolParamFile(tool_params_file_path)
+print("当前项目目录===========：", project_dir)
+
+
+branch_json_file_dir_path = getBranch_json_file_dir_path_fromToolParamFile(tool_params_file_path)
+if branch_json_file_dir_path == None:
+    exit(1)
 create_branch_json_file()
