@@ -1,8 +1,8 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
-LastEditors: dvlproad
-LastEditTime: 2023-04-23 13:17:54
+LastEditors: dvlproad dvlproad@163.com
+LastEditTime: 2023-11-25 17:48:34
 FilePath: branchJsonFile_update.py
 Description: 分支Json文件的信息更新
 '''
@@ -11,17 +11,18 @@ import json
 import subprocess
 from datetime import datetime
 
-from git_util import get_branch_json_file_path
+from env_util import getEnvValue_params_file_path
+from git_util import get_branch_json_file_path_byToolParamFile
 from object_update import update_dict_value
-from branchJsonFile_input import inputOutline, chooseAnswer, chooseTester
 
-def branch_info():
-    branch_json_file_path=get_branch_json_file_path()
-    chooseUpdateAction(branch_json_file_path)
+from branchJsonFile_input_base_util import chooseAnswerFromFile, chooseApierFromFile, chooseTesterFromFile, inputOutline
 
 
 # 请选择操作类型
-def chooseUpdateAction(file_path): 
+def chooseUpdateAction(tool_params_file_path):
+    # print(f"tool_params_file_path={tool_params_file_path}")
+    file_path=get_branch_json_file_path_byToolParamFile(tool_params_file_path)
+
     # 更新操作的类型
     updateAction_mapping = {
         "1": "更改人员信息(需求方/测试方)",
@@ -38,11 +39,20 @@ def chooseUpdateAction(file_path):
     print("您选择操作类型：\033[1;31m{}\033[0m\n".format(updateActionDes))
     
     if updateAction_input == "1":
-        answerName=chooseAnswer()
-        change("answer.name", f"{answerName}", file_path)
+        answerName=chooseAnswerFromFile(tool_params_file_path)
+        result=change("answer.name", f"{answerName}", file_path)
+        if result == False:
+            return False  
 
-        testerName=chooseTester()
-        change("tester.name", f"{testerName}", file_path)
+        apierName=chooseApierFromFile(tool_params_file_path)
+        result=change("apier.name", f"{apierName}", file_path)
+        if result == False:
+            return False 
+        
+        testerName=chooseTesterFromFile(tool_params_file_path)
+        result=change("tester.name", f"{testerName}", file_path)
+        if result == False:
+            return False 
 
     elif updateAction_input == "2":
         outlineMap = inputOutline()
@@ -50,12 +60,18 @@ def chooseUpdateAction(file_path):
 
     elif updateAction_input == "3":
         cur_date = datetime.now().strftime("%m.%d")
-        change("submit_test_time", f"{cur_date}", file_path)
+        result=change("submit_test_time", f"{cur_date}", file_path)
+        if result == False:
+            return False 
 
     elif updateAction_input == "4":
         cur_date = datetime.now().strftime("%m.%d")
-        change("pass_test_time", f"{cur_date}", file_path)
-        change("merger_pre_time", f"{cur_date}", file_path)
+        result=change("pass_test_time", f"{cur_date}", file_path)
+        if result == False:
+            return False 
+        result=change("merger_pre_time", f"{cur_date}", file_path)
+        if result == False:
+            return False 
 
     # 在 macOS 或 Linux 上打开 file_path 文件。
     # subprocess.Popen(['open', file_path])
@@ -78,11 +94,15 @@ def change(key, value, file_path):
     with open(file_path, "r+", encoding="utf-8") as json_file:
         json_data = json.load(json_file)
         # json_data[key] = value
-        update_dict_value(json_data, key, value)
+        result=update_dict_value(json_data, key, value)
+        if result == False:
+            return False  
         json_file.seek(0)
         json.dump(json_data, json_file, indent=4, ensure_ascii=False)
         json_file.truncate()
     # print(f"已成功更新字段 {key} 为 {value} 在文件 {file_path}")
 
 
-branch_info()
+# 执行代码
+tool_params_file_path = getEnvValue_params_file_path()
+chooseUpdateAction(tool_params_file_path)

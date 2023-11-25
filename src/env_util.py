@@ -7,9 +7,8 @@ FilePath: /script-branch-json-file/src/env_util.py
 Description: 获取环境变量的值
 '''
 import os
-import json
 import subprocess
-from path_util import joinFullPath_checkExsit, joinFullUrl
+from env_util_tool import get_json_file_data, getProject_dir_path_byToolParamFile, getBranch_json_file_dir_path_fromToolParamFile
 
 # 定义颜色常量
 NC='\033[0m' # No Color
@@ -72,31 +71,11 @@ def getEnvValue_params_file_data():
     return get_json_file_data(tool_params_file_path)
 
 
-def get_json_file_data(json_file_path):
-    try:
-        with open(json_file_path) as f:
-            data = json.load(f)
-    except FileNotFoundError:
-        print(f"{RED}Error: File {YELLOW}{json_file_path}{RED} not found. {NC}")
-        return None
-    except json.JSONDecodeError:
-        print(f"{RED}Error: Failed to load JSON data from file {YELLOW}{json_file_path}{RED} {NC}")
-        return None
-    return data
-
-
 # 获取环境变量的值-项目路径 project_dir_path
 def getEnvValue_project_dir_path():
     tool_params_file_path = getEnvValue_params_file_path()
-    tool_params_file_data = get_json_file_data(tool_params_file_path)
-    if tool_params_file_data == None:
-        return None
-    project_home_path_rel_this = tool_params_file_data['project_path']['home_path_rel_this_dir']
-    tool_params_dir_path = os.path.dirname(tool_params_file_path)
-    project_dir_abspath = joinFullPath_checkExsit(tool_params_dir_path, project_home_path_rel_this)
-    # print(f"project_dir_abspath:{RED}{project_dir_abspath} {NC}")
-    return project_dir_abspath
-
+    return getProject_dir_path_byToolParamFile(tool_params_file_path)
+    
 # 获取环境变量的值-项目的父路径 project_parent_dir_path
 def getEnvValue_project_parent_dir_path():
     project_dir_abspath=getEnvValue_project_dir_path()
@@ -115,28 +94,9 @@ def getEnvValue_project_parent_dir_path():
 
 # 获取环境变量的值-项目中分支信息文件的存放路径
 def getEnvValue_branch_json_file_dir_path(shouldCheckExist=False):
-    branch_json_file_git_home = getEnvValue_project_dir_path()
-    
     tool_params_file_path = getEnvValue_params_file_path()
-    tool_params_file_data = get_json_file_data(tool_params_file_path)
-    if tool_params_file_data == None:
-        return None
-    
-    branch_json_file_dir_relpath = tool_params_file_data['branchJsonFile']['BRANCH_JSON_FILE_DIR_RELATIVE_PATH']
-    branch_json_file_dir_abspath = joinFullPath_checkExsit(branch_json_file_git_home, branch_json_file_dir_relpath)
-    # print(f"branch_json_file_dir_abspath:{RED}{branch_json_file_dir_abspath} {NC}")
-    if branch_json_file_dir_abspath == None:
-        print(f"{RED}路径拼接失败，请检查从文件 {tool_params_file_path} 中的 ['branchJsonFile']['BRANCH_JSON_FILE_DIR_RELATIVE_PATH'] 获得的拼接参数 {RED}.{NC}")
-        return None
-    
-    if shouldCheckExist==False:
-        return branch_json_file_dir_abspath
-    else:
-        if not os.path.exists(branch_json_file_dir_abspath):
-            print(f"Error❌:{branch_json_file_dir_abspath}文件不存在，请检查")
-            return None
-        else:
-            return branch_json_file_dir_abspath
+    return getBranch_json_file_dir_path_fromToolParamFile(tool_params_file_path, shouldCheckExist)
+
 
 
 # 获取工程的所在目录(①用户Jenkins打包机的 打包项目 选择；②要更新哪个打包的历史json文件选择)

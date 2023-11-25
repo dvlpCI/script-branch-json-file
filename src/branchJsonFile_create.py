@@ -16,7 +16,8 @@ import re
 from path_util import joinFullPath_noCheck
 from env_util import getEnvValue_project_dir_path, getEnvValue_branch_json_file_dir_path
 from git_util import get_currentBranchFullName, get_branch_file_name, get_branch_type
-from branchJsonFile_input import inputOutline, chooseAnswer, chooseApier, chooseTester
+from branchJsonFile_input import chooseAnswer, chooseApier, chooseTester
+from branchJsonFile_input_base_util import chooseAnswerFromFile, chooseApierFromFile, chooseTesterFromFile, inputOutline
 
 import getpass
 username = getpass.getuser()

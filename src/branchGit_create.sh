@@ -43,23 +43,35 @@ function getCategoryFile() {
     relFilePathKey=".branch_belong_file_rel_this_file"
     rel_file_path_value=$(echo "$tool_root_content" | jq -r "${relFilePathKey}")
     if [ -z "${rel_file_path_value}" ] || [ "${rel_file_path_value}" == "null" ]; then
-        printf "${RED}请先在 ${BLUE}${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH} ${RED}文件中设置 ${BLUE}${relFilePathKey} ${NC}\n"
+        printf "${RED}请先在${BLUE} ${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH} ${RED}文件中设置${BLUE} ${relFilePathKey} ${NC}\n"
         exit_script
     fi
 
     target_file_abspath=$(getAbsPathByFileRelativePath "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" $rel_file_path_value)
     if [ $? != 0 ]; then
-        printf "${RED}拼接 ${BLUE}${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH} ${RED}和 ${BLUE}${rel_file_path_value} ${RED}组成的路径结果错误，错误结果为 ${target_file_abspath}${NC}\n"
+        printf "${RED}拼接${BLUE} ${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH} ${RED}和${BLUE} ${rel_file_path_value} ${RED}组成的路径结果错误，错误结果为 ${target_file_abspath} ${NC}\n"
         exit_script
     fi
 
     echo "${target_file_abspath}"
 }
-target_category_file_abspath=$(getCategoryFile)
-# echo "=======target_category_file_abspath=${target_category_file_abspath}"
-
 
 target_branch_type_file_abspath=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
+if [ ! -f "${target_branch_type_file_abspath}" ]; then
+    echo "${RED}您的 target_branch_type_file_abspath = ${BLUE} ${target_branch_type_file_abspath} {RED}不存在，请检查${NC}"
+    exit 1
+fi
+echo "=======target_branch_type_file_abspath=${target_branch_type_file_abspath}"
+
+target_category_file_abspath=$(getCategoryFile)
+if [ $? != 0 ]; then
+    echo "${target_category_file_abspath}" # 此时此值是错误信息
+    exit 1
+fi
+echo "=======target_category_file_abspath=${target_category_file_abspath}"
+
+
+
 
 # 1、确定分支名(分支类型选择+分支名输入)
 # 1.1、分支类型选择

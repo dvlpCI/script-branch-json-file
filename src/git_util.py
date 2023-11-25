@@ -20,7 +20,8 @@ CYAN = '\033[0;36m'
 import subprocess
 import os
 from path_util import joinFullPath_checkExsit
-from env_util import getEnvValue_project_dir_path, getEnvValue_branch_json_file_dir_path
+from env_util import getEnvValue_params_file_path
+from env_util_tool import getProject_dir_path_byToolParamFile, getBranch_json_file_dir_path_fromToolParamFile
 
 def get_gitHomeDir():
     git_output = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], text=True)
@@ -48,8 +49,6 @@ def get_currentBranchFullName():
     
     return currentBranchFullName
 
-project_dir=getEnvValue_project_dir_path()
-branch_json_file_dir_path = getEnvValue_branch_json_file_dir_path()
 
 
 def get_branch_type(fullBranchName):
@@ -67,22 +66,34 @@ def get_branch_file_name(fullBranchName):
     branchShortName = parts[-1]
     if len(parts) >= 2:
         branchType = parts[-2]
+        jsonFileName = f"{branchType}_{branchShortName}.json"
     else:
-        # branchType = None
         branchType = "unkonw"
-
-    # print("分支类型 = {}, 分支简名 = {}".format(branchType, branchShortName))
-    jsonFileName = f"{branchType}_{branchShortName}.json"
+        jsonFileName = f"{branchShortName}.json"
 
     return jsonFileName
 
 def get_branch_json_file_path():
+    tool_params_file_path = getEnvValue_params_file_path()
+    return get_branch_json_file_path_byToolParamFile(tool_params_file_path)
+    
+def get_branch_json_file_path_byToolParamFile(tool_params_file_path):
+    # print(f"tool_params_file_path ======= {tool_params_file_path}")
+    
+    project_dir = getProject_dir_path_byToolParamFile(tool_params_file_path)
+    if project_dir == None:
+        return None
     os.chdir(project_dir) # 修改当前 Python 进程的工作目录
+    
+    branch_json_file_dir_path = getBranch_json_file_dir_path_fromToolParamFile(tool_params_file_path)
+    if branch_json_file_dir_path == None:
+        return None
 
     currentBranchFullName = get_currentBranchFullName()
     print(f"当前分支全名：{BLUE}{currentBranchFullName}{NC}\n")
 
     jsonFileName=get_branch_file_name(currentBranchFullName)
+    print(f"当前分支信息文件的文件名：{BLUE}{jsonFileName}{NC}\n")
 
     file_path = joinFullPath_checkExsit(branch_json_file_dir_path, jsonFileName)
     if file_path == None:
@@ -96,3 +107,4 @@ def get_branch_json_file_path():
     else:
         return file_path
 
+# get_branch_json_file_path()

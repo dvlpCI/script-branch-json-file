@@ -124,6 +124,7 @@
       "des": "其他"
     }
   ],
+  "branch_belong_file_rel_this_file": "./tool_input_module.json",
   "branch_categorys": [
     {
       "codeEnable": false,
@@ -187,6 +188,22 @@
       "name": "张良俊"
     },
     {
+      "id": "apier1",
+      "name": "后台1"
+    },
+    {
+      "id": "apier2",
+      "name": "后台2"
+    },
+    {
+      "id": "apier3",
+      "name": "后台3"
+    },
+    {
+      "id": "apier4",
+      "name": "后台4"
+    },
+    {
       "id": "tester1",
       "name": "李智荣"
     },
@@ -204,7 +221,7 @@
     }
   ],
   "branchJsonFile": {
-    "BRANCH_JSON_FILE_DIR_RELATIVE_PATH": "/bulidScript/featureBrances/",
+    "BRANCH_JSON_FILE_DIR_RELATIVE_PATH": "./src/example/featureBrances/",
     "answerAllowId": [
       "developer1",
       "producter1",
@@ -212,6 +229,12 @@
       "producter3",
       "producter4",
       "producter5"
+    ],
+    "apierAllowId": [
+      "apier1",
+      "apier2",
+      "apier3",
+      "apier4"
     ],
     "testerAllowId": [
       "tester1",
