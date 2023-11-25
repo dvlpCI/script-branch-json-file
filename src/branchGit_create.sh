@@ -39,17 +39,17 @@ exit_script() { # 退出脚本的方法，省去当某个步骤失败后，还�
 
 function getCategoryFile() {
     # 读取文件内容
-    tool_root_content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
+    tool_root_content=$(cat "${target_branch_type_file_abspath}")
     relFilePathKey=".branch_belong_file_rel_this_file"
     rel_file_path_value=$(echo "$tool_root_content" | jq -r "${relFilePathKey}")
     if [ -z "${rel_file_path_value}" ] || [ "${rel_file_path_value}" == "null" ]; then
-        printf "${RED}请先在${BLUE} ${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH} ${RED}文件中设置${BLUE} ${relFilePathKey} ${NC}\n"
+        printf "%s" "${RED}请先在${BLUE} ${target_branch_type_file_abspath} ${RED}文件中设置${BLUE} ${relFilePathKey} ${NC}\n"
         exit_script
     fi
 
-    target_file_abspath=$(getAbsPathByFileRelativePath "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" $rel_file_path_value)
+    target_file_abspath=$(getAbsPathByFileRelativePath "${target_branch_type_file_abspath}" "$rel_file_path_value")
     if [ $? != 0 ]; then
-        printf "${RED}拼接${BLUE} ${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH} ${RED}和${BLUE} ${rel_file_path_value} ${RED}组成的路径结果错误，错误结果为 ${target_file_abspath} ${NC}\n"
+        printf "%s" "${RED}拼接${BLUE} ${target_branch_type_file_abspath} ${RED}和${BLUE} ${rel_file_path_value} ${RED}组成的路径结果错误，错误结果为 ${target_file_abspath} ${NC}\n"
         exit_script
     fi
 
@@ -61,14 +61,14 @@ if [ ! -f "${target_branch_type_file_abspath}" ]; then
     echo "${RED}您的 target_branch_type_file_abspath = ${BLUE} ${target_branch_type_file_abspath} {RED}不存在，请检查${NC}"
     exit 1
 fi
-echo "=======target_branch_type_file_abspath=${target_branch_type_file_abspath}"
+# echo "=======target_branch_type_file_abspath=${target_branch_type_file_abspath}"
 
 target_category_file_abspath=$(getCategoryFile)
 if [ $? != 0 ]; then
     echo "${target_category_file_abspath}" # 此时此值是错误信息
     exit 1
 fi
-echo "=======target_category_file_abspath=${target_category_file_abspath}"
+# echo "=======target_category_file_abspath=${target_category_file_abspath}"
 
 
 
@@ -254,11 +254,11 @@ fi
 # echo "分支创建准备..."
 # 1：需要切换到被拉取的分支，并且拉取项目，命令如下：
 # 读取文件内容
-content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
+content=$(cat "${target_branch_type_file_abspath}")
 should_rebase_from_branch=$(echo "$content" | jq -r '.rebase.rebaseFrom')
 # echo "should_rebase_from_branch=${should_rebase_from_branch}"
 if [ -z "${should_rebase_from_branch}" ] || [ "${should_rebase_from_branch}" == "null" ]; then
-    rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .rebase.rebaseFrom "
+    rebaseErrorMessage="请先在 ${target_branch_type_file_abspath} 文件中设置 .rebase.rebaseFrom "
     printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
     exit 1
 fi
@@ -266,7 +266,7 @@ should_rebase_from_branch=${should_rebase_from_branch##*/} # 取最后的compone
 
 git checkout "${should_rebase_from_branch}" && git pull origin "${should_rebase_from_branch}"
 if [ $? != 0 ]; then
-    printf "${RED}分支${YELLOW}%s${RED}创建失败，请检查${NC}\n" "$newbranch"
+    printf "%s" "${RED}分支${YELLOW}${newbranch}${RED}创建失败，请检查您是否是rebase自${BLUE} ${should_rebase_from_branch} ${RED}。如果不是请修改${BLUE} ${target_branch_type_file_abspath} ${RED}中的${BLUE} .rebase.rebaseFrom ${RED}字段的值。${NC}\n"
     exit 1
 fi
 
