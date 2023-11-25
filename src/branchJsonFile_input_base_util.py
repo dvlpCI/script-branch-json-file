@@ -2,15 +2,14 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad dvlproad@163.com
-LastEditTime: 2023-11-25 15:23:01
+LastEditTime: 2023-11-25 23:17:01
 FilePath: branchJsonFile_input.py
 Description: 分支JSON文件的创建-输入
 '''
 # -*- coding: utf-8 -*-
-
-# 如果你希望用户在输入答案时不换行，可以使用 input() 函数的 end 参数将输入的结尾字符改为一个空字符串。默认情况下，input() 函数的 end 参数是一个换行符 \n，这会导致用户输入答案后自动换行。
-# print("请输入测试人员编号：", end="")
+import json
 import re
+import datetime
 from env_util import get_json_file_data
 
 # 定义颜色常量
@@ -135,6 +134,18 @@ def inputBranchName():
     return branchName
 
 
+def addOutline(file_path):
+    with open(file_path, 'r') as json_file:
+        json_data = json.load(json_file)
+
+    outlineMap = inputOutline()
+    json_data['outlines'].append(outlineMap)
+
+    # 将更新后的数据写入json文件
+    with open(file_path, 'w') as file:
+        json.dump(json_data, file, indent=4, ensure_ascii=False)
+        
+    return True
 
 
 def inputOutline():
@@ -149,16 +160,45 @@ def inputOutline():
                 break  # 如果解码成功，则跳出循环
         except UnicodeDecodeError:
             print("输入的编码不是 UTF-8，请重新输入。")
-    print("输入的分支描述：\033[1;31m{}\033[0m\n".format(branchDes))
+    print(f"输入的分支描述：{RED}{branchDes}{NC}\n")
 
     # branchDes = "【【线上问题】复制口令，并且杀掉app重新打开，进入游戏会卡再初始图界面3s并且没有加载条】https://www.tapd.cn/69657441/bugtrace/bugs/view?bug_id=1169657442001003014"
     outlineMap = getOutline(branchDes)
     return outlineMap
 
+
+def get_date_range(date, formatter="%Y.%m.%d"):
+    # date = datetime.datetime.strptime(date_str, formatter)  # 将日期字符串解析为日期对象
+    start_of_week = date - datetime.timedelta(days=date.weekday())  # 计算本周的开始日期
+    end_of_week = start_of_week + datetime.timedelta(days=6)  # 计算本周的结束日期
+    
+    start_of_week_string = start_of_week.strftime(formatter)
+    end_of_week_string = end_of_week.strftime(formatter)
+    
+    range_time_string = f"{start_of_week_string} - {end_of_week_string}"
+    return range_time_string
+
+def is_within_date_range(check_date_str, start_date_str, end_date_str, formatter):
+    print(f"{YELLOW}正在判断 {check_date_str} 是否在 {start_date_str} - {end_date_str} 范围内(以{formatter}格式){NC}")
+            
+    # 将日期字符串转换为日期对象
+    date = datetime.datetime.strptime(check_date_str, formatter)
+    start_date = datetime.datetime.strptime(start_date_str, formatter)
+    end_date = datetime.datetime.strptime(end_date_str, formatter)
+
+    # 判断日期是否在范围内
+    if date < start_date:
+        return "smallThen"
+    elif date > end_date:
+        return "bigThen"
+    else:
+        return "in"
+
+
 def getOutline(text):
     result = {}
     
-    result["weekSpendHours"] = ["null"]
+    result["weekSpend"] = [{"range_time": get_date_range(datetime.datetime.now()), "hour": 0 }]
     
     # 使用正则表达式提取标题和URL
     title_pattern = r"(.+)"
@@ -180,9 +220,142 @@ def getOutline(text):
 
     return result
 
-# import os
-# tool_params_file_path = os.getenv('QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH')
-# chooseAnswerFromFile(tool_params_file_path)
-# chooseApierFromFile(tool_params_file_path)
-# chooseTesterFromFile(tool_params_file_path)
-# inputOutline()
+def updateOutlineSpendHour(file_path, atDateString=datetime.datetime.now().strftime("%Y.%m.%d"), formatter="%Y.%m.%d"):
+    with open(file_path, 'r') as json_file:
+        json_data = json.load(json_file)
+
+    timeRangeString = get_date_range(datetime.datetime.strptime(atDateString, formatter))
+
+    outlinesArray = json_data["outlines"]
+    for i, outline in enumerate(outlinesArray):
+        spendHour = 0
+        if "weekSpend" in outline:
+            weekSpendArray = outline["weekSpend"]
+            for i, spendMap in enumerate(weekSpendArray):
+                iHour = spendMap["hour"]
+                spendHour += iHour
+            
+        print(f"{i+1}:{BLUE} {outline['title']} {NC}【{RED}{spendHour}{NC}】")
+        
+    while True:
+        try:
+            index_input = input(f"请输入要修改的分支描述序号(若要退出请输入Q|q) ：")
+            if index_input == "q" or index_input == "Q":
+                exit()
+
+            if not index_input.isnumeric():
+                print(f"输入的不是一个数字，请重新输入！")
+                continue
+            
+            index_input = int(index_input)
+            if index_input < 0 or index_input >= len(outlinesArray):
+                print(f"输入的序号 {index_input} 不在范围内，请重新输入。")
+                continue
+            
+            willChangeOutlineMap = outlinesArray[index_input]
+            break
+        
+        except ValueError:
+            print(f"输入的不是数字，请重新输入。")
+            continue
+    
+    # 输入这次投入的功能耗时
+    willChangeOutlineTitle = willChangeOutlineMap["title"]
+    addSpendHour = inputSpendHour(willChangeOutlineTitle)
+    
+    # 将输入的这次投入的功能耗时添加到对应周上
+    weekIndex_create = get_week_number(json_data["create_time"])
+    weekIndex_current = int(datetime.datetime.now().strftime("%U"))
+    weekCount = weekIndex_current - weekIndex_create + 1
+    # print(f"weekCount={weekCount} , 计算公式: {weekIndex_current} - {weekIndex_create} + 1 ")
+    if "weekSpend" not in willChangeOutlineMap:
+        willChangeOutlineMap["weekSpend"] = []
+    
+    
+    weekSpendHourArray = willChangeOutlineMap["weekSpend"]
+    if len(weekSpendHourArray) == 0:
+        spendMap = {"range_time": timeRangeString, "hour": addSpendHour }
+        weekSpendHourArray.insert(0, spendMap)
+    else:
+        for i, weekSpendHourMap in enumerate(weekSpendHourArray):
+            weekRangeString = weekSpendHourMap["range_time"]
+            
+            # 分割字符串，获取起始日期和结束日期字符串
+            weekStartTimeString, weekEndTimeString = weekRangeString.split(" - ")
+            print(f"{YELLOW}正在判断 {atDateString} 是否在 {weekStartTimeString} - {weekStartTimeString} 范围内(以{formatter}格式){NC}")
+            
+            is_within_type = is_within_date_range(atDateString, weekStartTimeString, weekEndTimeString, formatter)
+            if is_within_type == "smallThen":
+                spendMap = {"range_time": timeRangeString, "hour": addSpendHour }
+                weekSpendHourArray.insert(i, spendMap)
+            elif is_within_type == "in":
+                spendMap = weekSpendHourArray[i]
+                spendMap["hour"] += addSpendHour
+            else:   # bigThen
+                spendMap = {"range_time": timeRangeString, "hour": addSpendHour }
+                weekSpendHourArray.insert(i+1, spendMap)
+
+    # print(f"{json.dumps(weekSpendHourArray, indent=2, ensure_ascii=False)}")
+    
+    # hasWriteWeekCount = len(weekSpendHourArray)
+    # print(f"已填写耗时的周数: {hasWriteWeekCount}/{weekCount}")
+    
+    # 将更新后的数据写入json文件
+    with open(file_path, 'w') as file:
+        json.dump(json_data, file, indent=4, ensure_ascii=False)
+    return True
+
+
+def get_week_number(date_str):
+    date_str = convert_date_format(date_str)
+    date = datetime.datetime.strptime(date_str, "%Y-%m-%d")  # 将日期字符串解析为日期对象
+    week_number = date.strftime("%U")  # 获取周数（起始从周日）
+    return int(week_number)
+
+
+def convert_date_format(date_str):
+    # 匹配 "2023.01.01" 格式
+    pattern1 = r"(\d{4})\.(\d{2})\.(\d{2})"
+    match1 = re.match(pattern1, date_str)
+
+    # 匹配 "01.01" 格式
+    pattern2 = r"(\d{2})\.(\d{2})"
+    match2 = re.match(pattern2, date_str)
+
+    if match1:
+        # 匹配到 "2023.01.01" 格式，进行转换
+        year = match1.group(1)
+        month = match1.group(2)
+        day = match1.group(3)
+        converted_date_str = f"{year}-{month}-{day}"
+    elif match2:
+        # 匹配到 "01.01" 格式，补充年份后进行转换
+        current_year = datetime.datetime.now().year
+        year = str(current_year)
+        month = match2.group(1)
+        day = match2.group(2)
+        converted_date_str = f"{year}-{month}-{day}"
+    else:
+        # 无法匹配日期格式，返回原始字符串
+        converted_date_str = date_str
+
+    return converted_date_str
+
+# 输入耗时(以小时计算)
+def inputSpendHour(forTitle):
+    while True:
+        try:
+            # 尝试使用 UTF-8 编码解码用户输入
+            spendHour_input = input(f"请输入这次在【 {forTitle} 】投入的功能耗时(以小时计算，若要退出请输入Q|q) ：") or "null"
+            if spendHour_input.lower() == 'q':
+                exit(2)
+            elif not spendHour_input.isnumeric():
+                print("输入的不是一个数字，请重新输入！")
+                continue
+            else:
+                break  # 如果解码成功，则跳出循环
+        except UnicodeDecodeError:
+            print("输入的编码不是 UTF-8，请重新输入。")
+    print(f"输入的这次投入的功能耗时：{RED}{spendHour_input}{NC}\n")
+
+    return int(spendHour_input)

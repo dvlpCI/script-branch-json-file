@@ -51,4 +51,3 @@ def chooseTester():
 # chooseAnswer()
 # chooseApier()
 # chooseTester()
-# inputOutline()

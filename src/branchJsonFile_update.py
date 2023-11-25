@@ -14,7 +14,7 @@ from datetime import datetime
 from git_util import get_branch_json_file_path_byToolParamFile
 from object_update import update_dict_value
 
-from branchJsonFile_input_base_util import chooseAnswerFromFile, chooseApierFromFile, chooseTesterFromFile, inputOutline
+from branchJsonFile_input_base_util import chooseAnswerFromFile, chooseApierFromFile, chooseTesterFromFile, addOutline, updateOutlineSpendHour
 
 # 定义颜色常量
 NC = '\033[0m'  # No Color
@@ -32,13 +32,15 @@ def chooseUpdateAction(tool_params_file_path):
 
     # 更新操作的类型
     updateAction_mapping = {
-        "1": "更改人员信息(需求方/测试方)",
-        "2": "添加信息",
-        "3": "更新提测开始日期",
-        "4": "更新测试通过日期和合入日期"
+        "1": "更改人员信息(需求方/后台方/测试方)",
+        "2": "添加功能信息",
+        "3": "添加功能耗时",
+        "4": "更新提测开始日期",
+        "5": "更新测试通过日期和合入日期"
     }
     for key, value in updateAction_mapping.items():
-        print(key, value)
+        print(f"{key}.{BLUE} {value} {NC}")
+    print(f"")
     
     while True:
         updateAction_input = input(f"请选择操作类型(若要退出请输入Q|q)：")
@@ -62,16 +64,22 @@ def chooseUpdateAction(tool_params_file_path):
                 return False
 
         elif updateAction_input == "2":
-            outlineMap = inputOutline()
-            addOutline(file_path, outlineMap)
+            result=addOutline(file_path)
+            if result == False:
+                return False
 
         elif updateAction_input == "3":
+            result=updateOutlineSpendHour(file_path)
+            if result == False:
+                return False
+            
+        elif updateAction_input == "4":
             cur_date = datetime.now().strftime("%m.%d")
             result=change("submit_test_time", f"{cur_date}", file_path)
             if result == False:
                 return False
 
-        elif updateAction_input == "4":
+        elif updateAction_input == "5":
             cur_date = datetime.now().strftime("%m.%d")
             result=change("pass_test_time", f"{cur_date}", file_path)
             if result == False:
@@ -93,15 +101,7 @@ def chooseUpdateAction(tool_params_file_path):
 
 
 
-def addOutline(file_path, outlineMap):
-    with open(file_path, 'r') as json_file:
-        json_data = json.load(json_file)
 
-    json_data['outlines'].append(outlineMap)
-
-    # 将更新后的数据写入json文件
-    with open(file_path, 'w') as file:
-        json.dump(json_data, file, indent=4, ensure_ascii=False)
     
 
 def change(key, value, file_path):

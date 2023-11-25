@@ -169,23 +169,23 @@
     },
     {
       "id": "producter1",
-      "name": "谢晓龙"
+      "name": "产品1"
     },
     {
       "id": "producter2",
-      "name": "李再超"
+      "name": "产品2"
     },
     {
       "id": "producter3",
-      "name": "王毅"
+      "name": "产品3"
     },
     {
       "id": "producter4",
-      "name": "刘璟"
+      "name": "产品4"
     },
     {
       "id": "producter5",
-      "name": "张良俊"
+      "name": "产品5"
     },
     {
       "id": "apier1",
@@ -205,19 +205,19 @@
     },
     {
       "id": "tester1",
-      "name": "李智荣"
+      "name": "测试1"
     },
     {
       "id": "tester2",
-      "name": "苏婉艺"
+      "name": "测试2"
     },
     {
       "id": "tester3",
-      "name": "谭贤"
+      "name": "测试3"
     },
     {
       "id": "tester4",
-      "name": "林尚挺"
+      "name": "测试4"
     }
   ],
   "branchJsonFile": {
