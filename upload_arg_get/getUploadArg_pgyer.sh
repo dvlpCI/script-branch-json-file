@@ -241,14 +241,6 @@ debug_log "恭喜:${PackageNetworkType}环境支持使用${branchKey}分支来�
         debug_log "上传目标：会上传到蒲公英的上的【所有渠道】"
     fi
     
-    # [Mac环境下shell脚本中的map](https://www.jianshu.com/p/a55480b793b0)
-    targetBranchConfig_realMap='{
-        "uploadChannelShortcut": "'"${lastUploadShortcut}"'",
-        "uploadChannelKey": "'"${lastUploadKey}"'",
-        "downloadChannelShortcut": "'"${lastDownloadShortcut}"'",
-        "downloadChannelKey": "'"${lastDownloadKey}"'"
-    }'
-    debug_log "====================targetBranchConfig_realMap=${targetBranchConfig_realMap}"
     
     
 
@@ -269,13 +261,17 @@ network_platform_pgyer_Map=$(echo "${network_PgyerRootMapString}" | ${JQ_EXEC} -
 network_pgyer_appOfficialWebsite=$(echo "${network_platform_pgyer_Map}" | ${JQ_EXEC} -r ".appOfficialWebsite")
 debug_log "network_pgyer_appOfficialWebsite=${network_pgyer_appOfficialWebsite}" # 网址有斜杠，所以使用sed_text.sh中的方法，其已帮处理斜杠问题
 
-lastJson='{
-    "package_result": {
-        "shoudUploadToPgyerOwner": "'"${network_pgyer_owner}"'",
-        "shoudUploadToPgyerKey": "'"${network_pgyer_pgyerKey}"'",
-        "package_official_website": "'"${network_pgyer_appOfficialWebsite}"'",
-        "pgyer_branch_config": '${targetBranchConfig_realMap}'
-    }
+# [Mac环境下shell脚本中的map](https://www.jianshu.com/p/a55480b793b0)
+download_website="https://www.pgyer.com/${lastDownloadShortcut}"
+pgyerArgument='{
+    "owner": "'"${network_pgyer_owner}"'",
+    "website_official": "'"${network_pgyer_appOfficialWebsite}"'",
+    "website_download": "'"${download_website}"'",
+    "appKey": "'"${network_pgyer_pgyerKey}"'",
+    "uploadChannelShortcut": "'"${lastUploadShortcut}"'",
+    "uploadChannelKey": "'"${lastUploadKey}"'",
+    "downloadChannelShortcut": "'"${lastDownloadShortcut}"'",
+    "downloadChannelKey": "'"${lastDownloadKey}"'"
 }'
 
-printf "%s" "${lastJson}"
+printf "%s" "${pgyerArgument}"

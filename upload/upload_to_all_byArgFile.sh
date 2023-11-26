@@ -77,11 +77,26 @@ JQ_EXEC=$(which jq)
 PackageResultMap=$(cat ${UploadPlatformArgsFilePath} | ${JQ_EXEC} -r ".${UploadPlatformArgsFileKey}")
 debug_log "PackageResultMap=${PackageResultMap}"
 
-pgyerOwner=$(printf "%s" "${PackageResultMap}" | ${JQ_EXEC} -r ".shoudUploadToPgyerOwner")
-pgyerChannelKey=$(printf "%s" "${PackageResultMap}" | ${JQ_EXEC} -r ".pgyer_branch_config.uploadChannelKey")
-pgyerApiKey=$(printf "%s" "${PackageResultMap}" | ${JQ_EXEC} -r ".shoudUploadToPgyerKey")
-pgyerChannelShortcut=$(printf "%s" "${PackageResultMap}" | ${JQ_EXEC} -r ".pgyer_branch_config.uploadChannelShortcut")
-pgyerShouldUploadFast="false"
+# Pgyer的配置
+PgyerArgumentMap=$(printf "%s" "${PackageResultMap}" | ${JQ_EXEC} -r ".pgyer")
+debug_log "PgyerArgumentMap=${PgyerArgumentMap}"
+if [ -n "${PgyerArgumentMap}" ]; then
+    # pgyerArgument='{
+    #     "owner": "'"${network_pgyer_owner}"'",
+    #     "website_official": "'"${network_pgyer_appOfficialWebsite}"'",
+    #     "website_download": "'"${download_website}"'",
+    #     "appKey": "'"${network_pgyer_pgyerKey}"'",
+    #     "uploadChannelShortcut": "'"${lastUploadShortcut}"'",
+    #     "uploadChannelKey": "'"${lastUploadKey}"'",
+    #     "downloadChannelShortcut": "'"${lastDownloadShortcut}"'",
+    #     "downloadChannelKey": "'"${lastDownloadKey}"'"
+    # }'
+    pgyerOwner=$(printf "%s" "${PgyerArgumentMap}" | ${JQ_EXEC} -r ".owner")
+    pgyerApiKey=$(printf "%s" "${PgyerArgumentMap}" | ${JQ_EXEC} -r ".appKey")
+    pgyerChannelKey=$(printf "%s" "${PgyerArgumentMap}" | ${JQ_EXEC} -r ".uploadChannelKey")
+    pgyerChannelShortcut=$(printf "%s" "${PgyerArgumentMap}" | ${JQ_EXEC} -r ".uploadChannelShortcut")
+    pgyerShouldUploadFast="false"
+fi
 
 # Cos的配置
 CosUploadToREGION=$(printf "%s" "${PackageResultMap}" | ${JQ_EXEC} -r ".cos.region")
