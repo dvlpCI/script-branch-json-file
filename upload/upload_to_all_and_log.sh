@@ -55,6 +55,7 @@ do
 
         -uploadArgsFPath|--upload-args-file-path) UploadPlatformArgsFilePath=$2; shift 2;;
         -uploadArgsFKey|--upload-args-file-key) UploadPlatformArgsFileKey=$2; shift 2;;
+        -uploadArgsJson|--upload-args-json) UploadPlatformArgsJson=$2; shift 2;;
         -uploadResultFPath|--pload-result-file-path) UploadResult_FILE_PATH=$2 shift 2;;
         -uploadResultFKey|--upload-result-file-key) UploadResult_FILE_Key=$2; shift 2;;
 
@@ -70,7 +71,7 @@ done
 # 1.进行上传
 responseJsonString=$(sh ${qtool_upload_to_all_byArgFile_scriptPath} -ipa "${ipa_file_path}" \
     -updateDesString "${updateDesString}" -updateDesFromFilePath "${updateDesFromFilePath}" -updateDesFromFileKey "${updateDesFromFileKey}" \
-    -uploadArgsFPath "${UploadPlatformArgsFilePath}" -uploadArgsFKey "${UploadPlatformArgsFileKey}" -uploadResultFKey "${UploadResult_FILE_Key}" \
+    -uploadArgsFPath "${UploadPlatformArgsFilePath}" -uploadArgsFKey "${UploadPlatformArgsFileKey}" -uploadArgsJson "${UploadPlatformArgsJson}" -uploadResultFKey "${UploadResult_FILE_Key}" \
     -LogPostToRobotUrl "${LogPostToRobotUrl}" -LogPostTextHeader "${LogPostTextHeader}" \
     )
 if [ $? != 0 ]; then

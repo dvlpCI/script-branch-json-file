@@ -51,23 +51,23 @@ exit_with_response_error_message() { # 退出脚本的方法，省去当某个�
 # shell 参数具名化
 while [ -n "$1" ]
 do
-        case "$1" in
-                -ipa|--ipa-file-path) ipa_file_path=$2; shift 2;;
+    case "$1" in
+        -ipa|--ipa-file-path) ipa_file_path=$2; shift 2;;
 
-                -updateDesString|--updateDesString) updateDesString=$2; shift 2;; # 上传安装包时候附带的说明文案，优先使用此值。
-                -updateDesFromFilePath|--updateDesFromFilePath) updateDesFromFilePath=$2; shift 2;; # 说明文案使用来源于哪个文件
-                -updateDesFromFileKey|--updateDesFromFileKey) updateDesFromFileKey=$2; shift 2;; # 说明文案使用来源于文件的哪个key
+        -updateDesString|--updateDesString) updateDesString=$2; shift 2;; # 上传安装包时候附带的说明文案，优先使用此值。
+        -updateDesFromFilePath|--updateDesFromFilePath) updateDesFromFilePath=$2; shift 2;; # 说明文案使用来源于哪个文件
+        -updateDesFromFileKey|--updateDesFromFileKey) updateDesFromFileKey=$2; shift 2;; # 说明文案使用来源于文件的哪个key
 
-                -uploadArgsFPath|--upload-args-file-path) UploadPlatformArgsFilePath=$2; shift 2;;
-                -uploadArgsFKey|--upload-args-file-key) UploadPlatformArgsFileKey=$2; shift 2;;
-                -uploadArgsJson|--upload-args-json) UploadPlatformArgsJson=$2; shift 2;;
-                -uploadResultFKey|--upload-result-file-key) UploadResult_FILE_Key=$2; shift 2;;
+        -uploadArgsFPath|--upload-args-file-path) UploadPlatformArgsFilePath=$2; shift 2;;
+        -uploadArgsFKey|--upload-args-file-key) UploadPlatformArgsFileKey=$2; shift 2;;
+        -uploadArgsJson|--upload-args-json) UploadPlatformArgsJson=$2; shift 2;;
+        -uploadResultFKey|--upload-result-file-key) UploadResult_FILE_Key=$2; shift 2;;
 
-                -LogPostToRobotUrl|--Log-PostTo-RobotUrl) LogPostToRobotUrl=$2; shift 2;; # 上传过程中的日志发送到哪个机器人
-                -LogPostTextHeader|--Log-Post-TextHeader) LogPostTextHeader=$2; shift 2;; # 上传过程中对日志进行补充的标题
-                --) break ;;
-                *) break ;;
-        esac
+        -LogPostToRobotUrl|--Log-PostTo-RobotUrl) LogPostToRobotUrl=$2; shift 2;; # 上传过程中的日志发送到哪个机器人
+        -LogPostTextHeader|--Log-Post-TextHeader) LogPostTextHeader=$2; shift 2;; # 上传过程中对日志进行补充的标题
+        --) break ;;
+        *) break ;;
+    esac
 done
 
 JQ_EXEC=$(which jq)
