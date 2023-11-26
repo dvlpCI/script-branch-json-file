@@ -37,7 +37,7 @@ log_title "上传结束,获取安装包的各种路径信息"
 test_script=${CommonFun_HomeDir_Absolute}/upload_result_log.sh
 uploadResultLog=$(sh ${test_script} -uploadResultFPath "${UploadResult_FILE_PATH}" -uploadResultFKey "${UploadResult_FILE_Key}")
 if [ $? != 0 ]; then
-    echo "${RED}Error❌:上传ipa到各个平台,平台参数来源于文件的错误信息如下:\n${BLUE} ${uploadResultLog} ${RED}。${NC}"
+    echo "${RED}Error❌:上传ipa到各个平台结束后获取各种路径信息的错误信息如下:\n${BLUE} ${uploadResultLog} ${RED}。${NC}"
     exit 1
 fi
 

@@ -265,13 +265,13 @@ debug_log "network_pgyer_appOfficialWebsite=${network_pgyer_appOfficialWebsite}"
 download_website="https://www.pgyer.com/${lastDownloadShortcut}"
 pgyerArgument='{
     "owner": "'"${network_pgyer_owner}"'",
-    "website_official": "'"${network_pgyer_appOfficialWebsite}"'",
-    "website_download": "'"${download_website}"'",
     "appKey": "'"${network_pgyer_pgyerKey}"'",
     "uploadChannelShortcut": "'"${lastUploadShortcut}"'",
     "uploadChannelKey": "'"${lastUploadKey}"'",
     "downloadChannelShortcut": "'"${lastDownloadShortcut}"'",
-    "downloadChannelKey": "'"${lastDownloadKey}"'"
+    "downloadChannelKey": "'"${lastDownloadKey}"'",
+    "website_official": "'"${network_pgyer_appOfficialWebsite}"'",
+    "website_download": "'"${download_website}"'",
 }'
 
 printf "%s" "${pgyerArgument}"

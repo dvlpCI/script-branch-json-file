@@ -60,6 +60,7 @@ do
 
                 -uploadArgsFPath|--upload-args-file-path) UploadPlatformArgsFilePath=$2; shift 2;;
                 -uploadArgsFKey|--upload-args-file-key) UploadPlatformArgsFileKey=$2; shift 2;;
+                -uploadArgsJson|--upload-args-json) UploadPlatformArgsJson=$2; shift 2;;
                 -uploadResultFKey|--upload-result-file-key) UploadResult_FILE_Key=$2; shift 2;;
 
                 -LogPostToRobotUrl|--Log-PostTo-RobotUrl) LogPostToRobotUrl=$2; shift 2;; # 上传过程中的日志发送到哪个机器人
@@ -73,8 +74,12 @@ JQ_EXEC=$(which jq)
 
 
 
-# 蒲公英的配置
-PackageResultMap=$(cat ${UploadPlatformArgsFilePath} | ${JQ_EXEC} -r ".${UploadPlatformArgsFileKey}")
+# 所有的配置
+if [ -n "${UploadPlatformArgsJson}" ]; then
+    PackageResultMap=${UploadPlatformArgsJson}
+elif [ -n "${UploadPlatformArgsFilePath}" ] && [ -n "${UploadPlatformArgsFileKey}" ]; then
+    PackageResultMap=$(cat ${UploadPlatformArgsFilePath} | ${JQ_EXEC} -r ".${UploadPlatformArgsFileKey}")
+fi
 debug_log "PackageResultMap=${PackageResultMap}"
 
 # Pgyer的配置
@@ -83,13 +88,13 @@ debug_log "PgyerArgumentMap=${PgyerArgumentMap}"
 if [ -n "${PgyerArgumentMap}" ]; then
     # pgyerArgument='{
     #     "owner": "'"${network_pgyer_owner}"'",
-    #     "website_official": "'"${network_pgyer_appOfficialWebsite}"'",
-    #     "website_download": "'"${download_website}"'",
     #     "appKey": "'"${network_pgyer_pgyerKey}"'",
     #     "uploadChannelShortcut": "'"${lastUploadShortcut}"'",
     #     "uploadChannelKey": "'"${lastUploadKey}"'",
     #     "downloadChannelShortcut": "'"${lastDownloadShortcut}"'",
-    #     "downloadChannelKey": "'"${lastDownloadKey}"'"
+    #     "downloadChannelKey": "'"${lastDownloadKey}"'",
+    #     "website_official": "'"${network_pgyer_appOfficialWebsite}"'",
+    #     "website_download": "'"${download_website}"'",
     # }'
     pgyerOwner=$(printf "%s" "${PgyerArgumentMap}" | ${JQ_EXEC} -r ".owner")
     pgyerApiKey=$(printf "%s" "${PgyerArgumentMap}" | ${JQ_EXEC} -r ".appKey")
@@ -108,6 +113,20 @@ CosResultHostUrl=$(printf "%s" "${PackageResultMap}" | ${JQ_EXEC} -r ".cos.hostU
 Transporter_USERNAME=$(printf "%s" "${PackageResultMap}" | ${JQ_EXEC} -r ".testFlight.username")
 Transporter_PASSWORD=$(printf "%s" "${PackageResultMap}" | ${JQ_EXEC} -r ".testFlight.password")
 
+debug_log "上传参数======== pgyerOwner: ${pgyerOwner}"
+debug_log "上传参数======== pgyerApiKey: ${pgyerApiKey}"
+debug_log "上传参数======== pgyerChannelKey: ${pgyerChannelKey}"
+debug_log "上传参数======== pgyerChannelShortcut: ${pgyerChannelShortcut}"
+debug_log "上传参数======== pgyerShouldUploadFast: ${pgyerShouldUploadFast}"
+
+debug_log "上传参数======== CosUploadToREGION: ${CosUploadToREGION}"
+debug_log "上传参数======== CosUploadToBUCKETName: ${CosUploadToBUCKETName}"
+debug_log "上传参数======== CosUploadToBUCKETDir: ${CosUploadToBUCKETDir}"
+debug_log "上传参数======== CosResultHostUrl: ${CosResultHostUrl}"
+
+debug_log "上传参数======== Transporter_USERNAME: ${Transporter_USERNAME}"
+debug_log "上传参数======== Transporter_PASSWORD: ${Transporter_PASSWORD}"
+
 # responseJsonString='{
 #   "existingKey": "existingValue",
 #   "pgyer": {
@@ -125,6 +144,7 @@ Transporter_PASSWORD=$(printf "%s" "${PackageResultMap}" | ${JQ_EXEC} -r ".testF
 #   "message": "",
 #   "log": "温馨提示：您的此iOS包不会上传到AppStore。（因为您设置用来上传ipa的 Transporter 用户名和密码缺失，请先补充，所以此次无法自动上传。附:Transporter_USERNAME= Transporter_PASSWORD= )。"
 # }'
+debug_log "${YELLOW}正在执行上传命令:《${BLUE} sh ${qbase_upload_app_to_all_script_path} -ipa \"${ipa_file_path}\" -updateDesString \"${updateDesString}\" -updateDesFromFilePath \"${updateDesFromFilePath}\" -updateDesFromFileKey \"${updateDesFromFileKey}\" -pgyerHelpOwner \"${pgyerOwner}\" -pgyerHelpChannelKey \"${pgyerChannelKey}\" -pgyerApiKey \"${pgyerApiKey}\" -pgyerChannelShortcut \"${pgyerChannelShortcut}\" -pgyerShouldUploadFast \"${pgyerShouldUploadFast}\" -CosREGION \"${CosUploadToREGION}\" -CosBUCKETName \"${CosUploadToBUCKETName}\" -CosBUCKETDir \"${CosUploadToBUCKETDir}\" -CosResultHostUrl \"${CosResultHostUrl}\" -TransporterUserName \"${Transporter_USERNAME}\" -TransporterPassword \"${Transporter_PASSWORD}\" -LogPostToRobotUrl \"${LogPostToRobotUrl}\" -LogPostTextHeader \"${LogPostTextHeader}\" ${YELLOW}》${NC}"
 responseJsonString=$(sh ${qbase_upload_app_to_all_script_path} -ipa "${ipa_file_path}" \
     -updateDesString "${updateDesString}" -updateDesFromFilePath "${updateDesFromFilePath}" -updateDesFromFileKey "${updateDesFromFileKey}" \
     -pgyerHelpOwner "${pgyerOwner}" -pgyerHelpChannelKey "${pgyerChannelKey}" \

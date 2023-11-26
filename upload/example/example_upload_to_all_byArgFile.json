@@ -10,7 +10,9 @@
         "uploadChannelShortcut": "fzgy",
         "uploadChannelKey": "uploadChannelKey",
         "downloadChannelShortcut": "fzgy",
-        "downloadChannelKey": "downloadChannelKey"
+        "downloadChannelKey": "downloadChannelKey",
+        "website_official": "xxx",
+        "website_download": "yyy"
       },
       "cos": {
         "region": "ap-shanghai",
@@ -20,7 +22,9 @@
       },
       "testFlight": {
         "username": "",
-        "password": ""
+        "password": "",
+        "website_official": "xxx",
+        "website_download": "yyy"
       }
     },
     "upload_result": {
