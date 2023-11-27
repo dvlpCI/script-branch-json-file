@@ -152,7 +152,7 @@ _gitBranch() {
 # 分支信息文件添加
 createBranchJsonFile() {
     # echo "正在执行命令:《 python3 \"${branchJsonFileScriptDir_Absolute}/branchJsonFile_create.py\" 》"
-    tool_params_file_path = ${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
+    tool_params_file_path=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
     if [[ $tool_params_file_path =~ ^~.* ]]; then
         # 如果 $tool_params_file_path 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
         tool_params_file_path="${HOME}${tool_params_file_path:1}"
@@ -164,7 +164,7 @@ createBranchJsonFile() {
 # 分支信息文件修改
 updateBranchJsonFile() {
     # echo "正在执行命令:《 python3 \"${branchJsonFileScriptDir_Absolute}/branchJsonFile_create.py\" 》"
-    tool_params_file_path = ${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
+    tool_params_file_path=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
     if [[ $tool_params_file_path =~ ^~.* ]]; then
         # 如果 $tool_params_file_path 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
         tool_params_file_path="${HOME}${tool_params_file_path:1}"
