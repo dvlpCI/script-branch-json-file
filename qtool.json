@@ -46,7 +46,7 @@
                     "des": "上传参数的获取 -- pgyer",
                     "key": "getUploadArg_pgyer",
                     "rel_path": "./upload_arg_get/getUploadArg_pgyer.sh",
-                    "example": "responseJsonString=$(sh xxx/xx.sh -pgyerDownJsonFPath \"${Pgyer_Download_FILE_PATH}\" -pgyerDownJsonFKey \"${Pgyer_Download_FILE_KEY}\" -pgyerUploadUrlType \"${PgyerUploadUrlType}\" -p \"${PlatformType}\" -pt \"${PackageTargetType}\" -pn \"${PackageNetworkType}\" -curBranchName \"${CurrentBranchName}\")"
+                    "example": "responseJsonString=$(sh xxx/xx.sh -pgyerJsonsFPath \"${Pgyer_Download_FILE_PATH}\" -pgyerJsonsFKey \"${Pgyer_Download_FILE_KEY}\" -pgyerUploadUrlType \"${PgyerUploadUrlType}\" -pl \"${PlatformType}\" -pn \"${PackageNetworkType}\" -curBranchName \"${CurrentBranchName}\")"
                 },
                 {
                     "des": "上传安装包到 各个平台(pgyer、cos、testFlight),平台参数来源于文件。并在上传结束,获取安装包的各种路径信息",

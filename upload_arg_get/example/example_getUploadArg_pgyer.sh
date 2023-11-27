@@ -37,10 +37,9 @@ Pgyer_Download_FILE_PATH="${Example_HomeDir_Absolute}/example_getUploadArg_pgyer
 Pgyer_Download_FILE_KEY=""
 PgyerUploadUrlType="toUploadUrl"
 PlatformType="iOS"
-PackageTargetType="formal"
 PackageNetworkType="product"
 CurrentBranchName="version/v1.2.0_0811"
-sh ${getUploadArg_pgyer_scriptPath} -pgyerDownJsonFPath "${Pgyer_Download_FILE_PATH}" -pgyerDownJsonFKey "${Pgyer_Download_FILE_KEY}" -pgyerUploadUrlType "${PgyerUploadUrlType}" -p "${PlatformType}" -pt "${PackageTargetType}" -pn "${PackageNetworkType}" -curBranchName "${CurrentBranchName}"
+sh ${getUploadArg_pgyer_scriptPath} -pgyerJsonsFPath "${Pgyer_Download_FILE_PATH}" -pgyerJsonsFKey "${Pgyer_Download_FILE_KEY}" -pgyerUploadUrlType "${PgyerUploadUrlType}" -pl "${PlatformType}" -pn "${PackageNetworkType}" -curBranchName "${CurrentBranchName}"
 if [ $? != 0 ]; then
     exit 1
 fi

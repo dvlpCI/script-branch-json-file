@@ -19,11 +19,10 @@ function debug_log() {
 while [ -n "$1" ]
 do
     case "$1" in
-        -pgyerDownJsonFPath|--pgyer-download-json-file) Pgyer_Download_FILE_PATH=$2; shift 2;;
-        -pgyerDownJsonFKey|--pgyer-download-json-key) Pgyer_Download_FILE_KEY=$2; shift 2;;
-        -pgyerUploadUrlType|--pgyer-upload-url-type) PgyerUploadUrlType=$2; shift 2;;
-        -p|--platformType) PlatformType=$2; shift 2;;
-        -pt|--package_target_type) PackageTargetType=$2; shift 2;;
+        -pgyerJsonsFPath|--pgyer-jsons-file-path) Pgyer_Jsons_FILE_PATH=$2; shift 2;;
+        -pgyerJsonsFKey|--pgyer-jsons-file-key) Pgyer_Jsons_FILE_Key=$2; shift 2;;
+        -pgyerUploadUrlType|--pgyer-upload-url-type) PgyerUploadUrlType=$2; shift 2;; # toDownUrl toUploadUrl toNoneUrl
+        -pl|--platformType) PlatformType=$2; shift 2;;
         -pn|--package_network_type) PackageNetworkType=$2; shift 2;;
         -curBranchName|--current-branch-name) CurrentBranchName=$2; shift 2;;
         --) continue ;;
@@ -31,19 +30,27 @@ do
     esac
 done
 
-
-if [ -z "${Pgyer_Download_FILE_PATH}" ] || [ ! -f "${Pgyer_Download_FILE_PATH}" ]; then
-    echo "您的 -pgyerDownJsonF 参数值 ${Pgyer_Download_FILE_PATH} 指向的配置所有环境使用的蒲公英上传参数的配置文件不存在，请检查！"
-    exit 1
+if [ -z "${PgyerUploadUrlType}" ] || [ "${PgyerUploadUrlType}" == "toNoneUrl" ]; then
+    message="温馨提示，您已设置 -pgyerUploadUrlType 参数的值 ${PgyerUploadUrlType} ，所以稍后不会上传。为，设置您要上传的位置。若不上传请勿调用本脚本。（要直接发布请设置为 toDownUrl ，要待发布请设置为 toUploadUrl ）"
+    pgyerArgument='{
+        "message": "'"${message}"'",
+        "owner": "",
+        "appKey": ""
+    }'
+    printf "%s" "${pgyerArgument}"
+    exit 0
 fi
-
-if [ -z "${PgyerUploadUrlType}" ]; then
-    echo "您未设置蒲公英上传方式，请检查 -pgyerUploadUrlType 参数"
+if [ "${PgyerUploadUrlType}" != "toDownUrl" ] && [ "${PgyerUploadUrlType}" != "toUploadUrl" ]; then
+    echo "您未设置蒲公英上传方式，所以，请检查 -pgyerUploadUrlType 参数。（要直接发布请设置为 toDownUrl ，要待发布请设置为 toUploadUrl ）"
     exit 1
 fi
 debug_log "------PgyerUploadUrlType:${PgyerUploadUrlType}"
+
+if [ -z "${Pgyer_Jsons_FILE_PATH}" ] || [ ! -f "${Pgyer_Jsons_FILE_PATH}" ]; then
+    echo "您的 -pgyerDownJsonF 参数值 ${Pgyer_Jsons_FILE_PATH} 指向的配置所有环境使用的蒲公英上传参数的配置文件不存在，请检查！"
+    exit 1
+fi
 debug_log "------PlatformType:${PlatformType}"
-debug_log "------PackageTargetType:${PackageTargetType}"
 debug_log "------PackageNetworkType:${PackageNetworkType}"
 ShortBranceName=${CurrentBranchName##*/}
 debug_log "------ShortBranceName=$ShortBranceName"
@@ -53,9 +60,9 @@ branchKey="${ShortBranceName}"
 platformKey="${PlatformType}"
 
 
-pgyerParamsRootMapString=$(cat "${Pgyer_Download_FILE_PATH}" | ${JQ_EXEC} -r ".${Pgyer_Download_FILE_KEY}")
+pgyerParamsRootMapString=$(cat "${Pgyer_Jsons_FILE_PATH}" | ${JQ_EXEC} -r ".${Pgyer_Jsons_FILE_Key}")
 if [ "${pgyerParamsRootMapString}" == "null" ] || [ -z "${pgyerParamsRootMapString}" ]; then
-    echo "你的${Pgyer_Download_FILE_PATH}中未添加package_pgyer_params参数，会导致即使打包成功，蒲公英也无法上传成功"
+    echo "你的${Pgyer_Jsons_FILE_PATH}中未添加package_pgyer_params参数，会导致即使打包成功，蒲公英也无法上传成功"
     exit 1
 fi
 # echo "您所有环境的蒲公英配置参数信息如下:"
@@ -71,7 +78,7 @@ network_PgyerRootMapString=$(printf "%s" "${pgyerParamsRootMapString}" | jq -r "
 # network_PgyerRootMapString=$(jq -r --arg networkType "$PackageNetworkType" '.[] | select(.network == $networkType)' <<< "$pgyerParamsRootMapString")
 # debug_log "network_PgyerRootMapString=${network_PgyerRootMapString}"
 if [ "${network_PgyerRootMapString}" == "null" ] || [ -z "${network_PgyerRootMapString}" ]; then
-    echo "没有 ${PackageNetworkType} 环境的配置，请检查您的参数或者 ${Pgyer_Download_FILE_PATH} 文件中 package_pgyer_params 的值！"
+    echo "没有 ${PackageNetworkType} 环境的配置，请检查您的参数或者 ${Pgyer_Jsons_FILE_PATH} 文件中 package_pgyer_params 的值！"
     exit 1
 fi
 # echo "您 ${PackageNetworkType} 环境的蒲公英配置参数信息如下:"
@@ -167,7 +174,7 @@ debug_log "恭喜:${PackageNetworkType}环境支持使用${branchKey}分支来�
     #echo "targetBranchConfig_mayString=${targetBranchConfig_mayString}"
     debug_log "=================${branchKey}分支的蒲公英匹配参数为targetBranchConfig_mayString=${targetBranchConfig_mayString}"
     if [ -z "${targetBranchConfig_mayString}" ] || [ "${targetBranchConfig_mayString}" == "null" ]; then
-        echo "允许打蒲公英${PackageNetworkType}环境的包，未包括${branchKey}分支，故无法找到本包上传蒲公英时候的匹配参数，请检查【${Pgyer_Download_FILE_PATH}】文件中的package_pgyer_params参数"
+        echo "允许打蒲公英${PackageNetworkType}环境的包，未包括${branchKey}分支，故无法找到本包上传蒲公英时候的匹配参数，请检查【${Pgyer_Jsons_FILE_PATH}】文件中的package_pgyer_params参数"
         return 1
     fi
     
@@ -202,7 +209,7 @@ debug_log "恭喜:${PackageNetworkType}环境支持使用${branchKey}分支来�
         else    # 上传到指定渠道
             if [ -z "${packagePgyerChannelKeyResult_download}" ] || [ "${packagePgyerChannelKeyResult_download}" == "null" ] ||
             [ -z "${packagePgyerChannelShortcutResult_download}" ] || [ "${packagePgyerChannelShortcutResult_download}" == "null" ]; then
-                echo "你将直接上传到下载地址，且要上传到指定渠道，所以下载地址的渠道shortCut和key不能不设置。所以请在${Pgyer_Download_FILE_PATH}为${PackageNetworkType}环境的${ShortBranceName}分支创建${PlatformType}平台的渠道信息"
+                echo "你将直接上传到下载地址，且要上传到指定渠道，所以下载地址的渠道shortCut和key不能不设置。所以请在${Pgyer_Jsons_FILE_PATH}为${PackageNetworkType}环境的${ShortBranceName}分支创建${PlatformType}平台的渠道信息"
                 exit 1
             fi
 
@@ -217,7 +224,7 @@ debug_log "恭喜:${PackageNetworkType}环境支持使用${branchKey}分支来�
         else    # 上传到指定渠道
             if [ -z "${packagePgyerChannelKeyResult_upload}" ] || [ "${packagePgyerChannelKeyResult_upload}" == "null" ] ||
             [ -z "${packagePgyerChannelShortcutResult_upload}" ] || [ "${packagePgyerChannelShortcutResult_upload}" == "null" ]; then
-                echo "你将先上传到上传地址，且要上传到指定渠道，所以上传地址的渠道shortCut和key不能不设置。所以请在${Pgyer_Download_FILE_PATH}为${PackageNetworkType}环境的${ShortBranceName}分支创建${PlatformType}平台的渠道信息"
+                echo "你将先上传到上传地址，且要上传到指定渠道，所以上传地址的渠道shortCut和key不能不设置。所以请在${Pgyer_Jsons_FILE_PATH}为${PackageNetworkType}环境的${ShortBranceName}分支创建${PlatformType}平台的渠道信息"
                 exit 1
             fi
 
@@ -244,7 +251,7 @@ debug_log "恭喜:${PackageNetworkType}环境支持使用${branchKey}分支来�
     
     
 
-# sh ${CommonFun_HomeDir_Absolute}/update_json_file.sh -f "${Pgyer_Download_FILE_PATH}" -k "package_pgyer_params_current" -v "${network_PgyerRootMapString}"
+# sh ${CommonFun_HomeDir_Absolute}/update_json_file.sh -f "${Pgyer_Jsons_FILE_PATH}" -k "package_pgyer_params_current" -v "${network_PgyerRootMapString}"
 # if [ $? != 0 ]; then
 #     echo "更新 package_pgyer_params_current 属性失败，请检查！"
 #     exit 1
@@ -261,6 +268,16 @@ network_platform_pgyer_Map=$(echo "${network_PgyerRootMapString}" | ${JQ_EXEC} -
 network_pgyer_appOfficialWebsite=$(echo "${network_platform_pgyer_Map}" | ${JQ_EXEC} -r ".appOfficialWebsite")
 debug_log "network_pgyer_appOfficialWebsite=${network_pgyer_appOfficialWebsite}" # 网址有斜杠，所以使用sed_text.sh中的方法，其已帮处理斜杠问题
 
+
+if [ "${PgyerUploadUrlType}" == "toDownUrl" ]; then
+    PackagePgyerPublishStateDes="会直接发布的"
+elif [ "${PgyerUploadUrlType}" == "toUploadUrl" ]; then
+    PackagePgyerPublishStateDes="待发布的"
+elif [ "${PgyerUploadUrlType}" == "toNoneUrl" ]; then
+    PackagePgyerPublishStateDes="不会发布的"
+fi
+
+
 # [Mac环境下shell脚本中的map](https://www.jianshu.com/p/a55480b793b0)
 download_website="https://www.pgyer.com/${lastDownloadShortcut}"
 pgyerArgument='{
@@ -272,6 +289,7 @@ pgyerArgument='{
     "downloadChannelKey": "'"${lastDownloadKey}"'",
     "website_official": "'"${network_pgyer_appOfficialWebsite}"'",
     "website_download": "'"${download_website}"'",
+    "success_publish_state_des": "'"${PackagePgyerPublishStateDes}"'"
 }'
 
 printf "%s" "${pgyerArgument}"
