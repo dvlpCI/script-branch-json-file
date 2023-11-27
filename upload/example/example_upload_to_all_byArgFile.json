@@ -1,40 +1,38 @@
 {
-    "package_des": {
-      "english": "[v1.6.8_1031]dev_test2_iOSV1.22.27(22271659)",
-      "chinese": "会直接发布的iOSdevtest2包"
+  "package_des": {
+    "english": "[v1.6.8_1031]dev_test2_iOSV1.22.27(22271659)",
+    "chinese": "会直接发布的iOSdevtest2包"
+  },
+  "package_platform_arg": {
+    "pgyer": {
+      "owner": "xxxx@qq.com",
+      "appKey": "da2bc35c7943aa78e66ee9c94fdd0824",
+      "uploadChannelShortcut": "fzgy",
+      "uploadChannelKey": "uploadChannelKey",
+      "downloadChannelShortcut": "fzgy",
+      "downloadChannelKey": "downloadChannelKey",
+      "website_official": "xxx",
+      "website_download": "yyy"
     },
-    "package_platform_arg": {
-      "pgyer": {
-        "owner": "xxxx@qq.com",
-        "appKey": "da2bc35c7943aa78e66ee9c94fdd0824",
-        "uploadChannelShortcut": "fzgy",
-        "uploadChannelKey": "uploadChannelKey",
-        "downloadChannelShortcut": "fzgy",
-        "downloadChannelKey": "downloadChannelKey",
-        "website_official": "xxx",
-        "website_download": "yyy"
-      },
-      "cos": {
-        "region": "ap-shanghai",
-        "bucketName": "prod-xhw-image-1302324914",
-        "bucketDir": "/mcms/download/app",
-        "hostUrl": "https://images.xihuanwu.com"
-      },
-      "testFlight": {
-        "username": "",
-        "password": "",
-        "website_official": "xxx",
-        "website_download": "yyy"
-      }
+    "cos": {
+      "region": "ap-shanghai",
+      "bucketName": "prod-xhw-image-1302324914",
+      "bucketDir": "/mcms/download/app",
+      "hostUrl": "https://images.xihuanwu.com"
     },
-    "upload_result": {
-      "pgyer": {
-        "download_url": "package pgyer url"
-      },
-      "cos": {
-        "download_url": "package cos url"
-      }
+    "testFlight": {
+      "username": "",
+      "password": "",
+      "website_official": "xxx",
+      "website_download": "yyy"
     }
-
+  },
+  "upload_result": {
+    "pgyer": {
+      "download_url": "package pgyer url"
+    },
+    "cos": {
+      "download_url": "package cos url"
+    }
   }
-  
+}

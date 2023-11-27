@@ -61,6 +61,8 @@ do
         -uploadArgsFPath|--upload-args-file-path) UploadPlatformArgsFilePath=$2; shift 2;;
         -uploadArgsFKey|--upload-args-file-key) UploadPlatformArgsFileKey=$2; shift 2;;
         -uploadArgsJson|--upload-args-json) UploadPlatformArgsJson=$2; shift 2;;
+
+        -uploadResultFPath|--upload-resutl-file-path) UploadResult_FILE_PATH=$2; shift 2;;
         -uploadResultFKey|--upload-result-file-key) UploadResult_FILE_Key=$2; shift 2;;
 
         -LogPostToRobotUrl|--Log-PostTo-RobotUrl) LogPostToRobotUrl=$2; shift 2;; # 上传过程中的日志发送到哪个机器人
@@ -180,20 +182,20 @@ updateAppNetworkUrlToFile_errorMessage=""
 for compontentKey in "${uploadSuccessTypeArray[@]}"; do
     compontentAppNetworkUrl=$(printf "%s" "${responseJsonString}" | jq -r ".${compontentKey}.appNetworkUrl")
     debug_log "${GREEN}上传ipa到 ${compontentKey}/${uploadSuccessTypeArray[*]} 成功，地址为 ${compontentAppNetworkUrl} .${NC}"
-    sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadPlatformArgsFilePath} -k "${UploadResult_FILE_Key}.${compontentKey}.download_url" -v "${compontentAppNetworkUrl}"
+    sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadResult_FILE_PATH} -k "${UploadResult_FILE_Key}.${compontentKey}.download_url" -v "${compontentAppNetworkUrl}"
     if [ $? != 0 ]; then
-        # echo "${RED}执行出错的命令如下:《${BLUE} sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadPlatformArgsFilePath} -k \"${UploadResult_FILE_Key}.${compontentKey}.download_url\" -v \"${compontentAppNetworkUrl}\" ${RED}》${NC}"
-        updateAppNetworkUrlToFile_errorMessage+="执行更新更新 ${compontentKey} 的地址值 ${compontentAppNetworkUrl} 到文件 ${UploadPlatformArgsFilePath} 失败。"
+        # echo "${RED}执行出错的命令如下:《${BLUE} sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadResult_FILE_PATH} -k \"${UploadResult_FILE_Key}.${compontentKey}.download_url\" -v \"${compontentAppNetworkUrl}\" ${RED}》${NC}"
+        updateAppNetworkUrlToFile_errorMessage+="执行更新更新 ${compontentKey} 的地址值 ${compontentAppNetworkUrl} 到文件 ${UploadResult_FILE_PATH} 失败。"
     fi
 done
 # 将失败的信息也写入文件的 ${UploadResult_FILE_Key} 键中，而不是上传失败和没有上传都不知道。
 for compontentKey in "${uploadFailureTypeArray[@]}"; do
     compontentAppNetworkUrl=$(printf "%s" "${responseJsonString}" | jq -r ".${compontentKey}.appNetworkUrl")
     debug_log "${GREEN}上传ipa到 ${compontentKey}/${uploadSuccessTypeArray[*]} 失败，信息为 ${compontentAppNetworkUrl} .${NC}"
-    sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadPlatformArgsFilePath} -k "${UploadResult_FILE_Key}.${compontentKey}.download_url" -v "${compontentAppNetworkUrl}"
+    sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadResult_FILE_PATH} -k "${UploadResult_FILE_Key}.${compontentKey}.download_url" -v "${compontentAppNetworkUrl}"
     if [ $? != 0 ]; then
-        # echo "${RED}执行出错的命令如下:《${BLUE} sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadPlatformArgsFilePath} -k \"${UploadResult_FILE_Key}.${compontentKey}.download_url\" -v \"${compontentAppNetworkUrl}\" ${RED}》${NC}"
-        updateAppNetworkUrlToFile_errorMessage+="执行更新更新 ${compontentKey} 的地址值 ${compontentAppNetworkUrl} 到文件 ${UploadPlatformArgsFilePath} 失败。"
+        # echo "${RED}执行出错的命令如下:《${BLUE} sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadResult_FILE_PATH} -k \"${UploadResult_FILE_Key}.${compontentKey}.download_url\" -v \"${compontentAppNetworkUrl}\" ${RED}》${NC}"
+        updateAppNetworkUrlToFile_errorMessage+="执行更新更新 ${compontentKey} 的地址值 ${compontentAppNetworkUrl} 到文件 ${UploadResult_FILE_PATH} 失败。"
     fi
 done
 if [ -n "${updateAppNetworkUrlToFile_errorMessage}" ]; then

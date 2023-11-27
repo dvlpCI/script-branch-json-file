@@ -69,6 +69,8 @@ UploadPlatformArgsJson='
 
 UploadPlatformArgsFilePath="${CurrentDIR_Script_Absolute}/example_upload_to_all_byArgFile.json"
 UploadPlatformArgsFileKey="package_platform_arg"
+
+UploadResult_FILE_PATH=${UploadPlatformArgsFilePath}
 UploadResult_FILE_Key="upload_result"
 
 
@@ -81,12 +83,12 @@ LogPostTextHeader="这是上传过程中对日志进行补充的标题"
 log_title "1.上传ipa到各个平台,平台参数来源于文件"
 # sh ${CategoryFun_HomeDir_Absolute}/upload_to_all_byArgFile.sh -ipa "${ipa_file_path}" \
 #     -updateDesString "${updateDesString}" -updateDesFromFilePath "${updateDesFromFilePath}" -updateDesFromFileKey "${updateDesFromFileKey}" \
-#     -uploadArgsFPath "${UploadPlatformArgsFilePath}" -uploadArgsFKey "${UploadPlatformArgsFileKey}" -uploadResultFKey "${UploadResult_FILE_Key}" \
+#     -uploadArgsFPath "${UploadPlatformArgsFilePath}" -uploadArgsFKey "${UploadPlatformArgsFileKey}" -uploadResultFPath "${UploadResult_FILE_PATH}" -uploadResultFKey "${UploadResult_FILE_Key}" \
 #     -LogPostToRobotUrl "${LogPostToRobotUrl}" -LogPostTextHeader "${LogPostTextHeader}"
 #     exit
 responseJsonString=$(sh ${CategoryFun_HomeDir_Absolute}/upload_to_all_byArgFile.sh -ipa "${ipa_file_path}" \
     -updateDesString "${updateDesString}" -updateDesFromFilePath "${updateDesFromFilePath}" -updateDesFromFileKey "${updateDesFromFileKey}" \
-    -uploadArgsFPath "${UploadPlatformArgsFilePath}" -uploadArgsFKey "${UploadPlatformArgsFileKey}" -uploadResultFKey "${UploadResult_FILE_Key}" \
+    -uploadArgsFPath "${UploadPlatformArgsFilePath}" -uploadArgsFKey "${UploadPlatformArgsFileKey}" -uploadResultFPath "${UploadResult_FILE_PATH}" -uploadResultFKey "${UploadResult_FILE_Key}" \
     -LogPostToRobotUrl "${LogPostToRobotUrl}" -LogPostTextHeader "${LogPostTextHeader}" \
     )
 if [ $? != 0 ]; then
@@ -102,12 +104,12 @@ echo "${GREEN}上传ipa到各个平台成功。信息如下：${BLUE} \n$(cat "$
 log_title "2.上传ipa到各个平台,平台参数来源于JsonString"
 # sh ${CategoryFun_HomeDir_Absolute}/upload_to_all_byArgFile.sh -ipa "${ipa_file_path}" \
 #     -updateDesString "${updateDesString}" -updateDesFromFilePath "${updateDesFromFilePath}" -updateDesFromFileKey "${updateDesFromFileKey}" \
-#     -uploadArgsJson "${UploadPlatformArgsJson}" -uploadResultFKey "${UploadResult_FILE_Key}" \
+#     -uploadArgsJson "${UploadPlatformArgsJson}" -uploadResultFPath "${UploadResult_FILE_PATH}" -uploadResultFKey "${UploadResult_FILE_Key}" \
 #     -LogPostToRobotUrl "${LogPostToRobotUrl}" -LogPostTextHeader "${LogPostTextHeader}"
 #     exit
 responseJsonString=$(sh ${CategoryFun_HomeDir_Absolute}/upload_to_all_byArgFile.sh -ipa "${ipa_file_path}" \
     -updateDesString "${updateDesString}" -updateDesFromFilePath "${updateDesFromFilePath}" -updateDesFromFileKey "${updateDesFromFileKey}" \
-    -uploadArgsJson "${UploadPlatformArgsJson}" -uploadResultFKey "${UploadResult_FILE_Key}" \
+    -uploadArgsJson "${UploadPlatformArgsJson}" -uploadResultFPath "${UploadResult_FILE_PATH}" -uploadResultFKey "${UploadResult_FILE_Key}" \
     -LogPostToRobotUrl "${LogPostToRobotUrl}" -LogPostTextHeader "${LogPostTextHeader}" \
     )
 if [ $? != 0 ]; then
