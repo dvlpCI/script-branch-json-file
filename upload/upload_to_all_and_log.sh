@@ -90,6 +90,6 @@ if [ $? != 0 ]; then
 fi
 # echo "${GREEN}上传结束后安装包的各种路径信息：${BLUE}\n${uploadResultLog} ${GREEN}。\n更多详情请查看: ${UploadResult_FILE_PATH} ${NC}"
 
-printf "%s" "${uploadResultLog}"
-
+responseJsonString=$(printf "%s" "$responseJsonString" | jq --arg uploadResultLog "$uploadResultLog" '. + { "uploadResultLog": $uploadResultLog }')
+printf "%s" "${responseJsonString}"
 

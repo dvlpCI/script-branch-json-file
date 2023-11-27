@@ -8,6 +8,23 @@
 # @Description: 上传结束,获取安装包的各种路径信息
 ###
 
+# uploadResultLog 的示例
+# 本地地址：/User/qian/Project/package/xxx.ipa
+# 已备份到本地目录：/User/qian/Project/package/backup/
+# cos下载地址：https://www.cos.com/xxxx/yyyy.ipa
+# pgyer主页：https://www.pgyer.com/xxxx/yyyy.ipa
+# pgyer下载地址：https://www.pgyer.com/xxxx/yyyy.ipa
+# "1.后续操作：
+# 请确认包是否已自动上传到苹果TestFlight后台，若失败，请下载cos地址手动上传，若成功则。"
+# ①请从电脑登录https://appstoreconnect.apple.com，进入'我的app'->XXX应用->顶部'TestFlight'->左侧'构建版本'
+# ②操作想要发布的版本
+# ③请版本检查更新人员更新最新的版本号、构件号、下载地址三要素
+# "2.发布后检查(新版本下载方法也是如此):"
+# ①请在iPhone上通过浏览器打开https://testflight.apple.com/join/TRKtWdEe，进入后跳到TestFlight即可看到应用
+# ②打开旧版app，查看是否弹出后台指定的新版本更新提示
+# ③官网下载也顺便看下 。
+
+
 JQ_EXEC=$(which jq)
 
 # 定义颜色常量

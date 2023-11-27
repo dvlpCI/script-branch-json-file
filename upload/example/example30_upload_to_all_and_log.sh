@@ -64,4 +64,16 @@ if [ $? != 0 ]; then
     echo "${responseJsonString}" # 此时值为错误信息
     exit 1
 fi
-echo "${GREEN}上传ipa到各个平台的脚本执行成功，结果如下:${BLUE}\n${responseJsonString} \n${GREEN}更多详情请查看: ${UploadPlatformArgsFilePath} ${NC}"
+echo "${GREEN}上传ipa到各个平台的脚本执行成功，json结果如下:${NC}"
+printf "%s" "${responseJsonString}" | jq "."
+
+echo ""
+uploadResultLog=$(printf "%s" "${responseJsonString}" | jq -r ".uploadResultLog")
+echo "${GREEN}上传结束后安装包的各种路径信息整理成字符串如下：${NC}"
+printf "%s" "${uploadResultLog}"
+
+echo ""
+echo "${GREEN}更多详情请查看: ${UploadPlatformArgsFilePath} ${NC}"
+
+
+

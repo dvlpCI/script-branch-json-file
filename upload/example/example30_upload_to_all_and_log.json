@@ -4,13 +4,15 @@
     "chinese": "会直接发布的iOSdevtest2包"
   },
   "package_platform_arg": {
-    "shoudUploadToPgyerOwner": "xxxx@qq.com",
-    "shoudUploadToPgyerKey": "da2bc35c7943aa78e66ee9c94fdd0824",
-    "pgyer_branch_config": {
+    "pgyer": {
+      "owner": "xxxx@qq.com",
+      "appKey": "da2bc35c7943aa78e66ee9c94fdd0824",
       "uploadChannelShortcut": "fzgy",
       "uploadChannelKey": "uploadChannelKey",
       "downloadChannelShortcut": "fzgy",
-      "downloadChannelKey": "downloadChannelKey"
+      "downloadChannelKey": "downloadChannelKey",
+      "website_official": "xxx",
+      "website_download": "yyy"
     },
     "cos": {
       "region": "ap-shanghai",
@@ -20,7 +22,9 @@
     },
     "testFlight": {
       "username": "",
-      "password": ""
+      "password": "",
+      "website_official": "xxx",
+      "website_download": "yyy"
     }
   },
   "upload_result": {
