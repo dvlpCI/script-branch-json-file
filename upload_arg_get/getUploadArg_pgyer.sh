@@ -30,6 +30,13 @@ do
     esac
 done
 
+debug_log "------------ Pgyer_Jsons_FILE_PATH=${Pgyer_Jsons_FILE_PATH}"
+debug_log "------------ Pgyer_Jsons_FILE_Key=${Pgyer_Jsons_FILE_Key}"
+debug_log "------------ PgyerUploadUrlType=${PgyerUploadUrlType}"
+debug_log "------------ PlatformType=${PlatformType}"
+debug_log "------------ PackageNetworkType=${PackageNetworkType}"
+debug_log "------------ CurrentBranchName=${CurrentBranchName}"
+
 if [ -z "${PgyerUploadUrlType}" ] || [ "${PgyerUploadUrlType}" == "toNoneUrl" ]; then
     message="温馨提示，您已设置 -pgyerUploadUrlType 参数的值 ${PgyerUploadUrlType} ，所以稍后不会上传。为，设置您要上传的位置。若不上传请勿调用本脚本。（要直接发布请设置为 toDownUrl ，要待发布请设置为 toUploadUrl ）"
     pgyerArgument='{
@@ -101,6 +108,8 @@ function checkAndGetAllowBasis() {
     
     hasFoundBranchConfig='false'
     targetAllowBranchConfig_String=""
+
+    qbase_isStringMatchPatterns_scriptPath=$(qbase -path isStringMatchPatterns)
     for ((i=0;i<network_allowBranchConfig_Count;i++))
     do
         iAllowBranchConfig_String=$(echo "${network_PgyerRootMapString}" | ${JQ_EXEC} -r ".allowBranchConfig[$i]")
@@ -110,23 +119,11 @@ function checkAndGetAllowBasis() {
         allowBranchRegularsString=$(echo "${iAllowBranchConfig_String}" | ${JQ_EXEC} -r ".branchRegulars")
         if [ -n "${allowBranchRegularsString}" ] && [ "${allowBranchRegularsString}" != "null" ]; then
             debug_log "${PackageNetworkType}环境支持使用符合以下正则的分支来打包，正则内容如下：${allowBranchRegularsString}"
-            allowBranchsRegularCount=$(echo "${iAllowBranchConfig_String}" | ${JQ_EXEC} -r ".branchRegulars|length")
-            #debug_log "$((i+1)) allowBranchsNameCount=${allowBranchsNameCount}, allowBranchNamesString=${allowBranchNamesString}"
-            for ((j=0;j<allowBranchsRegularCount;j++))
-            do
-                allowBranchRegular=$(echo "${allowBranchRegularsString}" | ${JQ_EXEC} -r ".[$j]")
-                #debug_log "$((i+1)).$((j+1)) allowBranchRegular=${allowBranchRegular}, branchKey=${branchKey}"
-                # if echo "${allowBranchNamesString[@]}" | grep -wq "*" &>/dev/null; then
-                if echo "$branchKey" | grep -qE "${allowBranchRegular}"; then
-                    targetAllowBranchConfig_String=$iAllowBranchConfig_String
-                    hasFoundBranchConfig='true'
-                    break
-                fi
-            done
-
-            if [ "${hasFoundBranchConfig}" == 'true' ]; then
+            matchPatter=$(sh $qbase_isStringMatchPatterns_scriptPath -inputString "${branchKey}" -patternsString "${allowBranchRegularsString}")
+            if [ $? == 0 ]; then # 被匹配
+                targetAllowBranchConfig_String=$iAllowBranchConfig_String
+                hasFoundBranchConfig='true'
                 debug_log "恭喜:${PackageNetworkType}环境支持使用${branchKey}分支来打包(附其判断依据为:${targetAllowBranchConfig_String})"
-                break
             fi
         fi
 
@@ -139,7 +136,7 @@ function checkAndGetAllowBasis() {
             do
                 allowBranchName=$(echo "${allowBranchNamesString}" | ${JQ_EXEC} -r ".[$j]")
                 #debug_log "$((i+1)).$((j+1)) allowBranchName=${allowBranchName}, branchKey=${branchKey}"
-                if [ "${allowBranchName}" == ${branchKey} ]; then
+                if [ "${allowBranchName}" == "${branchKey}" ]; then
                     debug_log "---------------------------------"
                     targetAllowBranchConfig_String=$iAllowBranchConfig_String
                     hasFoundBranchConfig='true'
@@ -162,7 +159,7 @@ function checkAndGetAllowBasis() {
 # 遍历获取指定分支使用的渠道（同一个环境不同分支可以上传到不同渠道，不能不设置，如果是要上传到所有渠道则 "branchRegulars" : ["v*"] )
 checkAndGetAllowBasis "${PackageNetworkType}" "${ShortBranceName}" "${PlatformType}"
 if [ $? != 0 ]; then
-    echo "失败:${PackageNetworkType}环境不支持使用${branchKey}分支来打包"
+    echo "失败:${PackageNetworkType}环境不支持使用${branchKey}分支来打包，请检查您的环境和设置的 branchRegulars 和 branchNames 值"
     exit 1
 fi
 debug_log "恭喜:${PackageNetworkType}环境支持使用${branchKey}分支来打包targetAllowBranchConfig_String=${targetAllowBranchConfig_String}"
@@ -170,83 +167,83 @@ debug_log "恭喜:${PackageNetworkType}环境支持使用${branchKey}分支来�
 
 
 
-    targetBranchConfig_mayString=$(echo "${targetAllowBranchConfig_String}" | ${JQ_EXEC} -r ".branchChannelConfig")
-    #echo "targetBranchConfig_mayString=${targetBranchConfig_mayString}"
-    debug_log "=================${branchKey}分支的蒲公英匹配参数为targetBranchConfig_mayString=${targetBranchConfig_mayString}"
-    if [ -z "${targetBranchConfig_mayString}" ] || [ "${targetBranchConfig_mayString}" == "null" ]; then
-        echo "允许打蒲公英${PackageNetworkType}环境的包，未包括${branchKey}分支，故无法找到本包上传蒲公英时候的匹配参数，请检查【${Pgyer_Jsons_FILE_PATH}】文件中的package_pgyer_params参数"
-        return 1
-    fi
+targetBranchConfig_mayString=$(echo "${targetAllowBranchConfig_String}" | ${JQ_EXEC} -r ".branchChannelConfig")
+#echo "targetBranchConfig_mayString=${targetBranchConfig_mayString}"
+debug_log "=================${branchKey}分支的蒲公英匹配参数为targetBranchConfig_mayString=${targetBranchConfig_mayString}"
+if [ -z "${targetBranchConfig_mayString}" ] || [ "${targetBranchConfig_mayString}" == "null" ]; then
+    echo "允许打蒲公英${PackageNetworkType}环境的包，未包括${branchKey}分支，故无法找到本包上传蒲公英时候的匹配参数，请检查【${Pgyer_Jsons_FILE_PATH}】文件中的package_pgyer_params参数"
+    exit 1
+fi
+
+
+network_branch_platform_pgyerRootMapString=$(echo "${targetBranchConfig_mayString}" | ${JQ_EXEC} -r --arg platformKey "$platformKey" '.[$platformKey]')
+debug_log "*************************network_branch_platform_pgyerRootMapString=${network_branch_platform_pgyerRootMapString}"
+if [ -z "${network_branch_platform_pgyerRootMapString}" ] || [ "${network_branch_platform_pgyerRootMapString}" == "null" ]; then
+    exit 1
+fi
     
+# 先获取 upload 和 download 的 channelShortcut 和 channelKey 值
+packagePgyerChannelShortcutResult_upload=$(echo "${network_branch_platform_pgyerRootMapString}" | ${JQ_EXEC} -r ".uploadChannelShortcut")
+debug_log "packagePgyerChannelShortcutResult_upload=${packagePgyerChannelShortcutResult_upload}"
+packagePgyerChannelKeyResult_upload=$(echo "${network_branch_platform_pgyerRootMapString}" | ${JQ_EXEC} -r ".uploadChannelKey")
+debug_log "packagePgyerChannelKeyResult_upload=${packagePgyerChannelKeyResult_upload}"
+packagePgyerChannelShortcutResult_download=$(echo "${network_branch_platform_pgyerRootMapString}" | ${JQ_EXEC} -r ".downloadChannelShortcut")
+debug_log "packagePgyerChannelShortcutResult_download=${packagePgyerChannelShortcutResult_download}"
+packagePgyerChannelKeyResult_download=$(echo "${network_branch_platform_pgyerRootMapString}" | ${JQ_EXEC} -r ".downloadChannelKey")
+debug_log "packagePgyerChannelKeyResult_download=${packagePgyerChannelKeyResult_download}"
 
-    network_branch_platform_pgyerRootMapString=$(echo "${targetBranchConfig_mayString}" | ${JQ_EXEC} -r --arg platformKey "$platformKey" '.[$platformKey]')
-    debug_log "*************************network_branch_platform_pgyerRootMapString=${network_branch_platform_pgyerRootMapString}"
-    if [ -z "${network_branch_platform_pgyerRootMapString}" ] || [ "${network_branch_platform_pgyerRootMapString}" == "null" ]; then
-        return 1
-    fi
-        
-    # 先获取 upload 和 download 的 channelShortcut 和 channelKey 值
-    packagePgyerChannelShortcutResult_upload=$(echo "${network_branch_platform_pgyerRootMapString}" | ${JQ_EXEC} -r ".uploadChannelShortcut")
-    debug_log "packagePgyerChannelShortcutResult_upload=${packagePgyerChannelShortcutResult_upload}"
-    packagePgyerChannelKeyResult_upload=$(echo "${network_branch_platform_pgyerRootMapString}" | ${JQ_EXEC} -r ".uploadChannelKey")
-    debug_log "packagePgyerChannelKeyResult_upload=${packagePgyerChannelKeyResult_upload}"
-    packagePgyerChannelShortcutResult_download=$(echo "${network_branch_platform_pgyerRootMapString}" | ${JQ_EXEC} -r ".downloadChannelShortcut")
-    debug_log "packagePgyerChannelShortcutResult_download=${packagePgyerChannelShortcutResult_download}"
-    packagePgyerChannelKeyResult_download=$(echo "${network_branch_platform_pgyerRootMapString}" | ${JQ_EXEC} -r ".downloadChannelKey")
-    debug_log "packagePgyerChannelKeyResult_download=${packagePgyerChannelKeyResult_download}"
-
-    # 再根据上传位置判断 upload 和 download 的值是否缺失
-    if [ "$PgyerUploadUrlType" == "toDownUrl" ]; then   # 上传到下载地址
-        debug_log "友情提示🤝：想直接上传到下载地址，所以上传地址为最终的下载地址(故也无需检查上传的 channelShortcut 和 channelKey 值)"
-        
-        if [ "${packagePgyerChannelShortcutResult_download}" == "*" ]; then # 不用到指定渠道
-            lastUploadShortcut=""
-            lastUploadKey=""
-        # elif [ -z "${packagePgyerChannelShortcutResult_download}" ] || [ "${packagePgyerChannelShortcutResult_download}" == "null" ]; then
-        #     echo "友情提示🤝:下载地址缺失，所以非指定情况下，下载地址 即为 上传地址"
-        #     lastUploadShortcut=""
-        #     lastUploadKey=""
-        else    # 上传到指定渠道
-            if [ -z "${packagePgyerChannelKeyResult_download}" ] || [ "${packagePgyerChannelKeyResult_download}" == "null" ] ||
-            [ -z "${packagePgyerChannelShortcutResult_download}" ] || [ "${packagePgyerChannelShortcutResult_download}" == "null" ]; then
-                echo "你将直接上传到下载地址，且要上传到指定渠道，所以下载地址的渠道shortCut和key不能不设置。所以请在${Pgyer_Jsons_FILE_PATH}为${PackageNetworkType}环境的${ShortBranceName}分支创建${PlatformType}平台的渠道信息"
-                exit 1
-            fi
-
-            lastUploadShortcut=${packagePgyerChannelShortcutResult_download}
-            lastUploadKey=${packagePgyerChannelKeyResult_download}
+# 再根据上传位置判断 upload 和 download 的值是否缺失
+if [ "$PgyerUploadUrlType" == "toDownUrl" ]; then   # 上传到下载地址
+    debug_log "友情提示🤝：想直接上传到下载地址，所以上传地址为最终的下载地址(故也无需检查上传的 channelShortcut 和 channelKey 值)"
+    
+    if [ "${packagePgyerChannelShortcutResult_download}" == "*" ]; then # 不用到指定渠道
+        lastUploadShortcut=""
+        lastUploadKey=""
+    # elif [ -z "${packagePgyerChannelShortcutResult_download}" ] || [ "${packagePgyerChannelShortcutResult_download}" == "null" ]; then
+    #     echo "友情提示🤝:下载地址缺失，所以非指定情况下，下载地址 即为 上传地址"
+    #     lastUploadShortcut=""
+    #     lastUploadKey=""
+    else    # 上传到指定渠道
+        if [ -z "${packagePgyerChannelKeyResult_download}" ] || [ "${packagePgyerChannelKeyResult_download}" == "null" ] ||
+        [ -z "${packagePgyerChannelShortcutResult_download}" ] || [ "${packagePgyerChannelShortcutResult_download}" == "null" ]; then
+            echo "你将直接上传到下载地址，且要上传到指定渠道，所以下载地址的渠道shortCut和key不能不设置。所以请在 ${Pgyer_Jsons_FILE_PATH} 为 ${PackageNetworkType} 环境的 ${ShortBranceName} 分支创建 ${PlatformType} 平台的渠道信息"
+            exit 1
         fi
 
-    elif [ "$PgyerUploadUrlType" == "toUploadUrl" ]; then # 上传到上传地址（可以作为未发布前的临时地址，要发布时候再从蒲公英后台为该渠道添加上去）
-        if [ "${packagePgyerChannelShortcutResult_upload}" == "*" ]; then # 不用到指定渠道
-            lastUploadShortcut=""
-            lastUploadKey=""
-        else    # 上传到指定渠道
-            if [ -z "${packagePgyerChannelKeyResult_upload}" ] || [ "${packagePgyerChannelKeyResult_upload}" == "null" ] ||
-            [ -z "${packagePgyerChannelShortcutResult_upload}" ] || [ "${packagePgyerChannelShortcutResult_upload}" == "null" ]; then
-                echo "你将先上传到上传地址，且要上传到指定渠道，所以上传地址的渠道shortCut和key不能不设置。所以请在${Pgyer_Jsons_FILE_PATH}为${PackageNetworkType}环境的${ShortBranceName}分支创建${PlatformType}平台的渠道信息"
-                exit 1
-            fi
+        lastUploadShortcut=${packagePgyerChannelShortcutResult_download}
+        lastUploadKey=${packagePgyerChannelKeyResult_download}
+    fi
 
-            lastUploadShortcut=${packagePgyerChannelShortcutResult_upload}
-            lastUploadKey=${packagePgyerChannelKeyResult_upload}
+elif [ "$PgyerUploadUrlType" == "toUploadUrl" ]; then # 上传到上传地址（可以作为未发布前的临时地址，要发布时候再从蒲公英后台为该渠道添加上去）
+    if [ "${packagePgyerChannelShortcutResult_upload}" == "*" ]; then # 不用到指定渠道
+        lastUploadShortcut=""
+        lastUploadKey=""
+    else    # 上传到指定渠道
+        if [ -z "${packagePgyerChannelKeyResult_upload}" ] || [ "${packagePgyerChannelKeyResult_upload}" == "null" ] ||
+        [ -z "${packagePgyerChannelShortcutResult_upload}" ] || [ "${packagePgyerChannelShortcutResult_upload}" == "null" ]; then
+            echo "你将先上传到上传地址，且要上传到指定渠道，所以上传地址的渠道shortCut和key不能不设置。所以请在 ${Pgyer_Jsons_FILE_PATH} 为 ${PackageNetworkType} 环境的 ${ShortBranceName} 分支创建 ${PlatformType} 平台的渠道信息"
+            exit 1
         fi
-    fi
 
-    if [ -z "${packagePgyerChannelShortcutResult_download}" ] || [ "${packagePgyerChannelShortcutResult_download}" == "null" ]; then
-        lastDownloadShortcut=${lastUploadShortcut}
-        lastDownloadKey=${lastUploadKey}
-    else
-        lastDownloadShortcut=${packagePgyerChannelShortcutResult_download}
-        lastDownloadKey=${packagePgyerChannelKeyResult_download}
+        lastUploadShortcut=${packagePgyerChannelShortcutResult_upload}
+        lastUploadKey=${packagePgyerChannelKeyResult_upload}
     fi
+fi
 
-    # 需事先在蒲公英上建立此渠道短链，否则会提示The channel shortcut URL is invalid
-    if [ -n "${lastUploadShortcut}" ]; then
-        debug_log "上传目标：只会上传到蒲公英的上的【指定渠道】:${lastUploadShortcut}"
-    else
-        debug_log "上传目标：会上传到蒲公英的上的【所有渠道】"
-    fi
+if [ -z "${packagePgyerChannelShortcutResult_download}" ] || [ "${packagePgyerChannelShortcutResult_download}" == "null" ]; then
+    lastDownloadShortcut=${lastUploadShortcut}
+    lastDownloadKey=${lastUploadKey}
+else
+    lastDownloadShortcut=${packagePgyerChannelShortcutResult_download}
+    lastDownloadKey=${packagePgyerChannelKeyResult_download}
+fi
+
+# 需事先在蒲公英上建立此渠道短链，否则会提示The channel shortcut URL is invalid
+if [ -n "${lastUploadShortcut}" ]; then
+    debug_log "上传目标：只会上传到蒲公英的上的【指定渠道】:${lastUploadShortcut}"
+else
+    debug_log "上传目标：会上传到蒲公英的上的【所有渠道】"
+fi
     
     
     
