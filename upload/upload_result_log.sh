@@ -113,7 +113,7 @@ done
 
 
 if [ ! -f "${UploadResult_FILE_PATH}" ]; then
-    printf "${RED}❌Error:您填写【保存打包信息文件】的文件 ${UploadResult_FILE_PATH} 未设置或不存在，请检查。${NC}\n"
+    printf "%s" "${RED}❌Error:您填写【保存打包信息文件】的文件 ${UploadResult_FILE_PATH} 未设置或不存在，请检查。${NC}\n"
     exit 1
 fi
 
@@ -124,11 +124,11 @@ if [ "${isRelease}" == true ]; then
     cat ${UploadResult_FILE_PATH} | ${JQ_EXEC} ".${UploadResult_FILE_Key}"
 fi
 
-Package_Local_File_Url=$(printf "%s" ${Package_Url_Result} | ${JQ_EXEC} '.local.origin_url' | sed 's/\"//g') # 去除引号
-Package_Local_Backup_Dir=$(printf "%s" ${Package_Url_Result} | ${JQ_EXEC} '.local.backup_dir' | sed 's/\"//g') # 去除引号
-Package_Network_File_Url=$(printf "%s" ${Package_Url_Result} | ${JQ_EXEC} '.cos.download_url' | sed 's/\"//g')
-Pgyer_Official_Url=$(printf "%s" ${Package_Url_Result} | ${JQ_EXEC} '.pgyer.official_url' | sed 's/\"//g')
-Pgyer_Download_Url=$(printf "%s" ${Package_Url_Result} | ${JQ_EXEC} '.pgyer.download_url' | sed 's/\"//g')
+Package_Local_File_Url=$(printf "%s" "${Package_Url_Result}" | ${JQ_EXEC} '.local.origin_url' | sed 's/\"//g') # 去除引号
+Package_Local_Backup_Dir=$(printf "%s" "${Package_Url_Result}" | ${JQ_EXEC} '.local.backup_dir' | sed 's/\"//g') # 去除引号
+Package_Network_File_Url=$(printf "%s" "${Package_Url_Result}" | ${JQ_EXEC} '.cos.download_url' | sed 's/\"//g')
+Pgyer_Official_Url=$(printf "%s" "${Package_Url_Result}" | ${JQ_EXEC} '.pgyer.official_url' | sed 's/\"//g')
+Pgyer_Download_Url=$(printf "%s" "${Package_Url_Result}" | ${JQ_EXEC} '.pgyer.download_url' | sed 's/\"//g')
 
 
 # echo "Package_Local_File_Url=${Package_Network_File_Url}"

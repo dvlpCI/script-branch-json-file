@@ -177,6 +177,10 @@ uploadFailureCount=${#uploadFailureTypeArray[@]}
 debug_log "${PURPLE} 上传结果失败 ${uploadFailureCount} 个平台，分别为: ${uploadFailureTypeArray[*]} ${PURPLE} 。${NC}"
 
 
+sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadResult_FILE_PATH} -k "${UploadResult_FILE_Key}.local.origin_url" -v "${ipa_file_path}"
+Pgyer_Official_Url=$(printf "%s" "${PackageResultMap}" | ${JQ_EXEC} -r ".pgyer.website_download")
+sh ${qbase_update_json_file_singleString_script_path} -jsonF ${UploadResult_FILE_PATH} -k "${UploadResult_FILE_Key}.pgyer.official_url" -v "${Pgyer_Official_Url}"
+
 # 将成功的信息写入文件的 ${UploadResult_FILE_Key} 键中
 updateAppNetworkUrlToFile_errorMessage=""
 for compontentKey in "${uploadSuccessTypeArray[@]}"; do
