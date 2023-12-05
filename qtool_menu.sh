@@ -218,8 +218,8 @@ openWebsiteByCustomChoose_fromSystemRecommend() {
 
 # 二、执行Jenkins上的Job
 buildJenkinsJob() {
-    # echo "正在执行命令：《 sh ${jenkinsScriptDir_Absolute}/jenkins.sh \"${jenkinsScriptDir_Absolute}\" \"${temp_reslut_file_path}\" 》"
-    sh ${jenkinsScriptDir_Absolute}/jenkins.sh "${jenkinsScriptDir_Absolute}" "${temp_reslut_file_path}"
+    # echo "正在执行命令：《 sh ${jenkinsScriptDir_Absolute}/jenkins.sh \"${temp_reslut_file_path}\" 》"
+    sh ${jenkinsScriptDir_Absolute}/jenkins.sh "${temp_reslut_file_path}"
     checkResultCode $?
 }
 
