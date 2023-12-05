@@ -125,8 +125,7 @@ elif [ "${firstArg}" == "-quick" ]; then
     qbase_checkInputArgsValid_scriptPath=$(qbase -path checkInputArgsValid)
     inputArgsErrorMessage=$(sh $qbase_checkInputArgsValid_scriptPath $allArgsExceptFirstArg)
     if [ $? != 0 ]; then
-        echo "${inputArgsErrorMessage}"
-        exit 1
+        echo "🚗🚗🚗🚗🚗🚗 如若后续执行发生错误，可能原因为: ${inputArgsErrorMessage}"
     fi
     # echo "qtool正在通过qbase调用快捷命令...《 sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg 》"
     sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg
