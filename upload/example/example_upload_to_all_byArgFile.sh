@@ -55,7 +55,7 @@ UploadPlatformArgsJson='
     "cos": {
         "region": "ap-shanghai",
         "bucketName": "prod-xhw-image-1302324914",
-        "bucketDir": "/mcms/download/app",
+        "bucketDir": "/mcms/download/app/",
         "hostUrl": "https://images.xihuanwu.com"
     },
     "testFlight": {
