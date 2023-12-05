@@ -14,9 +14,7 @@
         },
         "allowBranchConfig": [
             {
-                "branchRegulars" : ["v*"],
-                "branchNames" : ["dev_publish_in", "dev_publish_out", "develop", "master"],
-                "mustContainBranchNameArray":  [],
+                "branchRegulars" : ["v2*", "version/*", "v1.2.0_0811", "dev_publish_in", "dev_publish_out", "develop", "master"],
                 "branchChannelConfig" : {
                     "iOS": {
                         "uploadChannelShortcut": "bjwishproitemp", "uploadChannelKey": "e9a4a06bb7a0ad087dd0eb04a30dbc37",
@@ -45,9 +43,7 @@
         },
         "allowBranchConfig": [
             {
-                "branchRegulars" : ["v*"],
-                "branchNames" : ["dev_publish_in"],
-                "mustContainBranchNameArray":  ["dev_publish_out"],
+                "branchRegulars" : ["v*", "dev_publish_in"],
                 "branchChannelConfig" : {
                     "iOS": {
                         "uploadChannelShortcut": "lLZq", "uploadChannelKey": "f56f18024ea6c7ecfed1e822d1e8589b"
@@ -75,9 +71,7 @@
         },
         "allowBranchConfig": [
             {
-                "branchRegulars" : ["v*"],
-                "branchNames" : ["dev_all"],
-                "mustContainBranchNameArray":  ["dev_in_pgyer"],
+                "branchRegulars" : ["v*", "dev_all"],
                 "branchChannelConfig" : {
                     "iOS": {
                         "uploadChannelShortcut": "09nB", "uploadChannelKey": "27251623e2b1418ab2479e14d9688cff"
@@ -104,9 +98,7 @@
         },
         "allowBranchConfig": [
             {
-                "branchRegulars" : ["v*"],
-                "branchNames" : ["dev_all"],
-                "mustContainBranchNameArray":  ["dev_in_pgyer"],
+                "branchRegulars" : ["v*", "dev_all"],
                 "branchChannelConfig" : {
                     "iOS": {
                         "uploadChannelShortcut": "tbpZzJ", "uploadChannelKey": "62db5b98204d75fb7175372dea10834e"
@@ -134,7 +126,6 @@
         "allowBranchConfig": [
             {
                 "branchRegulars" : ["v*"],
-                "branchNames" : [],
                 "branchChannelConfig" : {
                     "iOS": {
                         "uploadChannelShortcut": "zHzO", "uploadChannelKey": "635e67a69be1f0a5dadcf595a30ba57b"

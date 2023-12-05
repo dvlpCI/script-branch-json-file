@@ -106,9 +106,8 @@ function checkAndGetAllowBasis() {
     network_allowBranchConfig_Count=$(echo "${network_PgyerRootMapString}" | ${JQ_EXEC} -r ".allowBranchConfig|length")
     # debug_log "network_allowBranchConfig_Count=${network_allowBranchConfig_Count},\n network_allowBranchConfig_String=${network_allowBranchConfig_String}"
     
-    hasFoundBranchConfig='false'
+    matchPatter=""
     targetAllowBranchConfig_String=""
-
     qbase_isStringMatchPatterns_scriptPath=$(qbase -path isStringMatchPatterns)
     for ((i=0;i<network_allowBranchConfig_Count;i++))
     do
@@ -116,54 +115,34 @@ function checkAndGetAllowBasis() {
         #debug_log "$((i+1)) iAllowBranchConfig_String=${iAllowBranchConfig_String}"
 
         # 1、有配置正则的时候，先判断是否符合正则
-        allowBranchRegularsString=$(echo "${iAllowBranchConfig_String}" | ${JQ_EXEC} -r ".branchRegulars")
+        allowBranchRegularsString=$(echo "${iAllowBranchConfig_String}" | ${JQ_EXEC} -r ".branchRegulars[]")
         if [ -n "${allowBranchRegularsString}" ] && [ "${allowBranchRegularsString}" != "null" ]; then
-            debug_log "${PackageNetworkType}环境支持使用符合以下正则的分支来打包，正则内容如下：${allowBranchRegularsString}"
+            # echo "正在检查您的分支 ${branchKey} 在 ${PackageNetworkType} 环境下是否符合以下正则：${allowBranchRegularsString} ，若不符合则无法进行打包。"
             matchPatter=$(sh $qbase_isStringMatchPatterns_scriptPath -inputString "${branchKey}" -patternsString "${allowBranchRegularsString}")
-            if [ $? == 0 ]; then # 被匹配
-                targetAllowBranchConfig_String=$iAllowBranchConfig_String
-                hasFoundBranchConfig='true'
-                debug_log "恭喜:${PackageNetworkType}环境支持使用${branchKey}分支来打包(附其判断依据为:${targetAllowBranchConfig_String})"
+            if [ $? != 0 ]; then # 没被匹配
+                matchPatter=""
+                continue
             fi
-        fi
 
-        # 2、没有配置正则内容的时候，或者匹配不上的时候，判断是否符合具体分支
-        allowBranchNamesString=$(echo "${iAllowBranchConfig_String}" | ${JQ_EXEC} -r ".branchNames")
-        if [ -n "${allowBranchNamesString}" ] && [ "${allowBranchNamesString}" != "null" ]; then
-            allowBranchsNameCount=$(echo "${iAllowBranchConfig_String}" | ${JQ_EXEC} -r ".branchNames|length")
-            #debug_log "$((i+1)) allowBranchsNameCount=${allowBranchsNameCount}, allowBranchNamesString=${allowBranchNamesString}"
-            for ((j=0;j<allowBranchsNameCount;j++))
-            do
-                allowBranchName=$(echo "${allowBranchNamesString}" | ${JQ_EXEC} -r ".[$j]")
-                #debug_log "$((i+1)).$((j+1)) allowBranchName=${allowBranchName}, branchKey=${branchKey}"
-                if [ "${allowBranchName}" == "${branchKey}" ]; then
-                    debug_log "---------------------------------"
-                    targetAllowBranchConfig_String=$iAllowBranchConfig_String
-                    hasFoundBranchConfig='true'
-                    break
-                fi
-            done
-
-            if [ "${hasFoundBranchConfig}" == 'true' ]; then
-                debug_log "恭喜:${PackageNetworkType}环境支持使用${branchKey}分支来打包(附其判断依据为:${targetAllowBranchConfig_String})"
-                break
-            fi
+            targetAllowBranchConfig_String=$iAllowBranchConfig_String
+            debug_log "恭喜:${PackageNetworkType}环境支持使用${branchKey}分支来打包(附其判断依据为:${targetAllowBranchConfig_String})"
+            break
         fi
     done
 
-    if [ "${hasFoundBranchConfig}" != 'true' ]; then
+    if [ -z "${matchPatter}" ]; then
+        echo "失败:${PackageNetworkType}环境不支持使用${branchKey}分支来打包，请检查您的环境和设置的 branchRegulars 值: ${allowBranchRegularsString}"
         return 1
     fi
+
+    debug_log "恭喜:${PackageNetworkType}环境支持使用${branchKey}分支来打包，其符合 ${matchPatter} (附其判断依据为:${targetAllowBranchConfig_String})"
 }
 
 # 遍历获取指定分支使用的渠道（同一个环境不同分支可以上传到不同渠道，不能不设置，如果是要上传到所有渠道则 "branchRegulars" : ["v*"] )
 checkAndGetAllowBasis "${PackageNetworkType}" "${ShortBranceName}" "${PlatformType}"
 if [ $? != 0 ]; then
-    echo "失败:${PackageNetworkType}环境不支持使用${branchKey}分支来打包，请检查您的环境和设置的 branchRegulars 和 branchNames 值"
     exit 1
 fi
-debug_log "恭喜:${PackageNetworkType}环境支持使用${branchKey}分支来打包targetAllowBranchConfig_String=${targetAllowBranchConfig_String}"
-
 
 
 
