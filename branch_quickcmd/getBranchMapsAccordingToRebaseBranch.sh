@@ -151,6 +151,11 @@ if [ $? != 0 ]; then
     echo "${resultBranchResponseJsonString}"
     exit 1
 fi
+if ! jq -e . <<< "$resultBranchResponseJsonString" >/dev/null 2>&1; then
+    echo "❌ getBranchNamesAccordingToRebaseBranch 失败，返回的结果不是json。其内容如下:"
+    echo "$resultBranchResponseJsonString"
+    exit 1
+fi
 resultBranchNames=$(printf "%s" "${resultBranchResponseJsonString}" | jq -r '.mergerRecords')
 resultBranchNames_searchFromDate=$(printf "%s" "${resultBranchResponseJsonString}" | jq -r '.searchFromDate')
 if [ -z "${resultBranchNames}" ]; then
@@ -179,6 +184,12 @@ else
         echo "${RED} $check_self_name_responseJsonString\n${check_self_name_SkipTip} ${NC}" # 此时是错误信息
         exit 1
     fi
+    if ! jq -e . <<< "$check_self_name_responseJsonString" >/dev/null 2>&1; then
+        echo "❌ check_self_name 失败，返回的结果不是json。其内容如下:"
+        echo "$check_self_name_responseJsonString"
+        exit 1
+    fi
+
     check_self_name_responseCode=$(printf "%s" "$check_self_name_responseJsonString" | jq -r '.code') # jq -r 去除双引号
     check_self_name_responseMessage=$(printf "%s" "$check_self_name_responseJsonString" | jq -r '.message')
     if [ "${check_self_name_responseCode}" != 0 ]; then
@@ -200,6 +211,12 @@ else
         echo "${RED} $check_missing_by_must_responseJsonString\n${check_missing_by_must_SkipTip} ${NC}" # 此时是错误信息
         exit 1
     fi
+    if ! jq -e . <<< "$check_missing_by_must_responseJsonString" >/dev/null 2>&1; then
+        echo "❌ check_missing_by_must 失败，返回的结果不是json。其内容如下:"
+        echo "$check_missing_by_must_responseJsonString"
+        exit 1
+    fi
+
     check_missing_by_must_responseCode=$(printf "%s" "$check_missing_by_must_responseJsonString" | jq -r '.code') # jq -r 去除双引号
     check_missing_by_must_responseMessage=$(printf "%s" "$check_missing_by_must_responseJsonString" | jq -r '.message')
     if [ "${check_missing_by_must_responseCode}" != 0 ]; then
@@ -217,6 +234,11 @@ else
     check_missing_diff_old_responseJsonString=$(sh ${branch_check_missing_diff_old_scriptPath} -curPackBranchNames "${CURRENT_PACK_BRANCH_NAMES}" -curPackFromDate "${CURRENT_PACK_FROM_DATE}" -lastPackBranchNames "${LAST_PACK_BRANCH_NAMES}" -lastPackFromDate "${LAST_PACK_FROM_DATE}" -lastOnlineBranchNames "${LAST_ONLINE_BRANCH_NAMES}" \
         -peoJsonF "${Personnel_FILE_PATH}")
     if [ $? != 0 ]; then
+        exit 1
+    fi
+    if ! jq -e . <<< "$check_missing_diff_old_responseJsonString" >/dev/null 2>&1; then
+        echo "❌ check_missing_diff_old 失败，返回的结果不是json。其内容如下:"
+        echo "$check_missing_diff_old_responseJsonString"
         exit 1
     fi
 
