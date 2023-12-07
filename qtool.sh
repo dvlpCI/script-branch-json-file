@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad
- # @LastEditTime: 2023-11-15 18:12:59
+ # @LastEditTime: 2023-12-07 14:36:58
  # @Description: 
 ### 
 
@@ -125,7 +125,7 @@ elif [ "${firstArg}" == "-quick" ]; then
     qbase_checkInputArgsValid_scriptPath=$(qbase -path checkInputArgsValid)
     inputArgsErrorMessage=$(sh $qbase_checkInputArgsValid_scriptPath $allArgsExceptFirstArg)
     if [ $? != 0 ]; then
-        echo "🚗🚗🚗🚗🚗🚗 如若后续执行发生错误，可能原因为: ${inputArgsErrorMessage}"
+        echo "🚗🚗🚗🚗🚗🚗 如若后续执行发生错误，可能原因为: ${inputArgsErrorMessage}" >&2  # 使用>&2将echo输出重定向到标准错误，作为日志
     fi
     # echo "qtool正在通过qbase调用快捷命令...《 sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg 》"
     sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg
