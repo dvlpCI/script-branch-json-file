@@ -15,11 +15,14 @@
 # 只是打包2
 
 function debug_log() {
+	echo "$1" >&2  # 使用>&2将echo输出重定向到标准错误，作为日志
+}
+
+function hide_log() {
     # 只有直接执行本脚本的时候才能够输出日志，不然如果是形如 echo $(sh xx.sh) 的时候会导致结果值不对
-    # is_Directly_execute_this_script=true
-    if [ "${is_Directly_execute_this_script}" == true ]; then
-        echo "$1"
-    fi
+	if [ "${isDebugThisScript}" == true ]; then
+		echo "$1" >&2  # 使用>&2将echo输出重定向到标准错误，作为日志
+	fi
 }
 
 # 当前【shell脚本】的工作目录
@@ -79,7 +82,13 @@ if [ $? != 0 ]; then
     # echo "${RED}执行错误的命令如下:《${BLUE} sh ${qtool_upload_to_all_byArgFile_scriptPath} -ipa \"${ipa_file_path}\" -updateDesString \"${updateDesString}\" -updateDesFromFilePath \"${updateDesFromFilePath}\" -updateDesFromFileKey \"${updateDesFromFileKey}\" -uploadArgsFPath \"${UploadPlatformArgsFilePath}\" -uploadArgsFKey \"${UploadPlatformArgsFileKey}\" -uploadResultFKey \"${UploadResult_FILE_Key}\" -LogPostToRobotUrl \"${LogPostToRobotUrl}\" -LogPostTextHeader \"${LogPostTextHeader}\" ${RED}》${NC}"
     exit 1
 fi
-# echo "${GREEN}上传ipa到各个平台成功。信息如下：\n${BLUE} $(cat "${UploadPlatformArgsFilePath}" | jq '.package_url_result') ${GREEN}。\n更多详情请查看: ${UploadPlatformArgsFilePath} ${NC}"
+if ! jq -e . <<< "$responseJsonString" >/dev/null 2>&1; then
+    echo "❌ qtool_upload_to_all_byArgFile_scriptPath 失败，返回的结果不是json。其内容如下:"
+    echo "$responseJsonString"
+    exit 1
+fi
+debug_log "${GREEN}上传ipa到各个平台成功。信息如下：\n${BLUE} $(cat "${UploadResult_FILE_PATH}" | jq '.${UploadResult_FILE_Key}') ${GREEN}。${NC}"
+debug_log "${GREEN}更多详情请查看: ${UploadResult_FILE_PATH} ${NC}"
 
 
 # 2.上传完成后，将各种路径信息日志返回给log
