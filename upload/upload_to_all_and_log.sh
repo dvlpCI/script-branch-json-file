@@ -87,7 +87,7 @@ if ! jq -e . <<< "$responseJsonString" >/dev/null 2>&1; then
     echo "$responseJsonString"
     exit 1
 fi
-debug_log "${GREEN}上传ipa到各个平台成功。信息如下：\n${BLUE} $(cat "${UploadResult_FILE_PATH}" | jq '.${UploadResult_FILE_Key}') ${GREEN}。${NC}"
+debug_log "${GREEN}上传ipa到各个平台成功。信息如下：\n${BLUE} $(cat "${UploadResult_FILE_PATH}" | jq ".${UploadResult_FILE_Key}") ${GREEN}。${NC}"
 debug_log "${GREEN}更多详情请查看: ${UploadResult_FILE_PATH} ${NC}"
 
 
