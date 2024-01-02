@@ -42,6 +42,40 @@ def chooseTesterFromFile(personFilePath):
     return _choosePeopleByType(personFilePath, "testerAllowId")
 
 
+
+
+# 定义一个函数，根据Personnel_FILE_PATH，searchIdKey，searchIdValue获取personName
+def getPeopleNameByPersonnel_FILE_PATH(Personnel_FILE_PATH, searchIdKey, searchIdValue):
+    # 读取Personnel_FILE_PATH文件内容
+    data = get_json_file_data(Personnel_FILE_PATH)
+    # 如果读取失败，则返回personName
+    if data == None:
+        personName="unkonw"
+        print(f"{YELLOW}您的{BLUE} {Personnel_FILE_PATH} {YELLOW}文件内容读取失败，无法获取姓名，将临时使用{BLUE} {personName} {YELLOW}，请后续补充。{NC}")
+        return personName
+    
+    # 查找 searchIdKey 为 searchIdValue 的字典
+    desired_dict = next((item for item in data if item[searchIdKey] == searchIdValue), None)
+    # 如果查找失败，则返回personName
+    if desired_dict==None:
+        personName="unkonw"
+        print(f"{YELLOW}您的{BLUE} {Personnel_FILE_PATH} {YELLOW}文件缺失{BLUE} {searchIdKey} {YELLOW}字段为{BLUE} {searchIdValue} {YELLOW}的内容，导致无法获取用户信息，将临时使用{BLUE} {personName} {YELLOW}，请后续补充。{NC}")
+        return personName
+    
+    # 打印结果
+    # print(f"==========={desired_dict}")
+    personName=desired_dict["name"]
+    if personName==None:
+        personName="unkonw"
+        print(f"{YELLOW}您的{BLUE} {Personnel_FILE_PATH} {YELLOW}文件中{BLUE} {searchIdKey} {YELLOW}字段为{BLUE} {searchIdValue} {YELLOW}的内容 {desired_dict} 缺少 name 属性，无法获取用户姓名，将临时使用{BLUE} {personName} {YELLOW}，请后续补充。{NC}")
+        return personName
+
+    return personName
+
+    
+
+
+
 def _choosePeopleByType(tool_params_file_path, typeId):
     data = get_json_file_data(tool_params_file_path)
     if data == None:

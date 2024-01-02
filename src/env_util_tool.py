@@ -43,18 +43,60 @@ def getBranch_json_file_dir_path_fromToolParamFile(tool_params_file_path, should
     branch_json_file_dir_abspath = joinFullPath_checkExsit(branch_json_file_git_home, branch_json_file_dir_relpath)
     # print(f"branch_json_file_dir_abspath:{RED}{branch_json_file_dir_abspath} {NC}")
     if branch_json_file_dir_abspath == None:
-        print(f"{RED}获取要存放等下填写的分支信息文件的文件夹路径失败。您的{BLUE} {branch_json_file_git_home} {RED}项目中，不存在{BLUE} {branch_json_file_dir_relpath} 的相对路径。请修改你在文件{BLUE} {tool_params_file_path} {RED}中的 ['branchJsonFile']['BRANCH_JSON_FILE_DIR_RELATIVE_PATH'] {RED}填写的该拼接参数值{NC}")
+        print(f"{RED}获取要存放等下填写的分支信息文件的文件夹路径失败。您的{BLUE} {branch_json_file_git_home} {RED}项目中，不存在{BLUE} {branch_json_file_dir_relpath} {RED}的相对路径。请修改你在文件{BLUE} {tool_params_file_path} {RED}中的 ['branchJsonFile']['BRANCH_JSON_FILE_DIR_RELATIVE_PATH'] {RED}填写的该拼接参数值{NC}")
         return None
     
     if shouldCheckExist==False:
         return branch_json_file_dir_abspath
     else:
         if not os.path.exists(branch_json_file_dir_abspath):
-            print(f"Error❌:{branch_json_file_dir_abspath}文件不存在，请检查")
+            print(f"Error❌: {branch_json_file_dir_abspath} 文件不存在，请检查")
             return None
         else:
             return branch_json_file_dir_abspath
 
+
+# 根据键值路径值 keypath 在 tool_params_file_path 的json文件中获取文件或者文件夹路径
+def get_fileOrDirPath_fromToolParamFile(tool_params_file_path, keypath, shouldCheckExist=False):
+    tool_params_file_data = get_json_file_data(tool_params_file_path)
+    if tool_params_file_data == None:
+        return None
+    
+    # 父目录
+    branch_json_file_git_home = getProject_dir_path_byToolParamFile(tool_params_file_path)
+
+    # 子目录
+    # result_value = tool_params_file_data['branchJsonFile']['BRANCH_JSON_FILE_DIR_RELATIVE_PATH']
+    # 按键值路径逐层获取值
+    hasFoundKeyPath="" # 已查找到哪一层
+    value = tool_params_file_data
+    for index, key in enumerate(keypath.split('.')):
+        if index > 0:
+            hasFoundKeyPath+=f"."
+        hasFoundKeyPath+=f"{key}"
+
+        value = value.get(key)
+        if value == None:
+            print(f"{RED}获取相对路径的字段值失败。您的{BLUE} {tool_params_file_path} {RED}文件中，不存在{BLUE} {value} {RED}字段。请修改您在文件{BLUE} {tool_params_file_path} {RED}中的 {hasFoundKeyPath.split('.')} {RED}填写的该拼接参数值{NC}")
+            return None
+    result_value=value
+
+    # 完整目录
+    branch_json_file_dir_abspath = joinFullPath_checkExsit(branch_json_file_git_home, result_value)
+    # print(f"branch_json_file_dir_abspath:{RED}{branch_json_file_dir_abspath} {NC}")
+    if branch_json_file_dir_abspath == None:
+        print(f"{RED}获取要路径失败。您的{BLUE} {branch_json_file_git_home} {RED}项目中，不存在{BLUE} {result_value} {RED}的相对路径。请修改您在文件{BLUE} {tool_params_file_path} {RED}中的 {hasFoundKeyPath.split('.')} {RED}填写的该拼接参数值{NC}")
+        return None
+    
+    if shouldCheckExist==False:
+        return branch_json_file_dir_abspath
+    else:
+        if not os.path.exists(branch_json_file_dir_abspath):
+            print(f"Error❌: {branch_json_file_dir_abspath} 文件不存在，请检查")
+            return None
+        else:
+            return branch_json_file_dir_abspath
+        
 
 
 def get_json_file_data(json_file_path):
@@ -62,9 +104,9 @@ def get_json_file_data(json_file_path):
         with open(json_file_path) as f:
             data = json.load(f)
     except FileNotFoundError:
-        print(f"{RED}Error: File {YELLOW}{json_file_path}{RED} not found. {NC}")
+        print(f"{RED}Error: File{YELLOW} {json_file_path} {RED}not found. {NC}")
         return None
     except json.JSONDecodeError:
-        print(f"{RED}Error: Failed to load JSON data from file {YELLOW}{json_file_path}{RED} {NC}")
+        print(f"{RED}Error: Failed to load JSON data from file{YELLOW} {json_file_path} {RED}{NC}")
         return None
     return data

@@ -1,26 +1,34 @@
 [
     {
-        "uid": "lichaoqian",
+        "name": "前",
+        "uid": "qian",
         "jenkin_name": "qian",
         "git_name": "qian",
-        "wechat_id": "lichaoqian"
+        "wechat_id": "lichaoqian",
+        "role_id": "developer1"
     },
     {
+        "name": "张三",
         "uid": "zhangsan",
         "jenkin_name": "张三",
         "git_name": "zhangsan",
-        "wechat_id": "zhangsan"
+        "wechat_id": "zhangsan",
+        "role_id": "developer2"
     },
     {
+        "name": "李四",
         "uid": "lisi",
         "jenkin_name": "李四",
         "git_name": "lisi",
-        "wechat_id": "lisi"
+        "wechat_id": "lisi",
+        "role_id": "apier1"
     },
     {
+        "name": "王五",
         "uid": "wangwu",
         "jenkin_name": "王五",
         "git_name": "wangwu",
-        "wechat_id": "wangwu"
+        "wechat_id": "wangwu",
+        "role_id": "tester1"
     }
 ]
