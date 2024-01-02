@@ -31,6 +31,15 @@ CYAN='\033[0;36m'
 # 1、branchJsonName_input 分支json文件名的输入
 quit_strings=["q", "Q", "quit", "Quit", "n"]  # 输入哪些字符串算是想要退出
 
+# # 获取具名参数的值
+# import argparse
+# parser = argparse.ArgumentParser()  # 创建参数解析器
+# parser.add_argument("-temp_reslut_file_path", "--temp_reslut_file_path", help="The value for argument 'temp_reslut_file_path'")
+# args = parser.parse_args()  # 解析命令行参数
+# temp_reslut_file_path = args.temp_reslut_file_path
+# if temp_reslut_file_path is None:
+#     print(f"{RED}您要获取创建分支信息的信息输入源文件 -temp_reslut_file_path 不能为空，请检查！{NC}")
+#     exit(1)
 last_arg=sys.argv[-1]  # 获取最后一个参数
 verbose_strings=[ "--verbose", "-verbose" ]  # 输入哪些字符串算是想要日志
 if last_arg in verbose_strings:

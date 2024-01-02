@@ -34,6 +34,15 @@ CYAN='\033[0;36m'
 
 
 jenkin_input_result_saveIn_file_path=sys.argv[1]
+# # 获取具名参数的值
+# import argparse
+# parser = argparse.ArgumentParser()  # 创建参数解析器
+# parser.add_argument("-temp_reslut_file_path", "--temp_reslut_file_path", help="The value for argument 'temp_reslut_file_path'")
+# args = parser.parse_args()  # 解析命令行参数
+# temp_reslut_file_path = args.temp_reslut_file_path
+# if temp_reslut_file_path is None:
+#     print(f"{RED}您要获取创建分支信息的信息输入源文件 -temp_reslut_file_path 不能为空，请检查！{NC}")
+#     exit(1)
 # print("====本脚本执行完，生成的jenkins_job_url结果等下会保存到的路径为：\033[1;31m{}\033[0m\n".format(jenkin_input_result_saveIn_file_path))
 
 def getOptionById(options, optionInputId):

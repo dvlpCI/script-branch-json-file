@@ -63,7 +63,7 @@ def getEnvValue_params_file_path():
     # return "/Users/qian/Project/CQCI/script-branch-json-file/test/tool_input.json"
     tool_params_file_path = os.getenv('QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH')
     if tool_params_file_path.startswith('~'):
-        tool_params_file_path = os.path.expanduser(tool_params_file_path) # 将~扩展为当前用户的home目录
+        tool_params_file_path = os.path.expanduser(tool_params_file_path) # 将波浪线~扩展为当前用户的home目录
     return tool_params_file_path
 
 def getEnvValue_params_file_data():
@@ -107,7 +107,7 @@ def getEnvValue_pack_workspace():
     # jenkins_data=data['pack']
     # jenkins_workspace=jenkins_data['workspace']
     # if jenkins_workspace.startswith('~'):
-    #     jenkins_workspace = os.path.expanduser(jenkins_workspace) # 将~扩展为当前用户的home目录
+    #     jenkins_workspace = os.path.expanduser(jenkins_workspace) # 将波浪线~扩展为当前用户的home目录
 
     # if not os.path.isdir(jenkins_workspace):
     #     print(f"{RED}目录{jenkins_workspace}不存在，请检查{tool_params_file_path}中的jenkins.workspace字段(已自动为你打开) {NC}")

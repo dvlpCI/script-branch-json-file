@@ -5,6 +5,15 @@ LastEditors: dvlproad
 LastEditTime: 2023-07-06 16:33:13
 Description: 
 '''
+# 定义颜色常量
+NC = '\033[0m'  # No Color
+RED = '\033[31m'
+GREEN = '\033[32m'
+YELLOW = '\033[33m'
+BLUE = '\033[34m'
+PURPLE = '\033[0;35m'
+CYAN = '\033[0;36m'
+
 import json
 import sys
 
@@ -54,6 +63,16 @@ def replace_values(json_path):
 
 env_list = ["test1", "test2", "develop1", "develop2", "preproduct", "product"]
 
+
+# # 获取具名参数的值
+# import argparse
+# parser = argparse.ArgumentParser()  # 创建参数解析器
+# parser.add_argument("-temp_reslut_file_path", "--temp_reslut_file_path", help="The value for argument 'temp_reslut_file_path'")
+# args = parser.parse_args()  # 解析命令行参数
+# temp_reslut_file_path = args.temp_reslut_file_path
+# if temp_reslut_file_path is None:
+#     print(f"{RED}您要获取创建分支信息的信息输入源文件 -temp_reslut_file_path 不能为空，请检查！{NC}")
+#     exit(1)
 if len(sys.argv) >= 2:
     env = sys.argv[1]
     if env not in env_list:

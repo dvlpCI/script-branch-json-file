@@ -18,7 +18,7 @@ def getEnvValue_params_file_path():
     # return "/Users/qian/Project/CQCI/script-branch-json-file/test/tool_input.json"
     tool_params_file_path = os.getenv('QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH')
     if tool_params_file_path.startswith('~'):
-        tool_params_file_path = os.path.expanduser(tool_params_file_path) # 将~扩展为当前用户的home目录
+        tool_params_file_path = os.path.expanduser(tool_params_file_path) # 将波浪线~扩展为当前用户的home目录
     return tool_params_file_path
 
 print(urllib.request.getproxies())
