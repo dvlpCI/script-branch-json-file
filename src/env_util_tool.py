@@ -38,22 +38,8 @@ def getBranch_json_file_dir_path_fromToolParamFile(tool_params_file_path, should
     if tool_params_file_data == None:
         return None
     
-    branch_json_file_git_home = getProject_dir_path_byToolParamFile(tool_params_file_path)
-    branch_json_file_dir_relpath = tool_params_file_data['branchJsonFile']['BRANCH_JSON_FILE_DIR_RELATIVE_PATH']
-    branch_json_file_dir_abspath = joinFullPath_checkExsit(branch_json_file_git_home, branch_json_file_dir_relpath)
-    # print(f"branch_json_file_dir_abspath:{RED}{branch_json_file_dir_abspath} {NC}")
-    if branch_json_file_dir_abspath == None:
-        print(f"{RED}获取要存放等下填写的分支信息文件的文件夹路径失败。您的{BLUE} {branch_json_file_git_home} {RED}项目中，不存在{BLUE} {branch_json_file_dir_relpath} {RED}的相对路径。请修改你在文件{BLUE} {tool_params_file_path} {RED}中的 ['branchJsonFile']['BRANCH_JSON_FILE_DIR_RELATIVE_PATH'] {RED}填写的该拼接参数值{NC}")
-        return None
-    
-    if shouldCheckExist==False:
-        return branch_json_file_dir_abspath
-    else:
-        if not os.path.exists(branch_json_file_dir_abspath):
-            print(f"Error❌: {branch_json_file_dir_abspath} 文件不存在，请检查")
-            return None
-        else:
-            return branch_json_file_dir_abspath
+    branch_json_file_dir_abspath = get_fileOrDirPath_fromToolParamFile(tool_params_file_path, "branchJsonFile.BRANCH_JSON_FILE_DIR_RELATIVE_PATH", shouldCheckExist=shouldCheckExist)
+    return branch_json_file_dir_abspath
 
 
 # 根据键值路径值 keypath 在 tool_params_file_path 的json文件中获取文件或者文件夹路径

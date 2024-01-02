@@ -39,10 +39,6 @@ def get_currentBranchFullName():
         print("标准输出:", e.output)
         print("标准错误输出:", e.stderr)
 
-    if currentBranchFullName=="master":
-        print(f"您的分支还是{BLUE}{currentBranchFullName}{NC}未切换到可编码分支，请检查：\n")
-        exit(1)
-
     # 提取分支名称
     if currentBranchFullName.startswith('refs/heads/'):
         currentBranchFullName = currentBranchFullName[len('refs/heads/'):]
