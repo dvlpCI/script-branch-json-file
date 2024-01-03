@@ -16,6 +16,30 @@
         "role_id": "developer2"
     },
     {
+        "name": "产品1",
+        "role_id": "producter1"
+    },
+    {
+        "name": "产品2",
+        "role_id": "producter2"
+    },
+    {
+        "name": "产品3",
+        "role_id": "producter3"
+    },
+    {
+        "name": "产品4",
+        "role_id": "producter4"
+    },
+    {
+        "name": "产品5",
+        "role_id": "producter5"
+    },
+    {
+        "name": "产品6",
+        "role_id": "producter6"
+    },
+    {
         "name": "李四",
         "uid": "lisi",
         "jenkin_name": "李四",
@@ -24,11 +48,59 @@
         "role_id": "apier1"
     },
     {
+        "name": "不用后台",
+        "role_id": "apier0"
+    },
+    {
+        "name": "后台1",
+        "role_id": "apier1"
+    },
+    {
+        "name": "后台2",
+        "role_id": "apier2"
+    },
+    {
+        "name": "后台3",
+        "role_id": "apier3"
+    },
+    {
+        "name": "后台4",
+        "role_id": "apier4"
+    },
+    {
         "name": "王五",
         "uid": "wangwu",
         "jenkin_name": "王五",
         "git_name": "wangwu",
         "wechat_id": "wangwu",
         "role_id": "tester1"
+    },
+    {
+        "name": "测试2",
+        "role_id": "tester2"
+    },
+    {
+        "name": "测试3",
+        "role_id": "tester3"
+    },
+    {
+        "name": "测试4",
+        "role_id": "tester4"
+    },
+    {
+        "name": "测试5",
+        "role_id": "tester5"
+    },
+    {
+        "name": "测试6",
+        "role_id": "tester6"
+    },
+    {
+        "name": "测试7",
+        "role_id": "tester7"
+    },
+    {
+        "name": "测试8",
+        "role_id": "tester8"
     }
 ]

@@ -11,6 +11,7 @@ import json
 import re
 import datetime
 from env_util import get_json_file_data
+from env_util_tool import get_fileOrDirPath_fromToolParamFile
 
 # 定义颜色常量
 NC = '\033[0m'  # No Color
@@ -82,27 +83,28 @@ def _choosePeopleByType(tool_params_file_path, typeId):
         personName="unkonw"
         print(f"{YELLOW}您的{BLUE} {tool_params_file_path} {YELLOW}文件内容读取失败，无法获取姓名，将临时使用{BLUE} {personName} {YELLOW}，请后续补充。{NC}")
         return personName
+    
+    # 获取用户信息文件 personnel_file_path
+    Personnel_FILE_PATH = get_fileOrDirPath_fromToolParamFile(tool_params_file_path, "personnel_file_path")
+    if Personnel_FILE_PATH == None:
+        personName="unkonw"
+        print(f"{YELLOW}您的{BLUE} {tool_params_file_path} {YELLOW}文件中的${BLUE} personnel_file_path {YELLOW}字段里缺失{BLUE} {typeId} {YELLOW}，无法获取姓名，将临时使用${BLUE} {personName} {YELLOW}，请后续补充。{NC}")
+        return personName
 
+    # 获取可以选择的用户ids
     if 'branchJsonFile' not in data:
         personName="unkonw"
         print(f"{YELLOW}您的{BLUE} {tool_params_file_path} {YELLOW}文件内容缺失{BLUE} branchJsonFile {YELLOW}字段，无法获取姓名，将临时使用{BLUE} {personName} {YELLOW}，请后续补充。{NC}")
         return personName
-    
-
     personResourceMap = data['branchJsonFile']
     if typeId not in personResourceMap:
         personName="unkonw"
         print(f"{YELLOW}您的{BLUE} {tool_params_file_path} {YELLOW}文件中的${BLUE} branchJsonFile {YELLOW}字段里缺失{BLUE} {typeId} {YELLOW}，无法获取姓名，将临时使用${BLUE} {personName} {YELLOW}，请后续补充。{NC}")
         return personName
-    
-    personMaps = personResourceMap[typeId]
-    if personMaps:
-        for i, personId in enumerate(personMaps):
-            person = getPersonById(data['person'], personId)  
-            if person:
-                print(f"{i+1}. {person['name']}")
-            else:
-                print(f"{i+1}. 未找到id为 {RED}{personId} {NC}的用户, 详情请查看 {BLUE}{tool_params_file_path} {NC}中的 {BLUE}person {NC}字段")
+    personIdMaps = personResourceMap[typeId]
+    for i, personId in enumerate(personIdMaps):
+        personName = getPeopleNameByPersonnel_FILE_PATH(Personnel_FILE_PATH, "role_id", personId)
+        print(f"{i+1}. {personName}")
 
     if typeId == 'answerAllowId':
         typeName="需求方人员"
@@ -126,13 +128,12 @@ def _choosePeopleByType(tool_params_file_path, typeId):
             break
 
         index = int(person_input) - 1
-        if index >= len(personMaps):
+        if index >= len(personIdMaps):
             print(f"请输入{typeName}编号（自定义请填0,退出q/Q）：")
             continue
         else:
-            selectedPersonId = personMaps[index]
-            personName = getPersonById(
-                data['person'], selectedPersonId)["name"]
+            selectedPersonId = personIdMaps[index]
+            personName = getPeopleNameByPersonnel_FILE_PATH(Personnel_FILE_PATH, "role_id", selectedPersonId)
             break
 
     print(f"您选择输入{typeName}名：{BLUE}{personName}{NC}")

@@ -63,7 +63,7 @@ def get_fileOrDirPath_fromToolParamFile(tool_params_file_path, keypath, shouldCh
 
         value = value.get(key)
         if value == None:
-            print(f"{RED}获取相对路径的字段值失败。您的{BLUE} {tool_params_file_path} {RED}文件中，不存在{BLUE} {value} {RED}字段。请修改您在文件{BLUE} {tool_params_file_path} {RED}中的 {hasFoundKeyPath.split('.')} {RED}填写的该拼接参数值{NC}")
+            print(f"{RED}获取相对路径的字段值失败。您的{BLUE} {tool_params_file_path} {RED}文件中，不存在{BLUE} {key} {RED}字段。请在文件{BLUE} {tool_params_file_path} {RED}中添加 {hasFoundKeyPath.split('.')} {RED}字段{NC}")
             return None
     result_value=value
 

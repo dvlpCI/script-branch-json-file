@@ -162,64 +162,7 @@
       "des": "版本分支:下下个版本"
     }
   ],
-  "person": [
-    {
-      "id": "developer1",
-      "name": "李超前"
-    },
-    {
-      "id": "producter1",
-      "name": "产品1"
-    },
-    {
-      "id": "producter2",
-      "name": "产品2"
-    },
-    {
-      "id": "producter3",
-      "name": "产品3"
-    },
-    {
-      "id": "producter4",
-      "name": "产品4"
-    },
-    {
-      "id": "producter5",
-      "name": "产品5"
-    },
-    {
-      "id": "apier1",
-      "name": "后台1"
-    },
-    {
-      "id": "apier2",
-      "name": "后台2"
-    },
-    {
-      "id": "apier3",
-      "name": "后台3"
-    },
-    {
-      "id": "apier4",
-      "name": "后台4"
-    },
-    {
-      "id": "tester1",
-      "name": "测试1"
-    },
-    {
-      "id": "tester2",
-      "name": "测试2"
-    },
-    {
-      "id": "tester3",
-      "name": "测试3"
-    },
-    {
-      "id": "tester4",
-      "name": "测试4"
-    }
-  ],
+  "personnel_file_path": "../../../Project/CQCI/script-branch-json-file/branch/example_branch_check_missing_diff_old/example_branch_check_missing_diff_old_personel.json",
   "branchJsonFile": {
     "BRANCH_JSON_FILE_DIR_RELATIVE_PATH": "./src/example/featureBrances/",
     "answerAllowId": [
