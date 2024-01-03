@@ -24,13 +24,13 @@
                     "action": "openDocTodoBug"
                 },
                 {
-                    "name": "open_custom_website",
-                    "des": "打开《更多网站(代码:gitlab、需求:tapd、UI:mockplus等)》",
+                    "name": "custom_website",
+                    "des": "打开《有关项目的其他网站(代码:gitlab、需求:tapd、UI:mockplus等)》",
                     "action": "openWebsiteByCustomChoose_fromProjectCustom"
                 },
                 {
-                    "name": "open_custom_website",
-                    "des": "打开《更多网站(APM、风控等)》",
+                    "name": "recommend_website",
+                    "des": "打开《推荐网站(APM、风控等)》",
                     "action": "openWebsiteByCustomChoose_fromSystemRecommend"
                 }
             ]

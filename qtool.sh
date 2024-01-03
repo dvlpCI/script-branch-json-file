@@ -183,5 +183,6 @@ if echo "${qtoolQuickCmdStrings[@]}" | grep -wq "$1" &>/dev/null; then
         printf "${YELLOW}温馨提示:无法执行未知命令《 qtool \"$1\" 》，请检查"
     fi
 else
+    # echo "正在执行命令(输出菜单):《 sh ${qtoolScriptDir_Absolute}/qtool_menu.sh \"${qtoolScriptDir_Absolute}\" \"${verboseParam}\" 》"
     sh ${qtoolScriptDir_Absolute}/qtool_menu.sh "${qtoolScriptDir_Absolute}" "${verboseParam}"
 fi
