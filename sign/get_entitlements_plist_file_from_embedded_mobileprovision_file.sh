@@ -1,5 +1,6 @@
 #!/bin/sh
 # 从 embedded.mobileprovision 获取生成签名需要的 entitlements.plist
+# 参考文档：[PlistBuddy 对plist文件的操作](https://blog.csdn.net/ZHFDBK/article/details/130948132)
 # 原理：将 Entitlements_plist_file 文件中 从 <key>Entitlements</key> 行开始到 <key>ExpirationDate</key> 之间的每一行添加到新文件中
 # <key>Entitlements</key>
 # 	<dict>
