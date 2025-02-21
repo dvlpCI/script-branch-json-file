@@ -1,18 +1,31 @@
 # script-branch-json-file
 
-
 ## 安装
+
+* 确保已安装 brew 命令，详见 官网 https://brew.sh/zh-cn/
+
+  ```
+  ```
+
+  
 
 * [Mac终端上Homebrew的常用命令](https://www.jianshu.com/p/536abd711af2)
 
 ```shell
 # 1、引入
-brew tap dvlpCI/qtool
+brew tap dvlpCI/qtool 或者 brew tap dvlpCI/tools
 
 # 2、安装
 brew install qtool
 # 如果上述命令执行失败，可能需要进入如下命令，删干净 qtool 相关问题
 open /usr/local/var/homebrew/
+
+# 3、使用:终端直接执行
+qtool
+# 其依赖qbase，请确保先执行 brew install qbase 安装 qbase。且安装过程请确保相应地址非private，即 https://github.com/dvlpCI/homebrew-qbase 和 https://github.com/dvlpCI/script-qbase 都不能private， 否则会导致qbase下载失败
+
+输入 `qbase -help` 其会提示支持的命令。这里可得支持的命令及其含义分别为 {"-quickCmd":"快捷命令","-path":"支持的脚本"}
+输入 `qbase -path`
 
 # 3、更新
 brew upgrade qtool
