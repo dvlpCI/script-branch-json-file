@@ -30,6 +30,11 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 
 
+# 获取操作的项目路径（即为哪个项目提交git记录）
+source ${qtoolScriptDir_Absolute}/base/get_system_env.sh
+project_dir=$(get_sysenv_project_dir)
+
+
 # 1、branchJsonName_input 分支json文件名的输入
 quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退出
 
@@ -41,7 +46,7 @@ branch_type_menu() {
     branchBelongKey1="commit_belong"
     branchBelongMaps1=$(echo "$content" | jq -r ".${branchBelongKey1}")
     if [ -z "${branchBelongMaps1}" ] || [ "${branchBelongMaps1}" == "null" ]; then
-        rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .${branchBelongKey1} "
+        rebaseErrorMessage="您正在为 ${project_dir} 项目操作分支，但未找到可选的操作类型，请先在 ${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH} 文件中设置 .${branchBelongKey1} "
         printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
         exit 1
     fi
@@ -108,7 +113,7 @@ menu_module() {
     branchBelongKey2="branch_belong2"
     branchBelongMaps2=$(echo "$content" | jq -r ".${branchBelongKey2}")
     if [ -z "${branchBelongMaps2}" ] || [ "${branchBelongMaps2}" == "null" ]; then
-        rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 .${branchBelongKey2} "
+        rebaseErrorMessage="您正在为 ${project_dir} 项目操作分支，但未找到可选的分支模块类型，请先在 ${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH} 文件中设置 .${branchBelongKey2} （可以考虑接在 commit_belong 字段后）"
         printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
         exit 1
     fi

@@ -19,9 +19,9 @@ CYAN='\033[0;36m'
 qtoolQuickCmdStrings=("cz" "help") # qtool 支持的快捷命令
 packageArg="qtool"
 
+CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
 # 本地测试
 function local_test() {
-    CurrentDIR_Script_Absolute="$(cd "$(dirname "$0")" && pwd)"
     qbaseScriptDir_Absolute=${CurrentDIR_Script_Absolute}
     echo "$qbaseScriptDir_Absolute"
 }
@@ -58,6 +58,11 @@ else # 最后一个元素不是 verbose
     else
         isTestingScript=false
     fi
+fi
+
+if [[ "${CurrentDIR_Script_Absolute}" == /Users/* ]]; then
+    isTestingScript=true
+    printf "${YELLOW}⚠️⚠️⚠️:您现在执行的qtool.sh是/Users下的脚本，所以固定为是测试该脚本⚠️⚠️⚠️\n${NC}" >&2  # 使用>&2将echo输出重定向到标准错误，作为日志
 fi
 
 
@@ -174,10 +179,10 @@ printf "${GREEN}温馨提示:您当前选择的操作参数使用  ${YELLOW}${pr
 
 # elif [ "$1" == "change" ]; then
 #     sh ${qtoolScriptDir_Absolute}/qtool_change.sh "${qtoolScriptDir_Absolute}"
-if echo "${qtoolQuickCmdStrings[@]}" | grep -wq "$1" &>/dev/null; then
-    if [ "$1" == "help" ]; then
+if echo "${qtoolQuickCmdStrings[@]}" | grep -wq "$firstArg" &>/dev/null; then
+    if [ "$firstArg" == "help" ]; then
         sh ${qtoolScriptDir_Absolute}/qtool_help.sh
-    elif [ "$1" == "cz" ]; then
+    elif [ "$firstArg" == "cz" ]; then
         sh ${qtoolScriptDir_Absolute}/commit/commit_message.sh
     else
         printf "${YELLOW}温馨提示:无法执行未知命令《 qtool \"$1\" 》，请检查"
