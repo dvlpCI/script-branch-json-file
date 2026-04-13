@@ -56,6 +56,26 @@ function getCategoryFile() {
     echo "${target_file_abspath}"
 }
 
+function getPersonFile() {
+    # target_file_abspath=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
+    # 读取文件内容
+    tool_root_content=$(cat "${target_branch_type_file_abspath}")
+    relFilePathKey=".personnel_file_path"
+    rel_file_path_value=$(echo "$tool_root_content" | jq -r "${relFilePathKey}")
+    if [ -z "${rel_file_path_value}" ] || [ "${rel_file_path_value}" == "null" ]; then
+        printf "%s" "${RED}请先在${BLUE} ${target_branch_type_file_abspath} ${RED}文件中设置${BLUE} ${relFilePathKey} ${NC}\n"
+        exit_script
+    fi
+
+    target_file_abspath=$(getAbsPathByFileRelativePath "${target_branch_type_file_abspath}" "$rel_file_path_value")
+    if [ $? != 0 ]; then
+        printf "%s" "${RED}拼接${BLUE} ${target_branch_type_file_abspath} ${RED}和${BLUE} ${rel_file_path_value} ${RED}组成的路径结果错误，错误结果为 ${target_file_abspath} ${NC}\n"
+        exit_script
+    fi
+
+    echo "${target_file_abspath}"
+}
+
 target_branch_type_file_abspath=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
 if [ ! -f "${target_branch_type_file_abspath}" ]; then
     echo "${RED}您的 target_branch_type_file_abspath = ${BLUE} ${target_branch_type_file_abspath} {RED}不存在，请检查${NC}"
@@ -69,6 +89,13 @@ if [ $? != 0 ]; then
     exit 1
 fi
 # echo "=======target_category_file_abspath=${target_category_file_abspath}"
+
+target_person_file_abspath=$(getPersonFile)
+if [ $? != 0 ]; then
+    echo "${target_person_file_abspath}" # 此时此值是错误信息
+    exit 1
+fi
+# echo "=======target_person_file_abspath=${target_person_file_abspath}"
 
 
 
@@ -226,7 +253,7 @@ function show_and_get_framework_category_forBranchCreate() {
     TempDir_Absolute="$( cd "$( dirname "$0" )" && pwd )"
     temp_file_abspath="${TempDir_Absolute}/${now_time}.json"
     
-    show_framework_category_forBranchCreate "${target_category_file_abspath}" "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" "${temp_file_abspath}" # 罗列模块列表
+    show_framework_category_forBranchCreate "${target_category_file_abspath}" "${target_person_file_abspath}" "${temp_file_abspath}" # 罗列模块列表
     if [ $? != 0 ]; then
         printf "${RED}获取模块列表失败${NC}\n"
         exit 1

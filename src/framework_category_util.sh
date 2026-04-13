@@ -143,14 +143,29 @@ getPersonNameById() {
     json_file="$1"
     person_id="$2"
     
-    # 检查 person 是否存在
-    person_data=$(jq -r '.person // "null"' "$json_file")
-    if [ "$person_data" == "null" ] || [ -z "$person_data" ]; then
-        printf "${RED}在${BLUE} ${json_file} ${RED}文件中未找到 .person 字段，请补充${NC}\n" >&2 # 要使用 >&2 把错误信息输出到 stderr： 这样可以避免这个错误信息没法在终端显示
+    # # 之前在 tool_input.json 中  .person 数组
+    # # 检查 person 是否存在
+    # person_data=$(jq -r '.person // "null"' "$json_file")
+    # if [ "$person_data" == "null" ] || [ -z "$person_data" ]; then
+    #     printf "${RED}在${BLUE} ${json_file} ${RED}文件中未找到 .person 字段，请补充${NC}\n" >&2 # 要使用 >&2 把错误信息输出到 stderr： 这样可以避免这个错误信息没法在终端显示
+    # fi
+
+    # name=$(jq -r --arg person_id "$person_id" '.person[] | select(.id == ($person_id)) | .name' "$json_file") # 加 -r 是为了去掉引号
+    
+    # 现在 person 独立在 tool_input_personel.json 中
+    # 检查是否是数组
+    data_type=$(jq -r 'type' "$json_file")
+    if [ "$data_type" != "array" ]; then
+        printf "${RED}在${BLUE} ${json_file} ${RED}文件中未找到人员数组，请补充${NC}\n" >&2
         return 1
     fi
     
-    name=$(jq -r --arg person_id "$person_id" '.person[] | select(.id == ($person_id)) | .name' "$json_file") # 加 -r 是为了去掉引号
+    name=$(jq -r --arg role_id "$person_id" '.[] | select(.role_id == ($role_id)) | .name' "$json_file")
+    if [ -z "$name" ] || [ "$name" == "null" ]; then
+        printf "${RED}需要在${BLUE} ${json_file} ${RED}文件中为 ${BLUE} ${target_category_file_abspath} ${RED} 找到 role_id=${person_id} 对应的 name ，但却没有找到，请检查${NC}\n" >&2
+        return 1
+    fi
+    
     echo "$name"
 }
 
