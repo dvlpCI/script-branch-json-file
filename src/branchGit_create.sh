@@ -227,6 +227,10 @@ function show_and_get_framework_category_forBranchCreate() {
     temp_file_abspath="${TempDir_Absolute}/${now_time}.json"
     
     show_framework_category_forBranchCreate "${target_category_file_abspath}" "${temp_file_abspath}" # 罗列模块列表
+    if [ $? != 0 ]; then
+        printf "${RED}获取模块列表失败${NC}\n"
+        exit 1
+    fi
     moduleOptionKeys=($(cat ${temp_file_abspath}))
     rm -rf ${temp_file_abspath} # 删除文件temp_file_abspath
 }

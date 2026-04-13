@@ -55,6 +55,13 @@ _show_framework_category() {
         echo "已知模块选项、已知基础选项："
     fi
 
+    # 检查 branch_belong2 是否是数组
+    branch_belong2_type=$(echo "$content" | jq -r ".branch_belong2 | type")
+    if [ "${branch_belong2_type}" != "array" ]; then
+        printf "${RED}Error: ${target_category_file_abspath} 里的 branch_belong2 必须是数组类型，当前是 ${branch_belong2_type} 类型${NC}\n"
+        exit 1
+    fi
+
     # 使用jq命令解析json数据
     categoryCount=$(echo "$content" | jq -r ".branch_belong2|length")
     # echo "===================${categoryCount}"
@@ -93,8 +100,17 @@ _show_framework_category() {
             mainerId=$(echo "$categoryValueMap_String" | jq -r '.mainer')
             backuperId=$(echo "$categoryValueMap_String" | jq -r '.backuper')
             createrName=$(getPersonNameById "$target_person_file_abspath" "$createrId")
+            if [ $? != 0 ]; then
+                return 1
+            fi
             mainerName=$(getPersonNameById "$target_person_file_abspath" "$mainerId")
+            if [ $? != 0 ]; then
+                return 1
+            fi
             backuperName=$(getPersonNameById "$target_person_file_abspath" "$backuperId")
+            if [ $? != 0 ]; then
+                return 1
+            fi
 
             moduleOptionKeys+=("${option}")
 
@@ -124,6 +140,14 @@ _show_framework_category() {
 getPersonNameById() {
     json_file="$1"
     person_id="$2"
+    
+    # 检查 person 是否存在
+    person_data=$(jq -r '.person // "null"' "$json_file")
+    if [ "$person_data" == "null" ] || [ -z "$person_data" ]; then
+        printf "${RED}在${BLUE} ${json_file} ${RED}文件中未找到 .person 字段，请补充${NC}\n" >&2 # 要使用 >&2 把错误信息输出到 stderr： 这样可以避免这个错误信息没法在终端显示
+        return 1
+    fi
+    
     name=$(jq -r --arg person_id "$person_id" '.person[] | select(.id == ($person_id)) | .name' "$json_file") # 加 -r 是为了去掉引号
     echo "$name"
 }
