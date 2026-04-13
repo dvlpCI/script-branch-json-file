@@ -12,18 +12,20 @@
 # 显示分支模块列表_供分支创建时候使用
 show_framework_category_forBranchCreate() {
     target_category_file_abspath=$1
-    saveModuleOptionKeysToFile=$2
+    target_person_file_abspath=$2
+    saveModuleOptionKeysToFile=$3
 
-    _show_framework_category "${target_category_file_abspath}" "forBranchCreate" "${saveModuleOptionKeysToFile}"
+    _show_framework_category "${target_category_file_abspath}" "${target_person_file_abspath}" "forBranchCreate" "${saveModuleOptionKeysToFile}"
 }
 
 # 显示分支模块列表_供负责人查找时候使用
 show_framework_category_md() {
     target_category_file_abspath=$1
-    tempMdFilePath=$2
-    saveModuleOptionKeysToFile=$3
+    target_person_file_abspath=$2
+    tempMdFilePath=$3
+    saveModuleOptionKeysToFile=$4
 
-    _show_framework_category "${target_category_file_abspath}" "onlyMdFile" "${saveModuleOptionKeysToFile}"
+    _show_framework_category "${target_category_file_abspath}" "${target_person_file_abspath}" "onlyMdFile" "${saveModuleOptionKeysToFile}"
 
     log_framework_category_md "${markdownString}" "${tempMdFilePath}"
 }
@@ -31,9 +33,9 @@ show_framework_category_md() {
 
 _show_framework_category() {
     target_category_file_abspath=$1
-    target_person_file_abspath=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
-    showType=$2
-    saveModuleOptionKeysToFile=$3
+    target_person_file_abspath=$2
+    showType=$3
+    saveModuleOptionKeysToFile=$4
     
     # 读取文件内容
     content=$(cat "${target_category_file_abspath}")

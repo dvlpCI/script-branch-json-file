@@ -72,4 +72,4 @@ fi
 
 tempMdFilePath=$(goPath_rel_project_dir_byKey ".project_path.other_path_rel_home.framework_category_md")
 # tempMdFilePath="~/Downloads/temp_framework_category.md"
-show_framework_category_md "${target_category_file_abspath}" "${tempMdFilePath}" # 罗列模块列表
+show_framework_category_md "${target_category_file_abspath}" "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" "${tempMdFilePath}" "" # 罗列模块列表
