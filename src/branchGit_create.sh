@@ -60,7 +60,7 @@ function getPersonFile() {
     # target_file_abspath=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
     # 读取文件内容
     tool_root_content=$(cat "${target_branch_type_file_abspath}")
-    relFilePathKey=".personnel_file_path"
+    relFilePathKey=".personnel_file_path_rel_this_file"
     rel_file_path_value=$(echo "$tool_root_content" | jq -r "${relFilePathKey}")
     if [ -z "${rel_file_path_value}" ] || [ "${rel_file_path_value}" == "null" ]; then
         printf "%s" "${RED}请先在${BLUE} ${target_branch_type_file_abspath} ${RED}文件中设置人员文件字段${BLUE} ${relFilePathKey} ${RED}（建议放在分支模块文件字段${BLUE} .branch_belong_file_rel_this_file ${RED}字段之前）${RED} \n"
@@ -149,9 +149,11 @@ function chooseBranchType() {
     valid_option=false
     while [ "$valid_option" = false ]; do
         read -r -p "①请选择您所要创建的分支类型的编号(若要退出请输入Q|q) : " option
-        if [ ${option} == "q" ] || [ ${option} == "Q" ]; then
+        if [ "${option}" == "q" ] || [ "${option}" == "Q" ]; then
             exit 2
-        elif [ ${option} -le ${branchBelongMapCount} ]; then
+        elif [ -z "${option}" ]; then
+            echo "输入不能为空，请重新输入。"
+        elif [ "${option}" -le "${branchBelongMapCount}" ]; then
             tBranchBelongMap=$(echo "$content" | jq ".${branchBelongKey1}" | jq -r ".[$((option - 1))]") # 添加 jq -r 的-r以去掉双引号
             chooseBranchTypeMap "${tBranchBelongMap}"
             break
