@@ -151,6 +151,11 @@
       "codeEnable": true,
       "key": "other",
       "des": "其他"
+    },
+    {
+      "codeEnable": true,
+      "key": "test",
+      "des": "本地测试"
     }
   ],
   "branch_version_choice": [

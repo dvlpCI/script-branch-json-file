@@ -23,7 +23,7 @@ joinFullPath_checkExsit() {
         if [ "${createIfNoExsit}" == true ]; then
             mkdir "${result_path}"
         else 
-            printf "${RED}❌Error:路径不存在:%s${NC}\n" "${result_path}"
+            printf "%s" "${result_path}" # 只返回 result_path ，其他提示语放在外面
             return 1
         fi
     fi
@@ -38,6 +38,7 @@ get_project_dir() {
     # home_abspath=$(cd "$(dirname "$project_tool_params_file_path")/$home_path_rel_this_dir"; pwd)
     home_abspath=$(joinFullPath_checkExsit "$(dirname $project_tool_params_file_path)" $home_path_rel_tool_dir)
     if [ $? != 0 ]; then
+        printf "${RED}❌Error:你要操作的项目不存在:%s 请检查${NC}\n" "${code_dir_abspath}" >&2
         exit_script
     fi
     printf "${BLUE}你要操作的项目的路径为：%s${NC}\n" "${home_abspath}"
@@ -59,6 +60,7 @@ goCodeHome() {
     code_dir_rel_home_dir=$(echo ${project_path_map} | jq -r ".other_path_rel_home.code_home")
     code_dir_abspath=$(joinFullPath_checkExsit "$home_abspath" $code_dir_rel_home_dir)
     if [ $? != 0 ]; then
+        printf "${RED}❌Error:您配置 .other_path_rel_home.code_home 指向的app的代码根目录不存在，请检查:%s ${NC}\n" "${code_dir_abspath}" >&2
         exit_script
     fi
     printf "${BLUE}app的代码根目录为：%s${NC}\n" "${code_dir_abspath}"

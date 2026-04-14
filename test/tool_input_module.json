@@ -301,6 +301,20 @@
           "backuper": "developer5"
         }
       ]
+    },
+    {
+      "key": "test",
+      "des": "临时本地测试玩玩",
+      "values": [
+        {
+          "option": "test1",
+          "short_des": "测试打包时候的分支信息提取",
+          "detail_des": "",
+          "creater": "developer1",
+          "mainer": "developer1",
+          "backuper": "developer1"
+        }
+      ]
     }
   ]
 }
