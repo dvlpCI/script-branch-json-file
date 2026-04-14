@@ -184,7 +184,7 @@ if [ "${onlyInput}" == true ]; then
 else
     # 1.2、分支模块选择
     # 1.2.1、分支模块列表
-    show_and_get_framework_category
+    show_and_get_framework_category "${target_category_file_abspath}" "${target_person_file_abspath}"
 
     chooseAndCompleteBranchName # 选择分支所属模块
     perfectDevBranchName        # 完善开发分支名

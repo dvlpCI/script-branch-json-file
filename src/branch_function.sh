@@ -55,6 +55,8 @@ function getPersonFile() {
 
 # 获取并显示模块列表（供分支创建和提交时使用）
 function show_and_get_framework_category() {
+    local target_category_file_abspath=$1
+    local target_person_file_abspath=$2
     now_time=$(date +"%m%d%H%M%S")
     TempDir_Absolute="$( cd "$( dirname "$0" )" && pwd )"
     temp_file_abspath="${TempDir_Absolute}/${now_time}.json"
@@ -70,6 +72,7 @@ function show_and_get_framework_category() {
 
 # 1.2.2、选择分支所属模块，并完善分支名
 function chooseAndCompleteBranchName() {
+    local quitStrings=("q" "Q" "quit" "Quit" "n")
     # 无限循环，监听用户输入
     while true; do
         read -r -p "②请输入您选择的完整模块标识key值(自定义请填0,退出请输入Q|q) : " module_option_input
