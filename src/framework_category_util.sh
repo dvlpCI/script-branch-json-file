@@ -9,7 +9,7 @@
 # @Description: 获取项目分类
 ###
 
-# 显示分支模块列表_供分支创建时候使用
+# 显示分支模块列表_只显示模块的基础信息(供分支创建时候使用)
 show_framework_category_forBranchCreate() {
     target_category_file_abspath=$1
     target_person_file_abspath=$2
@@ -18,7 +18,7 @@ show_framework_category_forBranchCreate() {
     _show_framework_category "${target_category_file_abspath}" "${target_person_file_abspath}" "forBranchCreate" "${saveModuleOptionKeysToFile}"
 }
 
-# 显示分支模块列表_供负责人查找时候使用
+# 显示分支模块列表_会额外显示模块的人员信息(供负责人查找时候使用)
 show_framework_category_md() {
     target_category_file_abspath=$1
     target_person_file_abspath=$2
@@ -143,6 +143,9 @@ _show_framework_category() {
                 return 1
             fi
 
+            # 序号（仅用于显示）
+            # TODO: 是不是输出值不应该只有 moduleOptionKeys ，而是应该是一个json,里面包含编号和key组成的数组，即[{"序号": "序号值","key":"key值"}，这样比较好未来拓展
+            # 实际 key（用于匹配）
             moduleOptionKeys+=("${option}")
 
             if [ "${showType}" == "forBranchCreate" ]; then

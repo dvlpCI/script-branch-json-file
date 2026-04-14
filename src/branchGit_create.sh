@@ -168,7 +168,7 @@ chooseBranchType
 chooseAndCompleteBranchName() {
     # 无限循环，监听用户输入
     while true; do
-        read -r -p "②请输入您的模块/基础选项(自定义请填0,退出请输入Q|q) : " module_option_input
+        read -r -p "②请输入您选择的完整模块标识key值(自定义请填0,退出请输入Q|q) : " module_option_input
 
         if echo "${quitStrings[@]}" | grep -wq "${module_option_input}" &>/dev/null; then
             echo "您已退出创建"
