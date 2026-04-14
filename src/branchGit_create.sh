@@ -63,7 +63,7 @@ function getPersonFile() {
     relFilePathKey=".personnel_file_path"
     rel_file_path_value=$(echo "$tool_root_content" | jq -r "${relFilePathKey}")
     if [ -z "${rel_file_path_value}" ] || [ "${rel_file_path_value}" == "null" ]; then
-        printf "%s" "${RED}请先在${BLUE} ${target_branch_type_file_abspath} ${RED}文件中设置${BLUE} ${relFilePathKey} ${NC}\n"
+        printf "%s" "${RED}请先在${BLUE} ${target_branch_type_file_abspath} ${RED}文件中设置人员文件字段${BLUE} ${relFilePathKey} ${RED}（建议放在分支模块文件字段${BLUE} .branch_belong_file_rel_this_file ${RED}字段之前）${RED} \n"
         exit_script
     fi
 

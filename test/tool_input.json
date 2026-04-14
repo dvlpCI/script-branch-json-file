@@ -124,6 +124,7 @@
       "des": "其他"
     }
   ],
+  "personnel_file_path": "./tool_input_personel.json",
   "branch_belong_file_rel_this_file": "./tool_input_module.json",
   "branch_categorys": [
     {
@@ -162,7 +163,6 @@
       "des": "版本分支:下下个版本"
     }
   ],
-  "personnel_file_path": "../../../Project/CQCI/script-branch-json-file/branch/example_branch_check_missing_diff_old/example_branch_check_missing_diff_old_personel.json",
   "branchJsonFile": {
     "BRANCH_JSON_FILE_DIR_RELATIVE_PATH": "./src/example/featureBrances/",
     "answerAllowId": [

@@ -31,6 +31,35 @@ show_framework_category_md() {
 }
 
 
+# 显示分支模块列表（核心函数）
+# 
+# @用途: 解析 branch_belong2 字段，按分类展示模块选项，并可选择保存到文件
+#
+# @注意：内部会包含去获取模块的 creater/mainer/backuper 对应的 name ，所以需要传入 target_person_file_abspath
+#
+# @传入参数:
+#   $1: target_category_file_abspath - 模块分类文件路径（如 tool_input_module.json）
+#   $2: target_person_file_abspath - 人员信息文件路径（如 tool_input_personel.json）
+#   $3: showType - 显示类型
+#       - "forBranchCreate": 供分支创建时选择（只显示模块的基础信息）
+#       - "onlyMdFile": 生成 Markdown 文档（会额外显示模块的人员信息）
+#   $4: saveModuleOptionKeysToFile - 保存选项 key 到文件（可选，为空则不保存）
+#
+# @功能说明:
+#   - 解析 branch_belong2 数组，按分类（category）遍历
+#   - 遍历每个分类下的模块项（values）
+#   - 从另一个文件 target_person_file_abspath 查找 role_id 对应的 name：
+#     - creater（创建者）
+#     - mainer（主开发者）
+#     - backuper（备份开发者）
+#
+# @使用场景:
+#   - branchGit_create.sh 中创建分支时选择模块
+#   - framework_category_showForResponsiblePerson.sh 中查看负责人信息
+#
+# @示例:
+#   _show_framework_category "/path/to/module.json" "/path/to/person.json" "forBranchCreate" "/tmp/keys.txt"
+#
 _show_framework_category() {
     target_category_file_abspath=$1
     target_person_file_abspath=$2
