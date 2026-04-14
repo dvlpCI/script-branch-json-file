@@ -84,11 +84,11 @@ def _choosePeopleByType(tool_params_file_path, typeId):
         print(f"{YELLOW}您的{BLUE} {tool_params_file_path} {YELLOW}文件内容读取失败，无法获取姓名，将临时使用{BLUE} {personName} {YELLOW}，请后续补充。{NC}")
         return personName
     
-    # 获取用户信息文件 personnel_file_path
-    Personnel_FILE_PATH = get_fileOrDirPath_fromToolParamFile(tool_params_file_path, "personnel_file_path")
+    # 获取用户信息文件
+    Personnel_FILE_PATH = get_fileOrDirPath_fromToolParamFile(tool_params_file_path, "personnel_file_path_rel_this_file")
     if Personnel_FILE_PATH == None:
         personName="unkonw"
-        print(f"{YELLOW}您的{BLUE} {tool_params_file_path} {YELLOW}文件中的${BLUE} personnel_file_path {YELLOW}字段里缺失{BLUE} {typeId} {YELLOW}，无法获取姓名，将临时使用${BLUE} {personName} {YELLOW}，请后续补充。{NC}")
+        print(f"{YELLOW}您的{BLUE} {tool_params_file_path} {YELLOW}文件中的${BLUE} personnel_file_path_rel_this_file {YELLOW}字段里缺失{BLUE} {typeId} {YELLOW}，无法获取姓名，将临时使用${BLUE} {personName} {YELLOW}，请后续补充。{NC}")
         return personName
 
     # 获取可以选择的用户ids

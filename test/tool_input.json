@@ -124,7 +124,7 @@
       "des": "其他"
     }
   ],
-  "personnel_file_path": "./tool_input_personel.json",
+  "personnel_file_path_rel_this_file": "./tool_input_personel.json",
   "branch_belong_file_rel_this_file": "./tool_input_module.json",
   "branch_categorys": [
     {

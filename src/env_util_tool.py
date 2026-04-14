@@ -43,13 +43,27 @@ def getBranch_json_file_dir_path_fromToolParamFile(tool_params_file_path, should
 
 
 # 根据键值路径值 keypath 在 tool_params_file_path 的json文件中获取文件或者文件夹路径
+# 
+# 说明：基准目录根据 keypath 后缀决定
+#   - 如果 keypath 以 "_rel_this_file" 结尾：相对于 tool_params_file_path 所在目录
+#   - 否则：相对于项目目录（通过 tool_params_file_path.json 中的 project_path.home_path_rel_this_dir 字段计算）
+# 
+# 参数:
+#   tool_params_file_path: 工具参数配置文件路径（如 /path/to/project/test/tool_input.json）
+#   keypath: JSON中的键值路径（如 "personnel_file_path" 或 "personnel_file_path_rel_this_file"）
+#   shouldCheckExist: 是否检查路径存在（默认False）
 def get_fileOrDirPath_fromToolParamFile(tool_params_file_path, keypath, shouldCheckExist=False):
     tool_params_file_data = get_json_file_data(tool_params_file_path)
     if tool_params_file_data == None:
         return None
     
-    # 父目录
-    branch_json_file_git_home = getProject_dir_path_byToolParamFile(tool_params_file_path)
+    # 基准目录：根据 keypath 后缀决定
+    # - 如果 keypath 以 "_rel_this_file" 结尾：相对于 tool_params_file_path 所在目录
+    # - 否则：相对于项目目录
+    if keypath.endswith("_rel_this_file"):
+        base_dir_path = os.path.dirname(tool_params_file_path)
+    else:
+        base_dir_path = getProject_dir_path_byToolParamFile(tool_params_file_path)
 
     # 子目录
     # result_value = tool_params_file_data['branchJsonFile']['BRANCH_JSON_FILE_DIR_RELATIVE_PATH']
@@ -68,10 +82,10 @@ def get_fileOrDirPath_fromToolParamFile(tool_params_file_path, keypath, shouldCh
     result_value=value
 
     # 完整目录
-    branch_json_file_dir_abspath = joinFullPath_checkExsit(branch_json_file_git_home, result_value)
+    branch_json_file_dir_abspath = joinFullPath_checkExsit(base_dir_path, result_value)
     # print(f"branch_json_file_dir_abspath:{RED}{branch_json_file_dir_abspath} {NC}")
     if branch_json_file_dir_abspath == None:
-        print(f"{RED}获取要路径失败。您的{BLUE} {branch_json_file_git_home} {RED}项目中，不存在{BLUE} {result_value} {RED}的相对路径。请修改您在文件{BLUE} {tool_params_file_path} {RED}中的 {hasFoundKeyPath.split('.')} {RED}填写的该拼接参数值{NC}")
+        print(f"{RED}获取路径失败。获取{BLUE} {base_dir_path} {RED}相对路径{BLUE} {result_value} {RED}失败。请修改您在文件{BLUE} {tool_params_file_path} {RED}中的 {hasFoundKeyPath.split('.')} {RED}字段值{NC}")
         return None
     
     if shouldCheckExist==False:

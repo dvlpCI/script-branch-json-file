@@ -51,6 +51,73 @@ source ${qtoolScriptDir_Absolute}/base/get_system_env.sh
 project_dir=$(get_sysenv_project_dir)
 ```
 
+### 2、配置文件路径解析规则
+
+配置文件中的路径有两种解析方式，通过字段名后缀区分：
+
+| 字段名后缀 | 基准目录 | 说明 |
+|-----------|---------|------|
+| 无后缀 | 项目目录 | 如 `personnel_file_path`，相对于 `home_path_rel_this_dir` 计算出的项目目录 |
+| `_rel_this_file` | 配置文件所在目录 | 如 `personnel_file_path_rel_this_file`，相对于 `tool_params_file_path` 所在目录 |
+
+#### Shell 脚本（getAbsPathByFileRelativePath）
+
+```bash
+# 参数:
+#   $1: file_path - 配置文件路径（如 /path/to/project/test/tool_input.json）
+#   $2: rel_path - 相对路径（如 ./tool_input_personel.json）
+# 结果: /path/to/project/test/ + ./tool_input_personel.json
+
+function getAbsPathByFileRelativePath() {
+    file_parent_dir_path="$(dirname $file_path)"
+    joinFullPath_checkExsit "${file_parent_dir_path}" "${rel_path}"
+}
+```
+
+#### Python 脚本（get_fileOrDirPath_fromToolParamFile）
+
+```python
+# 参数:
+#   tool_params_file_path: 配置文件路径
+#   keypath: 字段路径，如 "personnel_file_path" 或 "personnel_file_path_rel_this_file"
+# 结果: 根据 keypath 后缀决定基准目录
+
+def get_fileOrDirPath_fromToolParamFile(tool_params_file_path, keypath, shouldCheckExist=False):
+    if keypath.endswith("_rel_this_file"):
+        base_dir_path = os.path.dirname(tool_params_file_path)  # 相对于文件所在目录
+    else:
+        base_dir_path = getProject_dir_path_byToolParamFile(tool_params_file_path)  # 相对于项目目录
+    # 拼接路径...
+```
+
+#### 配置示例
+
+假设 `project_home_dir_path` = `/path/to/project`
+
+ `tool_params_file_path` = `/path/to/project/test/tool_input.json` 内容为：
+
+```json
+{
+  "project_path": {
+    "home_path_rel_this_dir": "../"
+  },
+  "personnel_file_path_rel_this_file": "./tool_input_personel.json",
+  "branchJsonFile": {
+    "BRANCH_JSON_FILE_DIR_RELATIVE_PATH": "./src/example/featureBrances/"
+  }
+}
+```
+
+则
+
+- 以 `_rel_this_file` 结尾的示例 `personnel_file_path_rel_this_file` 
+
+  `/path/to/project/test/tool_input.json`+"./tool_input_personel.json" → `/path/to/project/test/tool_input_personel.json` ✅
+
+- 无 `_rel_this_file` 结尾的示例 `BRANCH_JSON_FILE_DIR_RELATIVE_PATH`
+
+   `/path/to/project` + "./src/example/featureBrances/" → `/path/to/project/src/example/featureBrances/` ✅
+
 
 
 ## qtool.sh 的测试方法
@@ -180,6 +247,10 @@ fi
 
 
 ## 版本记录
+
+### 0.0.7 (2026-04-14)
+
+- 【Feature】`def get_fileOrDirPath_fromToolParamFile`: 新增 `_rel_this_file` 后缀支持：字段名以 `_rel_this_file` 结尾时，相对于配置文件所在目录解析
 
 ### 0.0.6 (2026-04-14)
 

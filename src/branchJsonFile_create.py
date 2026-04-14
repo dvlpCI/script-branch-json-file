@@ -136,7 +136,7 @@ branch_json_file_dir_path = getBranch_json_file_dir_path_fromToolParamFile(tool_
 if branch_json_file_dir_path == None:
     exit(1)
 
-Personnel_FILE_PATH=get_fileOrDirPath_fromToolParamFile(tool_params_file_path, "personnel_file_path")
+Personnel_FILE_PATH=get_fileOrDirPath_fromToolParamFile(tool_params_file_path, "personnel_file_path_rel_this_file")
 if Personnel_FILE_PATH == None:
     exit(1)
 
