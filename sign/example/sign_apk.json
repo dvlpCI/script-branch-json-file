@@ -1,0 +1,40 @@
+{
+    "action_sript_file_rel_this_dir": "../sign_apk.sh",
+    "action_sript_file_des": "签名apk",
+    "actions_envs_des": "要操作的环境",
+    "actions_envs_values": [
+        {
+            "env_id": "sign_apk",
+            "env_name": "签名任意apk",
+            "env_action_ids": [
+                "sign_properties_file",
+                "waitSign_DirOrFile",
+                "signResult_dir"
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "id": "sign_properties_file",
+            "des": "签名时候，使用的秘钥文件",
+            "actionType": "fixed",
+            "resultForParam": "null",
+            "fixedType": "file-path-rel-this-file",
+            "fixedValue": "./sign_apk.properties"
+        },
+        {
+            "id": "waitSign_DirOrFile",
+            "des": "等待执行签名的文件或文件夹",
+            "actionType": "custom",
+            "resultForParam": "null"
+        },
+        {
+            "id": "signResult_dir",
+            "des": "要签名的所有apk文件所位于的文件夹",
+            "actionType": "fixed",
+            "resultForParam": "null",
+            "fixedType": "dir-path-rel-this-file",
+            "fixedValue": "./all_ipa_output/channel"
+        }
+    ]
+}

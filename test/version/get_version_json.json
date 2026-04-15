@@ -1,0 +1,24 @@
+{
+    "action_sript_file_rel_this_dir": "./all02_clean_up.sh",
+    "action_sript_file_des": "获取版本json",
+    "actions_envs_des": "要操作的环境",
+    "actions_envs_values": [
+        {
+            "env_id": "get_version_json",
+            "env_name": "要合并json的文件所在的目录",
+            "env_action_ids": [
+                "jsonDir"
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "id": "jsonDir",
+            "des": "用来更新【iOS项目代码环境】的文件",
+            "actionType": "fixed",
+            "resultForParam": "-jsonDir",
+            "fixedType": "dir-path-rel-this-file",
+            "fixedValue": "../../bulidScript/featureBrances"
+        }
+    ]
+}
