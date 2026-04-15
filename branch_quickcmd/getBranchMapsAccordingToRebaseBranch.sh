@@ -52,7 +52,6 @@ do
         # branch_quickcmd/getBranchNames_accordingToRebaseBranch.sh
         -rebaseBranch|--rebase-branch) REBASE_BRANCH=$2; shift 2;;
         -addValue|--add-value) add_value="$2" shift 2;;
-        -addType|--add-type) add_type="$2" shift 2;;
         -onlyName|--only-name) ONLY_NAME=$2; shift 2;; # 名字是否只取最后部分，不为true时候为全名
 
         # branch_check_self_name
@@ -106,8 +105,7 @@ done
 
 debug_log "========1.1=======✅-rebaseBranch:${REBASE_BRANCH}"
 debug_log "========1.2=======✅--add-value:${add_value}"
-debug_log "========1.3=======✅--add-type:${add_type}"
-debug_log "========1.4=======✅-onlyName:${ONLY_NAME}"
+debug_log "========1.3=======✅-onlyName:${ONLY_NAME}"
 debug_log "========2.1=======✅-branchMapsFromDir:${BranceMaps_From_Directory_PATH}"
 debug_log "========2.2=======✅-branchMapsAddToJsonF:${BranchMapAddToJsonFile}"
 debug_log "========2.3=======✅-branchMapsAddToKey:${BranchMapAddToKey}"
@@ -145,8 +143,8 @@ debug_log "========2.5=======✅-shouldDeleteHasCatchRequestBranchFile:${shouldD
 
 echo "\n---------- getBranchNamesAccordingToRebaseBranch ----------"
 # qbase_getBranchNames_accordingToRebaseBranch_scriptPath=$(qbase -path getBranchNames_accordingToRebaseBranch)
-debug_log "${YELLOW}正在执行命令(根据rebase,获取分支名):《${BLUE} qbase -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch \"${REBASE_BRANCH}\" -addValue \"${add_value}\" -addType \"${add_type}\" -onlyName \"${ONLY_NAME}\" ${YELLOW}》${NC}"
-resultBranchResponseJsonString=$(qbase -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch "${REBASE_BRANCH}" -addValue "${add_value}" -addType "${add_type}" -onlyName "${ONLY_NAME}")
+debug_log "${YELLOW}正在执行命令(根据rebase,获取分支名):《${BLUE} qbase -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch \"${REBASE_BRANCH}\" -addValue \"${add_value}\" -onlyName \"${ONLY_NAME}\" ${YELLOW}》${NC}"
+resultBranchResponseJsonString=$(qbase -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch "${REBASE_BRANCH}" -addValue "${add_value}" -onlyName "${ONLY_NAME}")
 if [ $? != 0 ]; then
     echo "${resultBranchResponseJsonString}"
     exit 1

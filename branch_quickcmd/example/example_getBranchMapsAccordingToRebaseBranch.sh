@@ -37,7 +37,6 @@ qtool_getBranchMapsAccordingToRebaseBranch_scriptPath="${CategoryFun_HomeDir_Abs
 # branch_quickcmd/getBranchNames_accordingToRebaseBranch.sh
 REBASE_BRANCH="origin/main"
 add_value="1"
-# add_type=
 ONLY_NAME="false" # 名字是否只取最后部分，不为true时候为全名
 
 
@@ -70,7 +69,7 @@ ROBOT_URL="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=925776da-1ff4-41
 atMiddleBracketIdsString="[\"@all\", \"lichaoqian\"]"
 
 sh ${qtool_getBranchMapsAccordingToRebaseBranch_scriptPath} \
-    -rebaseBranch "${REBASE_BRANCH}" --add-value "${add_value}" -addType "${add_type}" -onlyName "${ONLY_NAME}" \
+    -rebaseBranch "${REBASE_BRANCH}" --add-value "${add_value}" -onlyName "${ONLY_NAME}" \
     -checkInNetwork "${CHECK_IN_NETWORK_TYPE}" -checkByJsonFile "${CHECK_BY_JSON_FILE}" \
     -mustContainByJsonFile "${MUST_CONTAIN_BY_JSON_FILE}" \
     -shouldCheckMissingDiffOld "${shouldCheckMissingDiffOld}" -lastPackBranchNames "${LAST_PACK_BRANCH_NAMES}" -lastPackFromDate "${LAST_PACK_FROM_DATE}" -lastOnlineBranchNames "${LAST_ONLINE_BRANCH_NAMES}" \
