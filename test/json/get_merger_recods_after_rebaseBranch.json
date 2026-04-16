@@ -1,0 +1,33 @@
+{
+    "action_sript_bin": "qbase",
+    "action_sript_file_des": "获取当前分支自rebase master后的所有包含分支",
+    "actions_envs_des": "要操作的环境",
+    "actions_envs_values": [
+        {
+            "env_id": "getBranchNamesAccordingToRebaseBranch",
+            "env_name": "获取当前分支自rebase master后的所有包含分支",
+            "env_action_ids": [
+                "-quick",
+                "rebaseBranch"
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "id": "-quick",
+            "des": "rebase的分支",
+            "actionType": "fixed",
+            "resultForParam": "-quick",
+            "fixedType": "fixed-value",
+            "fixedValue": "getBranchNamesAccordingToRebaseBranch"
+        },
+        {
+            "id": "rebaseBranch",
+            "des": "rebase的分支",
+            "actionType": "fixed",
+            "resultForParam": "-rebaseBranch",
+            "fixedType": "fixed-value",
+            "fixedValue": "main"
+        }
+    ]
+}

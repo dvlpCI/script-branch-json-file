@@ -18,7 +18,7 @@
             "actionType": "fixed",
             "resultForParam": "-jsonDir",
             "fixedType": "dir-path-rel-this-file",
-            "fixedValue": "../../bulidScript/featureBrances"
+            "fixedValue": "../../branch_quickcmd/example/featureBrances"
         }
     ]
 }

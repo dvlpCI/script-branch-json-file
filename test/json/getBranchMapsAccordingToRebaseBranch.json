@@ -1,0 +1,69 @@
+{
+    "action_sript_bin": "qbase",
+    "action_sript_file_des": "获取当前分支【在rebase指定分支后】的所有分支信息合入指定文件中",
+    "actions_envs_des": "要操作的环境",
+    "actions_envs_values": [
+        {
+            "env_id": "getBranchMapsAccordingToRebaseBranch",
+            "env_name": "获取当前分支【在rebase指定分支后】的所有分支信息合入指定文件中",
+            "env_action_ids": [
+                "-quick",
+                "rebaseBranch",
+                "add-value",
+                "-branchMapsFromDir",
+                "-branchMapsAddToJsonF",
+                "-branchMapsAddToKey"
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "id": "-quick",
+            "des": "rebase的分支",
+            "actionType": "fixed",
+            "resultForParam": "-quick",
+            "fixedType": "fixed-value",
+            "fixedValue": "getBranchMapsAccordingToRebaseBranch"
+        },
+        {
+            "id": "rebaseBranch",
+            "des": "rebase的分支",
+            "actionType": "fixed",
+            "resultForParam": "-rebaseBranch",
+            "fixedType": "fixed-value",
+            "fixedValue": "main"
+        },
+        {
+            "id": "add-value",
+            "des": "rebase的分支",
+            "actionType": "fixed",
+            "resultForParam": "--add-value",
+            "fixedType": "fixed-value",
+            "fixedValue": "1"
+        },
+        {
+            "id": "-branchMapsFromDir",
+            "des": "从哪个文件获取分支信息源",
+            "actionType": "fixed",
+            "resultForParam": "-branchMapsFromDir",
+            "fixedType": "dir-path-rel-this-file",
+            "fixedValue": "../../branch_quickcmd/example/featureBrances"
+        },
+        {
+            "id": "-branchMapsAddToJsonF",
+            "des": "获取后存到哪个json文件",
+            "actionType": "fixed",
+            "resultForParam": "-branchMapsAddToJsonF",
+            "fixedType": "file-path-rel-this-file",
+            "fixedValue": "../../branch_quickcmd/example/app_branch_info.json"
+        },
+        {
+            "id": "-branchMapsAddToKey",
+            "des": "获取后存到json文件的哪个字段",
+            "actionType": "fixed",
+            "resultForParam": "-branchMapsAddToKey",
+            "fixedType": "fixed-value",
+            "fixedValue": "feature_brances"
+        }
+    ]
+}

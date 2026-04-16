@@ -61,7 +61,10 @@
         "./pack/env_update_for_runinsimulator_input.json",
         "./sign/example/sign_apk.json",
         "./test/json/upload_cos.json",
-        "./test/version/get_version_json.json"
+        "./test/version/get_version_json.json",
+        "./test/json/getBranchNamesAccordingToRebaseBranch.json",
+        "./test/json/get_merger_recods_after_rebaseBranch.json",
+        "./test/json/getBranchMapsAccordingToRebaseBranch.json"
       ],
       "android_waitSignApk": {
         "android_waitSignApkVersions_dir_RELATIVE_HOME": "../all_ipa_output/channel/",

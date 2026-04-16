@@ -6,6 +6,12 @@
       "name": "默认的工程",
       "project_tool_file_path": "/Users/lichaoqian/Project/CQCI/script-branch-json-file/test/tool_input.json",
       "project_dir_path": "/Users/lichaoqian/Project/CQCI/script-branch-json-file/"
+    },
+    {
+      "id": "commit—info",
+      "name": "获取分支信息的工程",
+      "project_tool_file_path": "/Users/lichaoqian/Project/CQCI/AutoPackage-CommitInfo/test/tool_input.json",
+      "project_dir_path": "/Users/lichaoqian/Project/CQCI/AutoPackage-CommitInfo"
     }
   ]
 }
