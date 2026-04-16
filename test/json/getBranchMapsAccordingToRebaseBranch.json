@@ -1,5 +1,5 @@
 {
-    "action_sript_bin": "qbase",
+    "action_sript_bin": "~/Project/CQCI/script-branch-json-file/qtool.sh",
     "action_sript_file_des": "获取当前分支【在rebase指定分支后】的所有分支信息合入指定文件中",
     "actions_envs_des": "要操作的环境",
     "actions_envs_values": [
@@ -8,8 +8,8 @@
             "env_name": "获取当前分支【在rebase指定分支后】的所有分支信息合入指定文件中",
             "env_action_ids": [
                 "-quick",
-                "rebaseBranch",
-                "add-value",
+                "-rebaseBranch",
+                "--add-value",
                 "-branchMapsFromDir",
                 "-branchMapsAddToJsonF",
                 "-branchMapsAddToKey"
@@ -26,7 +26,7 @@
             "fixedValue": "getBranchMapsAccordingToRebaseBranch"
         },
         {
-            "id": "rebaseBranch",
+            "id": "-rebaseBranch",
             "des": "rebase的分支",
             "actionType": "fixed",
             "resultForParam": "-rebaseBranch",
@@ -34,7 +34,7 @@
             "fixedValue": "main"
         },
         {
-            "id": "add-value",
+            "id": "--add-value",
             "des": "rebase的分支",
             "actionType": "fixed",
             "resultForParam": "--add-value",

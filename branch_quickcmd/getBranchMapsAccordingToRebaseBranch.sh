@@ -1,4 +1,12 @@
 #!/bin/bash
+###
+ # @Author: dvlproad dvlproad@163.com
+ # @Date: 2023-11-04 02:01:01
+ # @LastEditors: dvlproad
+ # @LastEditTime: 2023-11-14 15:18:18
+ # @FilePath: getBranchMapsAccordingToRebaseBranch.sh
+ # @Description: 根据rebase分支获取所有分支信息
+### 
 
 # 定义颜色常量
 NC="\033[0m" # No Color
@@ -51,7 +59,7 @@ do
     case "$1" in
         # branch_quickcmd/getBranchNames_accordingToRebaseBranch.sh
         -rebaseBranch|--rebase-branch) REBASE_BRANCH=$2; shift 2;;
-        -addValue|--add-value) add_value="$2" shift 2;;
+        -addValue|--add-value) add_value="$2"; shift 2;;
         -onlyName|--only-name) ONLY_NAME=$2; shift 2;; # 名字是否只取最后部分，不为true时候为全名
 
         # branch_check_self_name
