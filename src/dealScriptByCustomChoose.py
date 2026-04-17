@@ -46,6 +46,7 @@ if pack_input_params_file_path == None:
     exit(1)
 
 
+# '''
 # 使用subprocess.run执行Shell命令
 # 定义 qbase 命令变量
 qbase_cmd = "qbase"
@@ -63,6 +64,7 @@ if result.returncode != 0:
 # else:
 #     print(f"result.stdout={result.stdout}")    # 打印命令输出
 sript_file_absPath=result.stdout.strip()  # 去除字符串两端的空白字符（避免多出个换行符）
+# '''
 # print(f"{GREEN}要执行的脚本是{BLUE} {sript_file_absPath} {GREEN} {GREEN}参数是【{BLUE} {pack_input_params_file_path} {GREEN}】。{NC}")
 
 command=["python3", sript_file_absPath, pack_input_params_file_path]

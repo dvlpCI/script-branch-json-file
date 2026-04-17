@@ -1,5 +1,5 @@
 {
-    "action_sript_bin": "~/Project/CQCI/script-branch-json-file/qtool.sh",
+    "action_sript_file_absPath": "~/Project/CQCI/script-branch-json-file/qtool.sh",
     "action_sript_file_des": "获取当前分支【在rebase指定分支后】的所有分支信息合入指定文件中",
     "actions_envs_des": "要操作的环境",
     "actions_envs_values": [

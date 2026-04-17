@@ -1,10 +1,10 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
-LastEditors: dvlproad
+LastEditors: dvlproad dvlproad@163.com
 LastEditTime: 2023-08-03 09:51:24
-FilePath: dealScriptByCustomChoose.py
-Description: 打包-输入
+FilePath: openWebsiteByCustomChoose.py
+Description: 打开选中的网站
 '''
 # -*- coding: utf-8 -*-
 
