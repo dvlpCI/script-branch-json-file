@@ -1,4 +1,10 @@
 {
+    "dependences": [
+        {
+            "key": "qbase",
+            "local_path": "~/Project/CQCI/script-qbase/qbase"
+        }
+    ],
     "quickCmd": [
         {
             "type": "branchCheck",

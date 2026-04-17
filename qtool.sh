@@ -2,8 +2,8 @@
 ###
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
- # @LastEditors: dvlproad
- # @LastEditTime: 2023-12-07 14:36:58
+ # @LastEditors: dvlproad dvlproad@163.com
+ # @LastEditTime: 2026-04-18 01:04:30
  # @Description: 
 ### 
 
@@ -107,8 +107,91 @@ function _logQuickCmd() {
     cat "$qpackageJsonF" | jq '.quickCmd'
 }
 
+
+function _get_qbase_in_qtoolJson() {
+    local json_file="$qpackageJsonF"
+    if [ ! -f "$json_file" ]; then
+        echo "qbase"  # 默认返回 qbase
+        return 1
+    fi
+    
+    # 从 JSON 中提取 dependences 数组中 key 为 "qbase" 的 local_path
+    local qbase_cmd
+    qbase_cmd=$(jq -r '.dependences // [] | .[] | select(.key == "qbase") | .local_path // "qbase"' "$json_file" 2>/dev/null)
+    
+    # 如果找到了且结果不为空
+     if [ -n "$qbase_cmd" ] && [ "$qbase_cmd" != "null" ]; then
+        qbase_cmd_origin=$qbase_cmd
+
+        # 如果 $qbase_cmd 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
+        if [[ $qbase_cmd =~ ^~.* ]]; then
+            qbase_cmd="${HOME}${qbase_cmd:1}"
+            if [ ! -f "$qbase_cmd" ]; then
+                echo "${RED}提示: 已进入当前测试模式。但尝试顺便测试本地依赖库(如 qbase 等)失败,${YELLOW} ${qbase_cmd_origin} ${RED}路径不存在。请打开${BLUE} ${json_file} ${RED}中修改:${BLUE} dependences 里 key 为${YELLOW} qbase ${BLUE}的 local_path 的值。${NC}" >&2
+                printf "%s" "$qbase_cmd"
+                return 11    # 设置了，但文件不存在，不支持
+            fi
+        fi
+
+        echo "${GREEN}测试模式: 会顺便测试本地依赖库，即使用 qbase 命令 -> ${qbase_cmd}${NC}" >&2
+        # 如果 qbase_cmd 是以 .sh 结尾的，因为还要额外再加 sh 来启动，才能兼容避免异常情况，\
+        # 但如果把 sh 也加上去就变成了两个参数了，传递给 -qbase-local-path 的时候会有问题，所以这里改为不支持
+        if [[ "$qbase_cmd" =~ \.sh$ ]]; then
+            echo "${RED}提示: 已进入当前测试模式。但尝试顺便测试本地依赖库(如 qbase 等)失败,${YELLOW} ${qbase_cmd_origin} ${RED}不能以sh结尾，建议是无后缀已编译的文件路径。请打开${BLUE} ${json_file} ${RED}中修改:${BLUE} dependences 里 key 为${YELLOW} qbase ${BLUE}的 local_path 的值。${NC}" >&2
+            printf "%s" "$qbase_cmd"
+            return 12 # 设置了，但是路径是 .sh 结尾的，不支持
+        fi
+
+        printf "%s" "$qbase_cmd"
+        return 0    # 设置了，且正确
+     fi
+
+    # 如果没找到或结果为空，返回默认值
+    echo "${CYAN}提示: 当前测试模式。如需测试本地依赖库(如 qbase 等)，请在${BLUE} ${json_file} ${CYAN}中设置:${BLUE}{ \"dependences\": [{ \"key\": \"qbase\", \"local_path\": \"/path/to/your/qbase.sh\" }] }${NC}" >&2
+    echo "qbase"
+    return 1 # 未设置
+}
+
+# 如果是测试脚本中
+qpackageJsonF="$qtool_homedir_abspath/qtool.json"
+if [ "${isTestingScript}" == true ]; then
+    QBASE_CMD=$(_get_qbase_in_qtoolJson)
+    if [ $? != 0 ]; then
+        exit 1
+    fi
+    # 本地测试时候，需要将qbase的路径传递给其他脚本，避免其他脚本还得根据参数重新算一遍
+    shouldAddQbaseLoalPath_Before_allArgsExceptFirstArg=true
+else
+    QBASE_CMD="qbase"
+    shouldAddQbaseLoalPath_Before_allArgsExceptFirstArg=false
+fi
+function insert_args_after_first() {
+    local args_str="$1"
+    local new_arg1="$2"
+    local new_arg2="$3"
+    
+    # 使用 eval 正确解析
+    local args_array=()
+    eval "args_array=($args_str)"
+    
+    # 重新组装
+    local result="${args_array[0]}"
+    result="$result $new_arg1 $new_arg2"
+    
+    for ((i=1; i<${#args_array[@]}; i++)); do
+        local arg="${args_array[i]}"
+        if [[ "$arg" =~ [[:space:]] ]]; then
+            result="$result \"$arg\""
+        else
+            result="$result $arg"
+        fi
+    done
+    
+    echo "$result"
+}
+
 # qbase_homedir_abspath="~/Project/CQCI/script-qbase"
-qbase_homedir_abspath=$(qbase -path home)
+qbase_homedir_abspath=$(${QBASE_CMD} -path home)
 qbase_quickcmd_scriptPath=$qbase_homedir_abspath/qbase_quickcmd.sh
 # qbase_quickcmd_scriptPath=qbase_quickcmd.sh
 
@@ -127,10 +210,18 @@ elif [ "${firstArg}" == "-path" ]; then
     sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg getPath $allArgsExceptFirstArg
     exit 0
 elif [ "${firstArg}" == "-quick" ]; then
-    qbase_checkInputArgsValid_scriptPath=$(qbase -path checkInputArgsValid)
+    qbase_checkInputArgsValid_scriptPath=$(${QBASE_CMD} -path checkInputArgsValid)
+    if [ ! -f "$qbase_checkInputArgsValid_scriptPath" ]; then
+        echo "${RED}🚗🚗🚗>>>>🚗🚗🚗 执行获取文件路径的命令${BLUE} ${QBASE_CMD} -path checkInputArgsValid ${RED}得到的结果${CYAN} $qbase_checkInputArgsValid_scriptPath ${RED}不是有效文件" >&2  # 使用>&2将echo输出重定向到标准错误，作为日志
+        exit 1
+    fi
     inputArgsErrorMessage=$(sh $qbase_checkInputArgsValid_scriptPath $allArgsExceptFirstArg)
     if [ $? != 0 ]; then
         echo "🚗🚗🚗🚗🚗🚗 如若后续执行发生错误，可能原因为: ${inputArgsErrorMessage}" >&2  # 使用>&2将echo输出重定向到标准错误，作为日志
+    fi
+
+    if [ "${shouldAddQbaseLoalPath_Before_allArgsExceptFirstArg}" == true ]; then
+        allArgsExceptFirstArg=$(insert_args_after_first "$allArgsExceptFirstArg" "-qbase-local-path" "$QBASE_CMD")
     fi
     # echo "qtool正在通过qbase调用快捷命令...《 sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg 》"
     sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg

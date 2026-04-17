@@ -248,6 +248,10 @@ fi
 
 ## 版本记录
 
+### 2026-04-15
+
+- 【Feature】qtool 增加测试qtool的时候，可以顺便测试依赖包的功能
+
 ### 0.0.7 (2026-04-14)
 
 - 【Feature】`def get_fileOrDirPath_fromToolParamFile`: 新增 `_rel_this_file` 后缀支持：字段名以 `_rel_this_file` 结尾时，相对于配置文件所在目录解析

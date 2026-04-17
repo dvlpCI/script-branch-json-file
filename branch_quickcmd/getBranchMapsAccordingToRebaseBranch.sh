@@ -2,8 +2,8 @@
 ###
  # @Author: dvlproad dvlproad@163.com
  # @Date: 2023-11-04 02:01:01
- # @LastEditors: dvlproad
- # @LastEditTime: 2023-11-14 15:18:18
+ # @LastEditors: dvlproad dvlproad@163.com
+ # @LastEditTime: 2026-04-17 23:27:53
  # @FilePath: getBranchMapsAccordingToRebaseBranch.sh
  # @Description: 根据rebase分支获取所有分支信息
 ### 
@@ -50,13 +50,85 @@ branch_check_missing_by_must_scriptPath="${qbase_homedir_abspath}/branch/branch_
 branch_check_missing_diff_old_scriptPath="${qbase_homedir_abspath}/branch/branch_check_missing_diff_old.sh"
 
 
+# --------------------- 具名参数值的解析和获取函数 ---------------------
+# 获取具名参数的值（不允许以 - 开头）
+# 用法：get_named_arg_value "$1" "$2" "参数名"
+# 返回值：0=成功，1=参数缺失，2=参数为空，3=参数以-开头
+# 输出：成功时输出参数值，失败时输出具体原因（不含 Error: 前缀）
+get_named_arg_value() {
+    local opt="$1"
+    local val="$2"
+    local arg_name="${3:-参数值}"
+    
+    # 条件1：没有第2个参数
+    if [ $# -lt 2 ]; then
+        printf "%s 缺少 %s" "$opt" "$arg_name"
+        return 1
+    fi
+    
+    # 条件2：第2个参数为空字符串
+    if [ -z "$val" ]; then
+        printf "%s 的 %s 为空字符串" "$opt" "$arg_name"
+        return 2
+    fi
+    
+    # 条件3：第2个参数以 - 开头（是选项）
+    if [[ "$val" =~ ^- ]]; then
+        printf "%s 的 %s 不能以 '-' 开头: %s" "$opt" "$arg_name" "$val"
+        return 3
+    fi
+    
+    # 正常情况：输出值，返回0
+    printf "%s" "$val"
+    return 0
+}
+
+# 获取具名参数的值（允许以 - 开头）
+# 用法：get_named_arg_dashValue "$1" "$2" "参数名"
+# 返回值：0=成功，1=参数缺失，2=参数为空
+# 输出：成功时输出参数值，失败时输出具体原因（不含 Error: 前缀）
+get_named_arg_dashValue() {
+    local opt="$1"
+    local val="$2"
+    local arg_name="${3:-参数值}"
+    
+    # 条件1：没有第2个参数
+    if [ $# -lt 2 ]; then
+        printf "%s 缺少 %s" "$opt" "$arg_name"
+        return 1
+    fi
+    
+    # 条件2：第2个参数为空字符串
+    if [ -z "$val" ]; then
+        printf "%s 的 %s 为空字符串" "$opt" "$arg_name"
+        return 2
+    fi
+    
+    # 正常情况：输出值，返回0
+    printf "%s" "$val"
+    return 0
+}
+
+# 定义错误处理函数
+handle_named_arg_error() {
+    local option="$1"
+    echo "${RED}Error: 您为参数${YELLOW} ${option} ${RED}指定了值，但该值不符合要求或为空，请检查是否在 ${option} 后提供了正确的值${NC}"
+    exit 1
+}
+
 quickCmdArgs="$@"
 # echo "==========所有参数为: ${quickCmdArgs[*]}"
 
+# ==================== 默认值设置 ====================
+QBASE_CMD="qbase"  # 默认值（当用户不传这个参数时使用）
 # shift 1
 while [ -n "$1" ]
 do
     case "$1" in
+        -qbase-local-path|--qbase-local-path)
+            # 用户明确传递了此参数，必须提供有效值
+            QBASE_CMD=$(get_named_arg_value "$1" "$2" "qbase路径") || handle_named_arg_error "$1"
+            shift 2;;
         # branch_quickcmd/getBranchNames_accordingToRebaseBranch.sh
         -rebaseBranch|--rebase-branch) REBASE_BRANCH=$2; shift 2;;
         -addValue|--add-value) add_value="$2"; shift 2;;
@@ -133,7 +205,7 @@ fi
 function printfAndNotificationErrorMessage() {
     errorMessage=$1
     printf "%s" "${errorMessage}" # 这是错误信息，其内部已经对输出内容，添加${RED}等颜色区分了
-    notification2wechat_scriptPath=$(qbase -path notification2wechat)
+    notification2wechat_scriptPath=$(${QBASE_CMD} -path notification2wechat)
     sh ${notification2wechat_scriptPath} -robot "${ROBOT_URL}" -content "${errorMessage}" -at "${AtMiddleBracketIdsString}" -msgtype "${msgtype}"
     if [ $? != 0 ]; then
         exit 1
@@ -148,11 +220,14 @@ debug_log "========2.5=======✅-shouldDeleteHasCatchRequestBranchFile:${shouldD
 # debug_log "========3.2=======✅-at:${AtMiddleBracketIdsString}"
 # debug_log "========3.4=======✅-xxx:${xxx}"
 
+remain_args="$@"
+debug_log "========x.x=======✅剩余参数为: ${remain_args[*]}"
+
 
 echo "\n---------- getBranchNamesAccordingToRebaseBranch ----------"
 # qbase_getBranchNames_accordingToRebaseBranch_scriptPath=$(qbase -path getBranchNames_accordingToRebaseBranch)
-debug_log "${YELLOW}正在执行命令(根据rebase,获取分支名):《${BLUE} qbase -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch \"${REBASE_BRANCH}\" -addValue \"${add_value}\" -onlyName \"${ONLY_NAME}\" ${YELLOW}》${NC}"
-resultBranchResponseJsonString=$(qbase -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch "${REBASE_BRANCH}" -addValue "${add_value}" -onlyName "${ONLY_NAME}")
+debug_log "${YELLOW}正在执行命令(根据rebase,获取分支名):《${BLUE} ${QBASE_CMD} -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch \"${REBASE_BRANCH}\" -addValue \"${add_value}\" -onlyName \"${ONLY_NAME}\" ${YELLOW}》${NC}"
+resultBranchResponseJsonString=$(${QBASE_CMD} -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch "${REBASE_BRANCH}" -addValue "${add_value}" -onlyName "${ONLY_NAME}")
 if [ $? != 0 ]; then
     echo "${resultBranchResponseJsonString}"
     exit 1
@@ -260,7 +335,7 @@ fi
 
 
 echo "\n---------- addBranchMaps_toJsonFile + checkMap ----------"
-qbase_addBranchMaps_toJsonFile_scriptPath=$(qbase -path addBranchMaps_toJsonFile)
+qbase_addBranchMaps_toJsonFile_scriptPath=$(${QBASE_CMD} -path addBranchMaps_toJsonFile)
 requestBranchNameArray=${resultBranchNames}
 CheckPropertyInNetworkType=${CHECK_IN_NETWORK_TYPE}
 debug_log "========r.r=======✅-requestBranchNamesString:${requestBranchNameArray[*]}"
