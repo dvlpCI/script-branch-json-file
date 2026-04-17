@@ -67,6 +67,13 @@ sript_file_absPath=result.stdout.strip()  # 去除字符串两端的空白字符
 # '''
 # print(f"{GREEN}要执行的脚本是{BLUE} {sript_file_absPath} {GREEN} {GREEN}参数是【{BLUE} {pack_input_params_file_path} {GREEN}】。{NC}")
 
+# 添加要执行的python脚本文件是否存在
+if sript_file_absPath is None:
+    print(f"{RED}错误: 找不到文件 dealScript_by_scriptConfig.py{NC}")
+    print(f"{YELLOW}当前文件路径: {sript_file_absPath}{NC}")
+    print(f"{YELLOW}查找相对路径: ./dealScript_by_scriptConfig.py{NC}")
+    exit(1)
+    
 command=["python3", sript_file_absPath, pack_input_params_file_path]
 # print(f"{GREEN}要执行的py脚本命令是【{BLUE} python3 {sript_file_absPath} {pack_input_params_file_path} {GREEN}】。{NC}")
 # print(f"{GREEN}脚本执行完成。{NC}")

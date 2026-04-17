@@ -248,6 +248,10 @@ fi
 
 ## 版本记录
 
+### 2026-04-18
+
+- 【Feature】dealScriptByCustomChoose_util.py 中的 getRealScriptOrCommandFromData 使用代用 qbase 中已写过的方法
+
 ### 2026-04-15
 
 - 【Feature】qtool 增加测试qtool的时候，可以顺便测试依赖包的功能

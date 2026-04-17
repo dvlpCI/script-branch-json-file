@@ -1,10 +1,11 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
-LastEditors: dvlproad
-LastEditTime: 2023-09-27 15:04:25
+LastEditors: dvlproad dvlproad@163.com
+LastEditTime: 2026-04-18 06:07:58
 FilePath: src/dealScriptByCustomChoose_util.py
 Description: 打包-输入
+Example: 通过 python3 "/Users/lichaoqian/Project/CQCI/script-branch-json-file/src/dealScriptByCustomChoose.py"
 '''
 # -*- coding: utf-8 -*-
 
@@ -13,6 +14,23 @@ Description: 打包-输入
 
 import os
 import json
+import sys
+
+def get_qbase_python_module_path():
+    import shutil
+    qbase_path = shutil.which('qbase')
+    if qbase_path:
+        qbase_real_path = os.path.realpath(qbase_path)
+        qbase_dir = os.path.dirname(qbase_real_path)
+        return os.path.join(qbase_dir, 'pythonModuleSrc')
+    return None
+
+qbase_python_path = get_qbase_python_module_path()
+if qbase_python_path and os.path.isdir(qbase_python_path):
+    sys.path.insert(0, qbase_python_path)
+    from dealScript_by_scriptConfig import getRealScriptOrCommandFromData
+else:
+    raise ImportError("Cannot find qbase pythonModuleSrc directory")
 
 from base_util import openFile
 from path_util import getAbsPathByFileRelativePath
@@ -104,28 +122,3 @@ def _get_custom_script_file_map(pack_input_params_file_path):
         "script_file_abspath": action_script_file_absPath, # 执行的脚本文件
         "script_file_des": action_sript_file_des # 执行的脚本文件的描述
     }
-
-
-# 1、从 fileData 中获取展示可选择的操作，并进行选择输出
-def getRealScriptOrCommandFromData(data, pack_input_params_file_path):
-    if 'action_sript_bin' in data:
-        action_sript_bin=data['action_sript_bin']
-        # print(f"这是本地命令{action_sript_bin}")
-        # check_command(action_sript_bin) # TODO不正确
-        return action_sript_bin
-    
-    
-    # print(f"这不是本地命令，所以将继续寻找实际的脚本")
-    if 'action_sript_file_rel_this_dir' not in data:
-        print(f"{RED}发生错误:{pack_input_params_file_path} 文件中不存在'action_sript_file_rel_this_dir'键，请检查{NC}")
-        return False
-    action_sript_file_rel_this_dir=data['action_sript_file_rel_this_dir']
-    # 获取脚本的实际绝对路径
-    action_script_file_absPath=getAbsPathByFileRelativePath(pack_input_params_file_path, action_sript_file_rel_this_dir)
-    if action_script_file_absPath == None or not os.path.isfile(action_script_file_absPath):
-        print(f"{RED}发生错误:脚本文件不存在，原因为计算出来的相对目录不存在。请检查您的 {YELLOW}{pack_input_params_file_path}{NC} 中的 {BLUE}action_sript_file_rel_this_dir{RED} 属性值 {BLUE}{action_sript_file_rel_this_dir}{RED} 是否正确。（其会导致计算相对于 {YELLOW}{pack_input_params_file_path}{RED} 的该属性值路径 {BLUE}{action_script_file_absPath}{RED} 不存在)。{NC}")
-        openFile(pack_input_params_file_path)
-        # print(f"{RED}=======这里报错了，应该要退出方法{NC}")
-        return False
-    
-    return action_script_file_absPath
