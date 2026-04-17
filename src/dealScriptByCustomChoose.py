@@ -47,7 +47,15 @@ if pack_input_params_file_path == None:
 
 
 # 使用subprocess.run执行Shell命令
-result = subprocess.run('qbase -path execScript_by_configJsonFile', shell=True, capture_output=True, text=True)
+# 定义 qbase 命令变量
+qbase_cmd = "qbase"
+# qbase_cmd = "/Users/lichaoqian/Project/CQCI/script-qbase/qbase"
+result = subprocess.run(
+    f"{qbase_cmd} -path execScript_by_configJsonFile",
+    shell=True,
+    capture_output=True, 
+    text=True
+)
 # 检查命令执行结果
 if result.returncode != 0:
     print(f"result.stderr={result.stderr}")    # 打印错误信息
@@ -55,7 +63,10 @@ if result.returncode != 0:
 # else:
 #     print(f"result.stdout={result.stdout}")    # 打印命令输出
 sript_file_absPath=result.stdout.strip()  # 去除字符串两端的空白字符（避免多出个换行符）
-# print(f"{GREEN}要执行的脚本是 {BLUE}{sript_file_absPath} {GREEN}。{NC}")
+# print(f"{GREEN}要执行的脚本是{BLUE} {sript_file_absPath} {GREEN} {GREEN}参数是【{BLUE} {pack_input_params_file_path} {GREEN}】。{NC}")
 
 command=["python3", sript_file_absPath, pack_input_params_file_path]
+# print(f"{GREEN}要执行的py脚本命令是【{BLUE} python3 {sript_file_absPath} {pack_input_params_file_path} {GREEN}】。{NC}")
+# print(f"{GREEN}脚本执行完成。{NC}")
+# exit(1)
 callScriptCommond(command, sript_file_absPath)
