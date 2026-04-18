@@ -3,8 +3,8 @@
 ###
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
- # @LastEditors: dvlproad
- # @LastEditTime: 2023-06-29 11:07:23
+ # @LastEditors: dvlproad dvlproad@163.com
+ # @LastEditTime: 2026-04-18 15:15:02
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -46,6 +46,14 @@ CYAN='\033[0;36m'
 
 quitStrings=("q" "Q" "quit" "Quit" "n") # 输入哪些字符串算是想要退出
 
+_resolve_tool_params_file_path() {
+    tool_params_file_path=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
+    if [[ $tool_params_file_path =~ ^~.* ]]; then
+    # 如果 $tool_params_file_path 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
+        tool_params_file_path="${HOME}${tool_params_file_path:1}"
+    fi
+    echo "${tool_params_file_path}"
+}
 
 # 环境变量检查--TOOL_PATH（才能保证可以正确创建分支）
 checkEnvValue_TOOL_PARAMS_FILE_PATH() {
@@ -149,26 +157,18 @@ _gitBranch() {
     sh ${branchJsonFileScriptDir_Absolute}/branchGit_create.sh
 }
 
-# 分支信息文件添加
+# 分支信息文件的创建
 createBranchJsonFile() {
-    # echo "正在执行命令:《 python3 \"${branchJsonFileScriptDir_Absolute}/branchJsonFile_create.py\" 》"
-    tool_params_file_path=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
-    if [[ $tool_params_file_path =~ ^~.* ]]; then
-        # 如果 $tool_params_file_path 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
-        tool_params_file_path="${HOME}${tool_params_file_path:1}"
-    fi
+    tool_params_file_path=$(_resolve_tool_params_file_path)
+    # echo "${YELLOW}正在执行命令(分支信息文件的创建):《${BLUE} python3 \"${branchJsonFileScriptDir_Absolute}/branchJsonFile_create.py\" -tool_params_file_path \"${tool_params_file_path}\" ${YELLOW}》${NC}"
     python3 "${branchJsonFileScriptDir_Absolute}/branchJsonFile_create.py" -tool_params_file_path "${tool_params_file_path}"
     checkResultCode $?
 }
 
-# 分支信息文件修改
+# 分支信息文件的修改
 updateBranchJsonFile() {
-    # echo "正在执行命令:《 python3 \"${branchJsonFileScriptDir_Absolute}/branchJsonFile_create.py\" 》"
-    tool_params_file_path=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
-    if [[ $tool_params_file_path =~ ^~.* ]]; then
-        # 如果 $tool_params_file_path 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
-        tool_params_file_path="${HOME}${tool_params_file_path:1}"
-    fi
+    tool_params_file_path=$(_resolve_tool_params_file_path)
+    # echo "${YELLOW}正在执行命令(分支信息文件的修改):《${BLUE} python3 \"${branchJsonFileScriptDir_Absolute}/branchJsonFile_update.py\" -tool_params_file_path \"${tool_params_file_path}\" ${YELLOW}》${NC}"
     python3 ${branchJsonFileScriptDir_Absolute}/branchJsonFile_update.py -tool_params_file_path "${tool_params_file_path}"
     checkResultCode $?
 }
