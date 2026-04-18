@@ -49,13 +49,13 @@
                 {
                     "des": "branchJsonFile 的创建",
                     "key": "branchJsonFile_create",
-                    "rel_path": "./scr/branchJsonFile_create.py",
+                    "rel_path": "./src/branchJsonFile_create.py",
                     "example": "qtool -quick branchJsonFile_create -tool_params_file_path \"${tool_params_file_path}\""
                 },
                 {
                     "des": "branchJsonFile 的更新",
                     "key": "branchJsonFile_update",
-                    "rel_path": "./scr/branchJsonFile_update.py",
+                    "rel_path": "./src/branchJsonFile_update.py",
                     "example": "qtool -quick branchJsonFile_update -tool_params_file_path \"${tool_params_file_path}\""
                 }
             ]

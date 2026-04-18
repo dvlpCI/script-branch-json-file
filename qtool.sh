@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2026-04-18 01:04:30
+ # @LastEditTime: 2026-04-19 02:23:52
  # @Description: 
 ### 
 
@@ -26,6 +26,14 @@ function local_test() {
     echo "$qbaseScriptDir_Absolute"
 }
 
+function qian_log() {
+    # 只有定义 --qian 的时候才打印这个log
+    if [ "$DEFINE_QIAN" = true ]; then
+        echo "$1" >&2   # 使用 echo 信息里的颜色才能正常显示出来
+        # printf "%s\n" "$1" >&2
+    fi
+}
+
 
 
 # 计算倒数第一个参数的位置
@@ -41,7 +49,7 @@ fi
 # echo "========second_last_arg=${second_last_arg}"
 # echo "========       last_arg=${last_arg}"
 
-verboseStrings=("--verbose" "-verbose") # 输入哪些字符串算是想要日志
+verboseStrings=("--verbose" "-verbose" "-v") # 输入哪些字符串算是想要日志
 # 判断最后一个参数是否是 verbose
 if echo "${verboseStrings[@]}" | grep -wq -- "$last_arg"; then
     verbose=true
@@ -60,10 +68,23 @@ else # 最后一个元素不是 verbose
     fi
 fi
 
-if [[ "${CurrentDIR_Script_Absolute}" == /Users/* ]]; then
-    isTestingScript=true
-    printf "${YELLOW}⚠️⚠️⚠️:您现在执行的qtool.sh是/Users下的脚本，所以固定为是测试该脚本⚠️⚠️⚠️\n${NC}" >&2  # 使用>&2将echo输出重定向到标准错误，作为日志
-fi
+allArgsOrigin="$@"
+DEFINE_QIAN=false
+for arg in $allArgsOrigin; do
+    case $arg in
+        --qian|-qian|-lichaoqian|-chaoqian)
+            DEFINE_QIAN=true
+            break
+            ;;
+    esac
+done
+qian_log "${YELLOW}⚠️⚠️⚠️:您现在执行的qtool.sh是 ${CurrentDIR_Script_Absolute} ⚠️⚠️⚠️\n${NC}"
+
+# TODO: 此判断有问题，暂时不用，待修复,若还要启动测试模式，还是得在脚本模式加 test
+# if [[ "${CurrentDIR_Script_Absolute}" == /Users/* ]]; then
+#     isTestingScript=true
+#     printf "${YELLOW}⚠️⚠️⚠️:您现在执行的qtool.sh是/Users下的脚本( ${CurrentDIR_Script_Absolute} )，所以固定为是测试该脚本⚠️⚠️⚠️\n${NC}" >&2  # 使用>&2将echo输出重定向到标准错误，作为日志
+# fi
 
 
 args=()
@@ -212,7 +233,7 @@ elif [ "${firstArg}" == "-path" ]; then
 elif [ "${firstArg}" == "-quick" ]; then
     qbase_checkInputArgsValid_scriptPath=$(${QBASE_CMD} -path checkInputArgsValid)
     if [ ! -f "$qbase_checkInputArgsValid_scriptPath" ]; then
-        echo "${RED}🚗🚗🚗>>>>🚗🚗🚗 执行获取文件路径的命令${BLUE} ${QBASE_CMD} -path checkInputArgsValid ${RED}得到的结果${CYAN} $qbase_checkInputArgsValid_scriptPath ${RED}不是有效文件" >&2  # 使用>&2将echo输出重定向到标准错误，作为日志
+        echo "${RED}Error:${CYAN} $qbase_checkInputArgsValid_scriptPath ${RED}不是有效文件【详情为: 您调用qbase执行获取文件路径的命令${BLUE} ${QBASE_CMD} -path checkInputArgsValid ${RED}得到的结果${CYAN} $qbase_checkInputArgsValid_scriptPath ${RED}不是有效文件】${NC}" >&2  # 使用>&2将echo输出重定向到标准错误，作为日志
         exit 1
     fi
     inputArgsErrorMessage=$(sh $qbase_checkInputArgsValid_scriptPath $allArgsExceptFirstArg)
@@ -223,7 +244,7 @@ elif [ "${firstArg}" == "-quick" ]; then
     if [ "${shouldAddQbaseLoalPath_Before_allArgsExceptFirstArg}" == true ]; then
         allArgsExceptFirstArg=$(insert_args_after_first "$allArgsExceptFirstArg" "-qbase-local-path" "$QBASE_CMD")
     fi
-    # echo "qtool正在通过qbase调用快捷命令...《 sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg 》"
+    qian_log "qtool正在通过qbase调用快捷命令...《 sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg 》"
     sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg
     exit 0
 else

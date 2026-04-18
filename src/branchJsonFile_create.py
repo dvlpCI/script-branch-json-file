@@ -172,6 +172,7 @@ if Personnel_FILE_PATH == None:
 import argparse
 parser = argparse.ArgumentParser()  # 创建参数解析器
 parser.add_argument("-tool_params_file_path", "--tool_params_file_path", help="The value for argument 'tool_params_file_path'")
+parser.add_argument("-qbase-local-path", "--qbase-local-path", help="qbase local path (ignored, for compatibility)")
 args = parser.parse_args()  # 解析命令行参数
 tool_params_file_path = args.tool_params_file_path
 if tool_params_file_path is None:
