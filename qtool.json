@@ -41,6 +41,24 @@
                     "example": "qtool -quick getBranchMapsAccordingToRebaseBranch -rebaseBranch \"${REBASE_BRANCH}\" --add-value \"${add_value}\" -onlyName \"${ONLY_NAME}\" -checkInNetwork \"${CHECK_IN_NETWORK_TYPE}\" -checkByJsonFile \"${CHECK_BY_JSON_FILE}\" -mustContainByJsonFile \"${MUST_CONTAIN_BY_JSON_FILE}\" -shouldCheckMissingDiffOld \"${shouldCheckMissingDiffOld}\" -lastPackBranchNames \"${LAST_PACK_BRANCH_NAMES}\" -lastPackFromDate \"${LAST_PACK_FROM_DATE}\" -lastOnlineBranchNames \"${LAST_ONLINE_BRANCH_NAMES}\" -peoJsonF \"${Personnel_FILE_PATH}\" -branchMapsFromDir \"${BranceMaps_From_Directory_PATH}\" -branchMapsAddToJsonF \"${BranchMapAddToJsonFile}\" -branchMapsAddToKey \"${BranchMapAddToKey}\" -ignoreCheckBranchNames \"${ignoreCheckBranchNameArray}\" -shouldDeleteHasCatchRequestBranchFile \"${shouldDeleteHasCatchRequestBranchFile}\" -robot \"${ROBOT_URL}\" -at \"${atMiddleBracketIdsString[*]}\""
                 }
             ]
+        },
+        {
+            "type": "branchJsonFile",
+            "des": "分支信息json文件的处理(创建、更新）",
+            "values": [
+                {
+                    "des": "branchJsonFile 的创建",
+                    "key": "branchJsonFile_create",
+                    "rel_path": "./scr/branchJsonFile_create.py",
+                    "example": "qtool -quick branchJsonFile_create -tool_params_file_path \"${tool_params_file_path}\""
+                },
+                {
+                    "des": "branchJsonFile 的更新",
+                    "key": "branchJsonFile_update",
+                    "rel_path": "./scr/branchJsonFile_update.py",
+                    "example": "qtool -quick branchJsonFile_update -tool_params_file_path \"${tool_params_file_path}\""
+                }
+            ]
         }
     ],
     "support_script_path": [
