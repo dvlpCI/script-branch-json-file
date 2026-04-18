@@ -77,6 +77,7 @@ def getPeopleNameByPersonnel_FILE_PATH(Personnel_FILE_PATH, searchIdKey, searchI
 
 
 
+# 根据 typeId 从 tool_params_file_path 中列出所有允许操作该项的人员(会根据哪些人员的 role_id 额外去人员json文件中获取姓名)。列出后，供用户进行输入编号选择人员姓名。
 def _choosePeopleByType(tool_params_file_path, typeId):
     data = get_json_file_data(tool_params_file_path)
     if data == None:

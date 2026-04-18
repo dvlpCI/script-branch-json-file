@@ -8,7 +8,8 @@ Description: 获取环境变量的值
 '''
 import os
 import subprocess
-from env_util_tool import get_json_file_data, getProject_dir_path_byToolParamFile, getBranch_json_file_dir_path_fromToolParamFile
+from file_util import get_json_file_data
+from env_util_tool import getProject_dir_path_byToolParamFile, getBranch_json_file_dir_path_fromToolParamFile
 
 # 定义颜色常量
 NC='\033[0m' # No Color
