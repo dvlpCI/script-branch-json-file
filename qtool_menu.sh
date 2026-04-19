@@ -4,7 +4,7 @@
 # @Author: dvlproad dvlproad@163.com
 # @Date: 2023-04-12 22:15:22
  # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2026-04-18 15:15:02
+ # @LastEditTime: 2026-04-19 21:05:13
 # @FilePath: qtool_menu.sh
 # @Description: 工具选项
 ###
@@ -18,8 +18,52 @@ elif [ ! -d "${qtoolScriptDir_Absolute}" ]; then
     exit 1
 fi
 
-# verboseParam='-verbose'
-verboseParam=$2
+shift 1  # 去除前一个参数
+allArgsExceptFirstArg="$@"  # 将去除前一个参数，剩余的参数赋值给新变量
+
+allArgsOrigin="$@"
+# 是不是包含 help 参数
+contains_help_in_allArgs=false
+for arg in $allArgsOrigin; do
+    case $arg in
+        --help|-help|-h|help)
+            contains_help_in_allArgs=true
+            break
+            ;;
+    esac
+done
+
+# 是不是包含 verbose 参数
+contains_verbose_in_allArgs=false
+for arg in $allArgsOrigin; do
+    case $arg in
+        --verbose|-verbose|-v)
+            contains_verbose_in_allArgs=true
+            break
+            ;;
+    esac
+done
+
+# 是不是包含 --qian 参数，打开关键调试命令的打印
+DEFINE_QIAN=false
+for arg in $allArgsOrigin; do
+    case $arg in
+        --qian|-qian|-lichaoqian|-chaoqian)
+            DEFINE_QIAN=true
+            break
+            ;;
+    esac
+done
+
+function qian_log() {
+    # 只有定义 --qian 的时候才打印这个log
+    if [ "$DEFINE_QIAN" = true ]; then
+        echo "$1" >&2   # 使用 echo 信息里的颜色才能正常显示出来
+        # printf "%s\n" "$1" >&2
+    fi
+}
+
+
 
 source ${qtoolScriptDir_Absolute}/base/get_system_env.sh
 
@@ -200,8 +244,8 @@ pushGitCommitMessage() {
 # 三、打包
 # 3.1、执行自定义的脚本
 dealScriptByCustomChoose() {
-    # echo "${YELLOW}正在执行命令(打印自定义脚本目录，供你来选择后执行):《${BLUE} python3 \"${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py\" ${YELLOW}》${NC}"
-    python3 "${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py"
+    qian_log "${YELLOW}正在执行命令(打印自定义脚本目录，供你来选择后执行):《${BLUE} python3 \"${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py\" ${allArgsExceptFirstArg} ${YELLOW}》${NC}"
+    python3 "${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py" ${allArgsExceptFirstArg}
     checkResultCode $?
 }
 
@@ -334,7 +378,7 @@ evalActionByInput() {
             # tCatalogOutlineActionType=$(echo "$tCatalogOutlineMap" | jq -r ".action_type")
             
             tCatalogOutlineAction=$(echo "$tCatalogOutlineMap" | jq -r ".action")
-            # printf "正在执行命令：${BLUE}%s${NC}\n" "${tCatalogOutlineAction}"
+            qian_log "正在执行的选中的菜单命令：${BLUE} eval \"$tCatalogOutlineAction\" ${NC}"
             eval "$tCatalogOutlineAction"
         else
             echo "无此选项，请重新输入。"
@@ -343,7 +387,7 @@ evalActionByInput() {
 }
 
 uploadDSYMAction() {
-    sh ${qtoolScriptDir_Absolute}/dsym/dsym_get_and_upload.sh "${verboseParam}"
+    sh ${qtoolScriptDir_Absolute}/dsym/dsym_get_and_upload.sh "${allArgsOrigin}"
     checkResultCode $?
 }
 

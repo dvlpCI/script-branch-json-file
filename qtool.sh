@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2026-04-19 02:23:52
+ # @LastEditTime: 2026-04-19 23:52:16
  # @Description: 
 ### 
 
@@ -26,58 +26,155 @@ function local_test() {
     echo "$qbaseScriptDir_Absolute"
 }
 
-function qian_log() {
-    # 只有定义 --qian 的时候才打印这个log
+# --------------------- 的 ---------------------
+# qian_log 函数
+qian_log() {
     if [ "$DEFINE_QIAN" = true ]; then
-        echo "$1" >&2   # 使用 echo 信息里的颜色才能正常显示出来
-        # printf "%s\n" "$1" >&2
+        echo "$1" >&2
     fi
 }
 
-
-
-# 计算倒数第一个参数的位置
-argCount=$#
-if [ $argCount -ge 1 ]; then
-    last_index=$((argCount))
-    last_arg=${!last_index} # 获取倒数第一个参数
-    if [ $argCount -ge 2 ]; then
-        second_last_index=$((argCount - 1))
-        second_last_arg=${!second_last_index} # 获取倒数第二个参数
+# --------------------- 具名参数值的解析和获取函数 ---------------------
+# 获取具名参数的值（不允许以 - 开头）
+# 用法：get_named_arg_value "$1" "$2" "参数名"
+# 返回值：0=成功，1=参数缺失，2=参数为空，3=参数以-开头
+# 输出：成功时输出参数值，失败时输出具体原因（不含 Error: 前缀）
+get_named_arg_value() {
+    local opt="$1"
+    local val="$2"
+    local arg_name="${3:-参数值}"
+    
+    # 条件1：没有第2个参数
+    if [ $# -lt 2 ]; then
+        printf "%s 缺少 %s" "$opt" "$arg_name"
+        return 1
     fi
-fi
-# echo "========second_last_arg=${second_last_arg}"
-# echo "========       last_arg=${last_arg}"
-
-verboseStrings=("--verbose" "-verbose" "-v") # 输入哪些字符串算是想要日志
-# 判断最后一个参数是否是 verbose
-if echo "${verboseStrings[@]}" | grep -wq -- "$last_arg"; then
-    verbose=true
-    verboseParam=$last_arg
-    if [ "$second_last_arg" == "test" ]; then
-        isTestingScript=true
-    else
-        isTestingScript=false
+    
+    # 条件2：第2个参数为空字符串
+    if [ -z "$val" ]; then
+        printf "%s 的 %s 为空字符串" "$opt" "$arg_name"
+        return 2
     fi
-else # 最后一个元素不是 verbose
-    verbose=false
-    if [ "$last_arg" == "test" ]; then
-        isTestingScript=true
-    else
-        isTestingScript=false
+    
+    # 条件3：第2个参数以 - 开头（是选项）
+    if [[ "$val" =~ ^- ]]; then
+        printf "%s 的 %s 不能以 '-' 开头: %s" "$opt" "$arg_name" "$val"
+        return 3
     fi
-fi
+    
+    # 正常情况：输出值，返回0
+    printf "%s" "$val"
+    return 0
+}
 
-allArgsOrigin="$@"
+# 获取具名参数的值（允许以 - 开头）
+# 用法：get_named_arg_dashValue "$1" "$2" "参数名"
+# 返回值：0=成功，1=参数缺失，2=参数为空
+# 输出：成功时输出参数值，失败时输出具体原因（不含 Error: 前缀）
+get_named_arg_dashValue() {
+    local opt="$1"
+    local val="$2"
+    local arg_name="${3:-参数值}"
+    
+    # 条件1：没有第2个参数
+    if [ $# -lt 2 ]; then
+        printf "%s 缺少 %s" "$opt" "$arg_name"
+        return 1
+    fi
+    
+    # 条件2：第2个参数为空字符串
+    if [ -z "$val" ]; then
+        printf "%s 的 %s 为空字符串" "$opt" "$arg_name"
+        return 2
+    fi
+    
+    # 正常情况：输出值，返回0
+    printf "%s" "$val"
+    return 0
+}
+
+# 定义错误处理函数
+handle_named_arg_error() {
+    local option="$1"
+    echo "${RED}Error: 您为参数${YELLOW} ${option} ${RED}指定了值，但该值不符合要求或为空，请检查是否在 ${option} 后提供了正确的值${NC}"
+    exit 1
+}
+
+# ==================== 默认值设置 ====================
+QBASE_CMD="qbase"  # 默认值（当用户不传这个参数时使用）
 DEFINE_QIAN=false
-for arg in $allArgsOrigin; do
-    case $arg in
+CONTAINS_VERBOSE=false
+CONTAINS_HELP=false
+
+# 解析命令行参数
+allArgsOrigin="$@"
+NEXT_SCRIPT_ARGS=() # 存储要传递给下个脚本的参数
+while [ $# -gt 0 ]; do
+    case "$1" in
+        # 具名参数（需要值的参数）
+        -qbase-local-path|--qbase-local-path)
+            # 用户明确传递了此参数，必须提供有效值
+            QBASE_CMD=$(get_named_arg_value "$1" "$2" "qbase路径") || handle_named_arg_error "$1"
+            NEXT_SCRIPT_ARGS+=("$1" "$2")
+            shift 2;;
+        # 标志参数（不需要值的开关）
+        --no-use-brew-path)
+            isTestingScript=true    # qtool 里的其他脚本路径是否使用本地来拼接，而不是 brew 里的路径
+            shift 1
+            ;;
         --qian|-qian|-lichaoqian|-chaoqian)
             DEFINE_QIAN=true
+            NEXT_SCRIPT_ARGS+=("$1")
+            shift 1
+            ;;
+        --verbose|-v)
+            CONTAINS_VERBOSE=true
+            NEXT_SCRIPT_ARGS+=("$1")
+            shift 1
+            ;;
+        --help|-h)
+            CONTAINS_HELP=true
+            NEXT_SCRIPT_ARGS+=("$1")
+            shift 1
+            ;;
+        
+        # 遇到 -- 停止解析
+        --)
+            NEXT_SCRIPT_ARGS+=("$1")
+            shift
+            break
+            ;;
+        # 未知参数或位置参数，停止解析
+        *)
+            NEXT_SCRIPT_ARGS+=("$@")    # 将剩余的所有参数都添加进去
             break
             ;;
     esac
 done
+
+# 剩余的位置参数
+POSITIONAL_ARGS=("$@")
+
+
+# 输出解析结果（调试用）
+qian_log "========== 参数解析结果 =========="
+qian_log "QBASE_CMD: $QBASE_CMD"
+qian_log "DEFINE_QIAN: $DEFINE_QIAN"
+qian_log "CONTAINS_VERBOSE: $CONTAINS_VERBOSE"
+qian_log "CONTAINS_HELP: $CONTAINS_HELP"
+qian_log "isTestingScript: $isTestingScript"
+qian_log "位置参数（${#POSITIONAL_ARGS[@]}个）: ${POSITIONAL_ARGS[*]}"
+qian_log "传递给下个脚本的参数（${#NEXT_SCRIPT_ARGS[@]}个）: ${NEXT_SCRIPT_ARGS[*]}"
+qian_log "=================================="
+
+# 详细模式输出
+if [ "$CONTAINS_VERBOSE" = true ]; then
+    echo "✅ 详细模式已开启"
+fi
+
+# 你的业务逻辑写在这里
+# ...
+
 qian_log "${YELLOW}⚠️⚠️⚠️:您现在执行的qtool.sh是 ${CurrentDIR_Script_Absolute} ⚠️⚠️⚠️\n${NC}"
 
 # TODO: 此判断有问题，暂时不用，待修复,若还要启动测试模式，还是得在脚本模式加 test
@@ -88,11 +185,11 @@ qian_log "${YELLOW}⚠️⚠️⚠️:您现在执行的qtool.sh是 ${CurrentDIR
 
 
 args=()
-if [ "${verbose}" == true ]; then
-    args+=("-verbose")
+if [ "${CONTAINS_VERBOSE}" == true ]; then
+    args+=("--verbose")
 fi
 if [ "${isTestingScript}" == true ]; then
-    args+=("test")
+    args+=("--test")
 fi
 
 # 如果是测试脚本中
@@ -219,7 +316,8 @@ qbase_quickcmd_scriptPath=$qbase_homedir_abspath/qbase_quickcmd.sh
 firstArg=$1 # 去除第一个参数之前，先保留下来
 shift 1  # 去除前一个参数
 allArgsExceptFirstArg="$@"  # 将去除前一个参数，剩余的参数赋值给新变量
-
+qian_log "qtool的所有参数: allArgsOrigin = ${allArgsOrigin}"
+qian_log "qtool的所有参数: firstArg = ${firstArg} , allArgsExceptFirstArg = ${allArgsExceptFirstArg}"
 
 # 如果是获取版本号
 versionCmdStrings=("--version" "-version" "-v" "version")
@@ -227,7 +325,7 @@ if echo "${versionCmdStrings[@]}" | grep -wq "${firstArg}" &>/dev/null; then
     echo "${qtool_latest_version}"
     exit 0
 elif [ "${firstArg}" == "-path" ]; then
-    # echo "qtool正在通过qbase调用快捷命令...《 sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg getPath $allArgsExceptFirstArg 》"
+    qian_log "qtool正在通过qbase调用快捷命令...《 sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg getPath $allArgsExceptFirstArg 》"
     sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg getPath $allArgsExceptFirstArg
     exit 0
 elif [ "${firstArg}" == "-quick" ]; then
@@ -248,15 +346,14 @@ elif [ "${firstArg}" == "-quick" ]; then
     sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg
     exit 0
 else
+    qian_log "qtool先输出版本号(然后再输出菜单让你选择): ${qtool_latest_version}"
     echo "${qtool_latest_version}"
 fi
 
-
-
-
-
-
-
+if [ "${CONTAINS_HELP}" == true ]; then
+    sh ${qtoolScriptDir_Absolute}/qtool_help.sh
+    exit 0
+fi
 
 
 qtoolScriptDir_Absolute="${qtool_homedir_abspath}"
@@ -300,6 +397,6 @@ if echo "${qtoolQuickCmdStrings[@]}" | grep -wq "$firstArg" &>/dev/null; then
         printf "${YELLOW}温馨提示:无法执行未知命令《 qtool \"$1\" 》，请检查"
     fi
 else
-    # echo "正在执行命令(输出菜单):《 sh ${qtoolScriptDir_Absolute}/qtool_menu.sh \"${qtoolScriptDir_Absolute}\" \"${verboseParam}\" 》"
-    sh ${qtoolScriptDir_Absolute}/qtool_menu.sh "${qtoolScriptDir_Absolute}" "${verboseParam}"
+    qian_log "qtool正在执行命令(输出菜单):《 sh ${qtoolScriptDir_Absolute}/qtool_menu.sh \"${qtoolScriptDir_Absolute}\" \"${NEXT_SCRIPT_ARGS[*]}\" 》"
+    sh ${qtoolScriptDir_Absolute}/qtool_menu.sh "${qtoolScriptDir_Absolute}" "${NEXT_SCRIPT_ARGS[*]}"
 fi

@@ -1,8 +1,8 @@
 '''
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
-LastEditors: dvlproad
-LastEditTime: 2023-09-27 15:01:08
+LastEditors: dvlproad dvlproad@163.com
+LastEditTime: 2026-04-19 21:28:06
 FilePath: dealScriptByCustomChoose.py
 Description: 打包-输入
 '''
@@ -33,7 +33,62 @@ CYAN='\033[0;36m'
 #     parser.add_argument(item)
 # args = parser.parse_args()
 # print(args)
+import argparse
+import sys
 
+def print_custom_help():
+    print(f"print_custom_help()")
+    
+def parse_arguments():
+    # 先手动检查 help
+    if '-h' in sys.argv or '--help' in sys.argv:
+        print_custom_help()
+        sys.exit(0)
+    
+    # 禁用自动 help，避免冲突
+    parser = argparse.ArgumentParser(description='你的程序描述', add_help=False)
+    
+    parser.add_argument('--verbose', '-v', 
+                       action='store_true',
+                       help='显示详细信息')
+    
+    parser.add_argument('--qian', 
+                       action='store_true',
+                       help='开启打印调试log模式')
+    
+    parser.add_argument('--qbase-local-path', '-qbase-local-path', 
+                   type=str,  # 指定类型为字符串
+                   default=None,  # 默认值为 None
+                   help='依赖的子库 qbase 使用指定的路径，用来顺便测试子库')
+    
+    args = parser.parse_args()
+    return args
+
+# 声明全局变量
+DEFINE_QIAN = None
+def qian_log(msg):
+    """只有定义 --qian 的时候才打印这个log"""
+    global DEFINE_QIAN
+    if DEFINE_QIAN:  # 只有当用户传了 --qian 相关参数时才打印
+        print(msg, file=sys.stderr)
+
+# 解析参数（所有参数都是可选的）
+args = parse_arguments()
+contains_verbose_in_allArgs = args.verbose  # 用户没传 --verbose 时是 False
+DEFINE_QIAN = args.qian  # 用户没传 --qian 时是 False
+QBASE_CMD = "qbase"
+if args.qbase_local_path:
+    QBASE_CMD = args.qbase_local_path
+    print(f"{GREEN}使用本地 qbase 路径: {QBASE_CMD} {NC}")
+ 
+'''
+# 测试输出
+if contains_verbose_in_allArgs:
+    print("Verbose mode enabled")
+'''
+
+
+# 业务逻辑代码...
 custom_script_files_abspath=getEnvValue_pack_input_params_file_path(shouldCheckExist=True)
 if custom_script_files_abspath == None:
     exit(1)
@@ -44,15 +99,13 @@ chooseScriptFilePath=chooseScriptMap["script_info_abspath"]
 pack_input_params_file_path=chooseScriptFilePath
 if pack_input_params_file_path == None:
     exit(1)
+qian_log(f"{GREEN}要执行的脚本是{BLUE} {pack_input_params_file_path} {GREEN}。{NC}")
 
 
 # '''
 # 使用subprocess.run执行Shell命令
-# 定义 qbase 命令变量
-qbase_cmd = "qbase"
-# qbase_cmd = "/Users/lichaoqian/Project/CQCI/script-qbase/qbase"
 result = subprocess.run(
-    f"{qbase_cmd} -path execScript_by_configJsonFile",
+    f"{QBASE_CMD} -path execScript_by_configJsonFile",
     shell=True,
     capture_output=True, 
     text=True
@@ -75,7 +128,7 @@ if sript_file_absPath is None:
     exit(1)
     
 command=["python3", sript_file_absPath, pack_input_params_file_path]
-# print(f"{GREEN}要执行的py脚本命令是【{BLUE} python3 {sript_file_absPath} {pack_input_params_file_path} {GREEN}】。{NC}")
+qian_log(f"{GREEN}要执行的py脚本命令是【{BLUE} python3 {sript_file_absPath} {pack_input_params_file_path} {GREEN}】。{NC}")
 # print(f"{GREEN}脚本执行完成。{NC}")
 # exit(1)
 callScriptCommond(command, sript_file_absPath)

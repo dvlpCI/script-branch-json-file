@@ -2,8 +2,8 @@
 ###
 # @Author: dvlproad
 # @Date: 2023-04-23 13:18:33
- # @LastEditors: dvlproad
- # @LastEditTime: 2023-11-06 16:02:50
+ # @LastEditors: dvlproad dvlproad@163.com
+ # @LastEditTime: 2026-04-19 22:16:09
 # @Description:
 ###
 
@@ -33,26 +33,8 @@ verboseStrings=("--verbose" "-verbose") # 输入哪些字符串算是想要日�
 # 判断最后一个参数是否是 verbose
 if echo "${verboseStrings[@]}" | grep -wq -- "$last_arg"; then
     verbose=true
-    if [ "$second_last_arg" == "test" ]; then
-        isTestingScript=true
-    else
-        isTestingScript=false
-    fi
 else # 最后一个元素不是 verbose
     verbose=false
-    if [ "$last_arg" == "test" ]; then
-        isTestingScript=true
-    else
-        isTestingScript=false
-    fi
-fi
-
-args=()
-if [ "${verbose}" == true ]; then
-    args+=("-verbose")
-fi
-if [ "${isTestingScript}" == true ]; then
-    args+=("test")
 fi
 
 function _verbose_log() {

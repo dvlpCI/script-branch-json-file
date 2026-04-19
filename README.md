@@ -157,12 +157,12 @@ fi
 if [ "$last_arg" == "--verbose" ] || [ "$last_arg" == "-verbose" ]; then
     verbose=true
     # 检查倒数第二个参数
-    if [ "$second_last_arg" == "test" ] || [ "$second_last_arg" == "--local" ] || [ "$second_last_arg" == "-l" ]; then
+    if [ "$second_last_arg" == "--test" ] || [ "$second_last_arg" == "--local" ] || [ "$second_last_arg" == "-l" ]; then
         isTestingScript=true
     fi
 else
     # 检查最后一个参数
-    if [ "$last_arg" == "test" ] || [ "$last_arg" == "--local" ] || [ "$last_arg" == "-l" ]; then
+    if [ "$last_arg" == "--test" ] || [ "$last_arg" == "--local" ] || [ "$last_arg" == "-l" ]; then
         isTestingScript=true
     fi
 fi
@@ -247,6 +247,25 @@ fi
 
 
 ## 版本记录
+
+### 0.9.3 (2026-04-19)
+
+- 【Feature】qtool入参与参数解析修改，详情 `qtool --help`
+
+  ```
+  选项:
+    -qbase-local-path, --qbase-local-path PATH    qbase路径（默认: qbase）
+    --no-use-brew-path                            qtool 里的其他脚本路径是否使用本地来拼接，而不是 brew 里的路径
+  
+    --qian, -qian, -lichaoqian, -chaoqian         调试模式
+    --verbose, -v                                 详细信息
+    --help, -h                                    帮助信息
+  
+  示例:
+    $0 --verbose --qian
+    $0 --qbase-local-path /path/to/qbase
+  EOF
+  ```
 
 ### 2026-04-18
 
