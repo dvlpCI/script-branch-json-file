@@ -116,19 +116,19 @@ if result.returncode != 0:
     exit(1)
 # else:
 #     print(f"result.stdout={result.stdout}")    # 打印命令输出
-sript_file_absPath=result.stdout.strip()  # 去除字符串两端的空白字符（避免多出个换行符）
+qbase_execScript_by_configJsonFile_scriptPath=result.stdout.strip()  # 去除字符串两端的空白字符（避免多出个换行符）
 # '''
 # print(f"{GREEN}要执行的脚本是{BLUE} {sript_file_absPath} {GREEN} {GREEN}参数是【{BLUE} {pack_input_params_file_path} {GREEN}】。{NC}")
 
 # 添加要执行的python脚本文件是否存在
-if sript_file_absPath is None:
+if qbase_execScript_by_configJsonFile_scriptPath is None:
     print(f"{RED}错误: 找不到文件 dealScript_by_scriptConfig.py{NC}")
-    print(f"{YELLOW}当前文件路径: {sript_file_absPath}{NC}")
+    print(f"{YELLOW}当前文件路径: {qbase_execScript_by_configJsonFile_scriptPath}{NC}")
     print(f"{YELLOW}查找相对路径: ./dealScript_by_scriptConfig.py{NC}")
     exit(1)
     
-command=["python3", sript_file_absPath, pack_input_params_file_path]
-qian_log(f"{GREEN}要执行的py脚本命令是【{BLUE} python3 {sript_file_absPath} {pack_input_params_file_path} {GREEN}】。{NC}")
+command=["python3", qbase_execScript_by_configJsonFile_scriptPath, "-script-config-file", pack_input_params_file_path]
+qian_log(f"{GREEN}要执行的py脚本命令是【{BLUE} python3 {qbase_execScript_by_configJsonFile_scriptPath} -script-config-file {pack_input_params_file_path} {GREEN}】。{NC}")
 # print(f"{GREEN}脚本执行完成。{NC}")
 # exit(1)
-callScriptCommond(command, sript_file_absPath)
+callScriptCommond(command, qbase_execScript_by_configJsonFile_scriptPath)
