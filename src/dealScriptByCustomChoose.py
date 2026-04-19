@@ -33,11 +33,22 @@ CYAN='\033[0;36m'
 #     parser.add_argument(item)
 # args = parser.parse_args()
 # print(args)
+
 import argparse
 import sys
 
 def print_custom_help():
-    print(f"print_custom_help()")
+    print("""
+Usage: python3 dealScriptByCustomChoose.py [其他参数]
+
+Options:
+  --verbose, -v                                  显示详细信息
+  --qian                                         开启打印调试log模式
+  --qbase-local-path <path>                      依赖的子库 qbase 使用指定的路径
+
+Example:
+  python3 dealScriptByCustomChoose.py
+""")
     
 def parse_arguments():
     # 先手动检查 help
@@ -61,11 +72,61 @@ def parse_arguments():
                    default=None,  # 默认值为 None
                    help='依赖的子库 qbase 使用指定的路径，用来顺便测试子库')
     
-    args = parser.parse_args()
+    parser.add_argument('--no-use-brew-path', 
+                   action='store_true',
+                   help='qtool 里的其他脚本路径是否使用本地来拼接，而不是 brew 里的路径')
+    
+    
+    try:
+        args = parser.parse_args()
+    except SystemExit:
+        print_custom_help()
+        sys.exit(1)
     return args
 
+def filter_argv(exclude_flags=None, exclude_options=None):
+    """
+    过滤命令行参数
+    exclude_flags: 排除的标志参数（不需要值的），如 ['--qian']
+    exclude_options: 排除的选项参数（需要值的），如 ['--qbase-local-path']
+    """
+    if exclude_flags is None:
+        exclude_flags = ['--qian']
+    if exclude_options is None:
+        exclude_options = []
+    
+    filtered = []
+    skip_next = False
+    
+    for i, arg in enumerate(sys.argv[1:]):
+        if skip_next:
+            skip_next = False
+            continue
+        
+        # 检查是否是需要排除的标志参数
+        if arg in exclude_flags:
+            continue
+        
+        # 检查是否是需要排除的选项参数
+        if arg in exclude_options:
+            skip_next = True  # 跳过下一个参数（值）
+            continue
+        
+        filtered.append(arg)
+    
+    return filtered
+
+#### ------ qian_log_func() ------ ####
+import inspect
 # 声明全局变量
 DEFINE_QIAN = None
+def qian_log_func(msg):
+    """只有定义 --qian 的时候才打印这个log(带函数名)"""
+    global DEFINE_QIAN
+    if DEFINE_QIAN:  # 只有当用户传了 --qian 相关参数时才打印
+        func_name = inspect.currentframe().f_back.f_code.co_name
+        print(f"{PURPLE}>>>>>>>>>>>>【{func_name}】{msg} {NC}", file=sys.stderr)
+        
 def qian_log(msg):
     """只有定义 --qian 的时候才打印这个log"""
     global DEFINE_QIAN
@@ -82,6 +143,13 @@ if args.qbase_local_path:
     print(f"{GREEN}使用本地 qbase 路径: {QBASE_CMD} {NC}")
  
 '''
+# 传递给下个脚本的参数
+next_args = filter_argv(
+    exclude_flags=[],  # 若要排除 --qian ， [] 内填 '--qian'
+    exclude_options=[]  # 不排除任何选项参数
+)
+qian_log(f"传递给下一个脚本的参数: {next_args}")
+
 # 测试输出
 if contains_verbose_in_allArgs:
     print("Verbose mode enabled")

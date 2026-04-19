@@ -109,7 +109,7 @@ CONTAINS_HELP=false
 
 # 解析命令行参数
 allArgsOrigin="$@"
-NEXT_SCRIPT_ARGS=() # 存储要传递给下个脚本的参数
+NEXT_SCRIPT_ARGS=() # 存储要传递给下个脚本的参数，只允许传递不影响脚本逻辑的公共参数，不然传了后发现有些脚本只接收指定的参数会造成反而无法正常运行
 while [ $# -gt 0 ]; do
     case "$1" in
         # 具名参数（需要值的参数）
@@ -121,6 +121,7 @@ while [ $# -gt 0 ]; do
         # 标志参数（不需要值的开关）
         --no-use-brew-path)
             isTestingScript=true    # qtool 里的其他脚本路径是否使用本地来拼接，而不是 brew 里的路径
+            NEXT_SCRIPT_ARGS+=("$1")
             shift 1
             ;;
         --version|-version)
@@ -145,7 +146,7 @@ while [ $# -gt 0 ]; do
         
         # 遇到 -- 停止解析
         --)
-            NEXT_SCRIPT_ARGS+=("$1")
+            # NEXT_SCRIPT_ARGS+=("$1")
             shift
             break
             ;;
@@ -154,15 +155,15 @@ while [ $# -gt 0 ]; do
             # 判断当前参数是否以 - 或 -- 开头
             if [[ "$1" == -* ]]; then
                 # 具名参数，需要判断下一个参数是否也是以 - 开头
-                NEXT_SCRIPT_ARGS+=("$1")
+                # NEXT_SCRIPT_ARGS+=("$1")
                 shift
                 if [[ "$1" != -* ]] && [ $# -gt 0 ]; then
-                    NEXT_SCRIPT_ARGS+=("$1")
+                    # NEXT_SCRIPT_ARGS+=("$1")
                     shift
                 fi
             else
                 # 位置参数
-                NEXT_SCRIPT_ARGS+=("$1")
+                # NEXT_SCRIPT_ARGS+=("$1")
                 shift
             fi
             ;;

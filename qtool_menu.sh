@@ -244,8 +244,10 @@ pushGitCommitMessage() {
 # 三、打包
 # 3.1、执行自定义的脚本
 dealScriptByCustomChoose() {
-    qian_log "${YELLOW}正在执行命令(打印自定义脚本目录，供你来选择后执行):《${BLUE} python3 \"${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py\" ${allArgsExceptFirstArg} ${YELLOW}》${NC}"
-    python3 "${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py" ${allArgsExceptFirstArg}
+    # 注意，不要将 allArgsExceptFirstArg 的所有参数传递给 dealScriptByCustomChoose.py 因为该脚本里只接收几个参数而已
+
+    qian_log "${YELLOW}正在执行命令(打印自定义脚本目录，供你来选择后执行):《${BLUE} python3 \"${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py\" ${YELLOW}》${NC}"
+    python3 "${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py"
     checkResultCode $?
 }
 
