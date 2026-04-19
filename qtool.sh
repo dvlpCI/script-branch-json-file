@@ -149,11 +149,24 @@ while [ $# -gt 0 ]; do
             shift
             break
             ;;
-        # 未知参数或位置参数，停止解析
+        # 未知参数或位置参数，继续解析（不 break，让后续参数能被处理）
         *)
-            NEXT_SCRIPT_ARGS+=("$@")    # 将剩余的所有参数都添加进去
-            break
+            # 判断当前参数是否以 - 或 -- 开头
+            if [[ "$1" == -* ]]; then
+                # 具名参数，需要判断下一个参数是否也是以 - 开头
+                NEXT_SCRIPT_ARGS+=("$1")
+                shift
+                if [[ "$1" != -* ]] && [ $# -gt 0 ]; then
+                    NEXT_SCRIPT_ARGS+=("$1")
+                    shift
+                fi
+            else
+                # 位置参数
+                NEXT_SCRIPT_ARGS+=("$1")
+                shift
+            fi
             ;;
+        
     esac
 done
 
