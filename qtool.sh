@@ -3,7 +3,7 @@
  # @Author: dvlproad
  # @Date: 2023-04-23 13:18:33
  # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2026-04-20 05:37:23
+ # @LastEditTime: 2026-04-20 05:48:52
  # @Description: 
 ### 
 
@@ -110,7 +110,7 @@ CONTAINS_HELP=false
 # 解析命令行参数
 allArgsOrigin="$@"
 QUICK_OR_PATH_ARGS=() # 存储传递给 -quick 和 -path 的所有参数
-NEXT_SCRIPT_ARGS=() # 存储要传递给下个脚本的参数，只允许传递不影响脚本逻辑的公共参数，不然传了后发现有些脚本只接收指定的参数会造成反而无法正常运行
+COMMON_FLAG_ARGS=() # 存储要传递给下个脚本的参数，只允许传递不影响脚本逻辑的公共参数，不然传了后发现有些脚本只接收指定的参数会造成反而无法正常运行
 firstArg=$1         # 第一个参数要作为 -quick 的入口的判断。所以得先保存第一个参数（需要在解析之前保存，因为解析循环会改变 $1）
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -121,13 +121,13 @@ while [ $# -gt 0 ]; do
         -qbase-local-path|--qbase-local-path)
             # 用户明确传递了此参数，必须提供有效值
             QBASE_CMD=$(get_named_arg_value "$1" "$2" "qbase路径") || handle_named_arg_error "$1"
-            NEXT_SCRIPT_ARGS+=("$1" "$2")
+            COMMON_FLAG_ARGS+=("$1" "$2")
             QUICK_OR_PATH_ARGS+=("$1" "$2")
             shift 2;;
         # 标志参数（不需要值的开关）
         --no-use-brew-path)
             isTestingScript=true    # qtool 里的其他脚本路径是否使用本地来拼接，而不是 brew 里的路径
-            NEXT_SCRIPT_ARGS+=("$1")
+            COMMON_FLAG_ARGS+=("$1")
             QUICK_OR_PATH_ARGS+=("$1")
             shift 1
             ;;
@@ -137,26 +137,26 @@ while [ $# -gt 0 ]; do
             ;;
         --qian|-qian|-lichaoqian|-chaoqian)
             DEFINE_QIAN=true
-            NEXT_SCRIPT_ARGS+=("$1")
+            COMMON_FLAG_ARGS+=("$1")
             QUICK_OR_PATH_ARGS+=("$1")
             shift 1
             ;;
         --verbose|-v)
             CONTAINS_VERBOSE=true
-            NEXT_SCRIPT_ARGS+=("$1")
+            COMMON_FLAG_ARGS+=("$1")
             QUICK_OR_PATH_ARGS+=("$1")
             shift 1
             ;;
         --help|-h)
             CONTAINS_HELP=true
-            NEXT_SCRIPT_ARGS+=("$1")
+            COMMON_FLAG_ARGS+=("$1")
             QUICK_OR_PATH_ARGS+=("$1")
             shift 1
             ;;
         
         # 遇到 -- 停止解析
         --)
-            # NEXT_SCRIPT_ARGS+=("$1")
+            # COMMON_FLAG_ARGS+=("$1")
             shift
             break
             ;;
@@ -165,17 +165,17 @@ while [ $# -gt 0 ]; do
             # 判断当前参数是否以 - 或 -- 开头
             if [[ "$1" == -* ]]; then
                 # 具名参数，需要判断下一个参数是否也是以 - 开头
-                # NEXT_SCRIPT_ARGS+=("$1")
+                # COMMON_FLAG_ARGS+=("$1")
                 QUICK_OR_PATH_ARGS+=("$1")
                 shift
                 if [[ "$1" != -* ]] && [ $# -gt 0 ]; then
-                    # NEXT_SCRIPT_ARGS+=("$1")
+                    # COMMON_FLAG_ARGS+=("$1")
                     QUICK_OR_PATH_ARGS+=("$1")
                     shift
                 fi
             else
                 # 位置参数
-                # NEXT_SCRIPT_ARGS+=("$1")
+                # COMMON_FLAG_ARGS+=("$1")
                 QUICK_OR_PATH_ARGS+=("$1")
                 shift
             fi
@@ -196,7 +196,7 @@ qian_log "CONTAINS_VERBOSE: $CONTAINS_VERBOSE"
 qian_log "CONTAINS_HELP: $CONTAINS_HELP"
 qian_log "isTestingScript: $isTestingScript"
 qian_log "位置参数（${#POSITIONAL_ARGS[@]}个）: ${POSITIONAL_ARGS[*]}"
-qian_log "传递给下个脚本的参数（${#NEXT_SCRIPT_ARGS[@]}个）: ${NEXT_SCRIPT_ARGS[*]}"
+qian_log "传递给下个脚本的参数（${#COMMON_FLAG_ARGS[@]}个）: ${COMMON_FLAG_ARGS[*]}"
 qian_log "传递给 -quick 命令的参数（${#QUICK_OR_PATH_ARGS[@]}个）: ${QUICK_OR_PATH_ARGS[*]}"
 qian_log "=================================="
 
@@ -437,6 +437,6 @@ if [ "$is_quick_cmd" = true ]; then
         printf "${YELLOW}温馨提示:无法执行未知命令《 qtool \"$1\" 》，请检查${NC}\n"
     fi
 else
-    qian_log "qtool正在执行命令(输出菜单):《 sh ${qtoolScriptDir_Absolute}/qtool_menu.sh \"${qtoolScriptDir_Absolute}\" \"${NEXT_SCRIPT_ARGS[*]}\" 》"
-    sh ${qtoolScriptDir_Absolute}/qtool_menu.sh "${qtoolScriptDir_Absolute}" "${NEXT_SCRIPT_ARGS[*]}"
+    qian_log "qtool正在执行命令(输出菜单):《 sh ${qtoolScriptDir_Absolute}/qtool_menu.sh \"${qtoolScriptDir_Absolute}\" \"${COMMON_FLAG_ARGS[*]}\" 》"
+    sh ${qtoolScriptDir_Absolute}/qtool_menu.sh "${qtoolScriptDir_Absolute}" "${COMMON_FLAG_ARGS[*]}"
 fi

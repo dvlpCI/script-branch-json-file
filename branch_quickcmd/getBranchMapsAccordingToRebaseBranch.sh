@@ -3,7 +3,7 @@
  # @Author: dvlproad dvlproad@163.com
  # @Date: 2023-11-04 02:01:01
  # @LastEditors: dvlproad dvlproad@163.com
- # @LastEditTime: 2026-04-17 23:27:53
+ # @LastEditTime: 2026-04-20 05:42:21
  # @FilePath: getBranchMapsAccordingToRebaseBranch.sh
  # @Description: 根据rebase分支获取所有分支信息
 ### 
@@ -118,17 +118,27 @@ handle_named_arg_error() {
 
 quickCmdArgs="$@"
 # echo "==========所有参数为: ${quickCmdArgs[*]}"
+# --------------------- 的 ---------------------
+# qian_log 函数
+qian_log() {
+    if [ "$DEFINE_QIAN" = true ]; then
+        echo "$1" >&2
+    fi
+}
 
 # ==================== 默认值设置 ====================
 QBASE_CMD="qbase"  # 默认值（当用户不传这个参数时使用）
-# shift 1
+CONTAINS_VERSION=false  # 是否是打印版本号后就结束任务
+DEFINE_QIAN=false
+CONTAINS_VERBOSE=false
+CONTAINS_HELP=false
+
+# 解析命令行参数
+allArgsOrigin="$@"
+COMMON_FLAG_ARGS=() # 存储要传递给下个脚本的参数，只允许传递不影响脚本逻辑的公共参数，不然传了后发现有些脚本只接收指定的参数会造成反而无法正常运行
 while [ -n "$1" ]
 do
     case "$1" in
-        -qbase-local-path|--qbase-local-path)
-            # 用户明确传递了此参数，必须提供有效值
-            QBASE_CMD=$(get_named_arg_value "$1" "$2" "qbase路径") || handle_named_arg_error "$1"
-            shift 2;;
         # branch_quickcmd/getBranchNames_accordingToRebaseBranch.sh
         -rebaseBranch|--rebase-branch) REBASE_BRANCH=$2; shift 2;;
         -addValue|--add-value) add_value="$2"; shift 2;;
@@ -177,11 +187,78 @@ do
             array_count=$((array_count))
             # echo "AtMiddleBracketIdsString count: $array_count"
             shift $array_count;;
-        # -xxx|--xxx) xxx=$2; shift 2;;
-        --) break ;;
-        *) break ;;
+        # 具名参数（需要值的参数）
+        -qbase-local-path|--qbase-local-path)
+            # 用户明确传递了此参数，必须提供有效值
+            QBASE_CMD=$(get_named_arg_value "$1" "$2" "qbase路径") || handle_named_arg_error "$1"
+            COMMON_FLAG_ARGS+=("$1" "$2")
+            shift 2;;
+        # 标志参数（不需要值的开关）
+        --no-use-brew-path)
+            isTestingScript=true    # qtool 里的其他脚本路径是否使用本地来拼接，而不是 brew 里的路径
+            COMMON_FLAG_ARGS+=("$1")
+            shift 1
+            ;;
+        --version|-version)
+            CONTAINS_VERSION=true
+            shift 1
+            ;;
+        --qian|-qian|-lichaoqian|-chaoqian)
+            DEFINE_QIAN=true
+            COMMON_FLAG_ARGS+=("$1")
+            shift 1
+            ;;
+        --verbose|-v)
+            CONTAINS_VERBOSE=true
+            COMMON_FLAG_ARGS+=("$1")
+            shift 1
+            ;;
+        --help|-h)
+            CONTAINS_HELP=true
+            COMMON_FLAG_ARGS+=("$1")
+            shift 1
+            ;;
+        
+        # 遇到 -- 停止解析
+        --)
+            # COMMON_FLAG_ARGS+=("$1")
+            shift
+            break
+            ;;
+        # 未知参数或位置参数，继续解析（不 break，让后续参数能被处理）
+        *)
+            # 判断当前参数是否以 - 或 -- 开头
+            if [[ "$1" == -* ]]; then
+                # 具名参数，需要判断下一个参数是否也是以 - 开头
+                # COMMON_FLAG_ARGS+=("$1")
+                shift
+                if [[ "$1" != -* ]] && [ $# -gt 0 ]; then
+                    # COMMON_FLAG_ARGS+=("$1")
+                    shift
+                fi
+            else
+                # 位置参数
+                # COMMON_FLAG_ARGS+=("$1")
+                shift
+            fi
+            ;;
     esac
 done
+
+# 剩余的位置参数
+POSITIONAL_ARGS=("$@")
+
+
+# 输出解析结果（调试用）
+qian_log "========== 参数解析结果 =========="
+qian_log "QBASE_CMD: $QBASE_CMD"
+qian_log "DEFINE_QIAN: $DEFINE_QIAN"
+qian_log "CONTAINS_VERBOSE: $CONTAINS_VERBOSE"
+qian_log "CONTAINS_HELP: $CONTAINS_HELP"
+qian_log "isTestingScript: $isTestingScript"
+qian_log "位置参数（${#POSITIONAL_ARGS[@]}个）: ${POSITIONAL_ARGS[*]}"
+qian_log "传递给下个脚本的参数（${#COMMON_FLAG_ARGS[@]}个）: ${COMMON_FLAG_ARGS[*]}"
+qian_log "=================================="
 
 debug_log "========1.1=======✅-rebaseBranch:${REBASE_BRANCH}"
 debug_log "========1.2=======✅--add-value:${add_value}"
@@ -226,7 +303,7 @@ debug_log "========x.x=======✅剩余参数为: ${remain_args[*]}"
 
 echo "\n---------- getBranchNamesAccordingToRebaseBranch ----------"
 # qbase_getBranchNames_accordingToRebaseBranch_scriptPath=$(qbase -path getBranchNames_accordingToRebaseBranch)
-debug_log "${YELLOW}正在执行命令(根据rebase,获取分支名):《${BLUE} ${QBASE_CMD} -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch \"${REBASE_BRANCH}\" -addValue \"${add_value}\" -onlyName \"${ONLY_NAME}\" ${YELLOW}》${NC}"
+qian_log "${YELLOW}正在执行命令(根据rebase,获取分支名):《${BLUE} ${QBASE_CMD} -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch \"${REBASE_BRANCH}\" -addValue \"${add_value}\" -onlyName \"${ONLY_NAME}\" ${YELLOW}》${NC}"
 resultBranchResponseJsonString=$(${QBASE_CMD} -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch "${REBASE_BRANCH}" -addValue "${add_value}" -onlyName "${ONLY_NAME}")
 if [ $? != 0 ]; then
     echo "${resultBranchResponseJsonString}"
@@ -339,7 +416,7 @@ qbase_addBranchMaps_toJsonFile_scriptPath=$(${QBASE_CMD} -path addBranchMaps_toJ
 requestBranchNameArray=${resultBranchNames}
 CheckPropertyInNetworkType=${CHECK_IN_NETWORK_TYPE}
 debug_log "========r.r=======✅-requestBranchNamesString:${requestBranchNameArray[*]}"
-debug_log "${YELLOW}正在执行命令(获取所有指定分支名的branchMaps输出到指定文件中):《${BLUE} sh ${qbase_addBranchMaps_toJsonFile_scriptPath} -branchMapsFromDir \"${BranceMaps_From_Directory_PATH}\" -branchMapsAddToJsonF \"${BranchMapAddToJsonFile}\" -branchMapsAddToKey \"${BranchMapAddToKey}\" -requestBranchNamesString \"${requestBranchNameArray[*]}\" -checkPropertyInNetwork \"${CheckPropertyInNetworkType}\" -ignoreCheckBranchNames \"${ignoreCheckBranchNameArray}\" -shouldDeleteHasCatchRequestBranchFile \"${shouldDeleteHasCatchRequestBranchFile}\" ${YELLOW}》${NC}"
+qian_log "${YELLOW}正在执行命令(获取所有指定分支名的branchMaps输出到指定文件中):《${BLUE} sh ${qbase_addBranchMaps_toJsonFile_scriptPath} -branchMapsFromDir \"${BranceMaps_From_Directory_PATH}\" -branchMapsAddToJsonF \"${BranchMapAddToJsonFile}\" -branchMapsAddToKey \"${BranchMapAddToKey}\" -requestBranchNamesString \"${requestBranchNameArray[*]}\" -checkPropertyInNetwork \"${CheckPropertyInNetworkType}\" -ignoreCheckBranchNames \"${ignoreCheckBranchNameArray}\" -shouldDeleteHasCatchRequestBranchFile \"${shouldDeleteHasCatchRequestBranchFile}\" ${YELLOW}》${NC}"
 errorMessage=$(sh ${qbase_addBranchMaps_toJsonFile_scriptPath} -branchMapsFromDir "${BranceMaps_From_Directory_PATH}" -branchMapsAddToJsonF "${BranchMapAddToJsonFile}" -branchMapsAddToKey "${BranchMapAddToKey}" -requestBranchNamesString "${requestBranchNameArray[*]}" -checkPropertyInNetwork "${CheckPropertyInNetworkType}" -ignoreCheckBranchNames "${ignoreCheckBranchNameArray}" -shouldDeleteHasCatchRequestBranchFile "${shouldDeleteHasCatchRequestBranchFile}")
 if [ $? != 0 ]; then
     printfAndNotificationErrorMessage "${errorMessage}"
