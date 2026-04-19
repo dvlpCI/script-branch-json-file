@@ -197,6 +197,10 @@ if qbase_execScript_by_configJsonFile_scriptPath is None:
     
 command=["python3", qbase_execScript_by_configJsonFile_scriptPath, "-script-config-file", pack_input_params_file_path]
 qian_log(f"{GREEN}要执行的py脚本命令是【{BLUE} python3 {qbase_execScript_by_configJsonFile_scriptPath} -script-config-file {pack_input_params_file_path} {GREEN}】。{NC}")
+# command = command + COMMON_FLAG_ARGS # 不是 +next_args 
+# import shlex
+# cmd_str = ' '.join(shlex.quote(arg) for arg in command)
+# qian_log(f"{GREEN}执行【要执行的脚本】的py命令是【{BLUE} {cmd_str} {GREEN}】。{NC}")
 # print(f"{GREEN}脚本执行完成。{NC}")
 # exit(1)
 callScriptCommond(command, qbase_execScript_by_configJsonFile_scriptPath)

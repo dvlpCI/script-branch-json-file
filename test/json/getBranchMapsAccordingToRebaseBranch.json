@@ -47,7 +47,7 @@
             "actionType": "fixed",
             "resultForParam": "-branchMapsFromDir",
             "fixedType": "dir-path-rel-this-file",
-            "fixedValue": "../../branch_quickcmd/example/featureBrances"
+            "fixedValue": "../../example/featureBrances"
         },
         {
             "id": "-branchMapsAddToJsonF",
@@ -55,7 +55,7 @@
             "actionType": "fixed",
             "resultForParam": "-branchMapsAddToJsonF",
             "fixedType": "file-path-rel-this-file",
-            "fixedValue": "../../branch_quickcmd/example/app_branch_info.json"
+            "fixedValue": "../../example/app_branch_info.json"
         },
         {
             "id": "-branchMapsAddToKey",
@@ -63,7 +63,7 @@
             "actionType": "fixed",
             "resultForParam": "-branchMapsAddToKey",
             "fixedType": "fixed-value",
-            "fixedValue": "feature_brances"
+            "fixedValue": "online_branches"
         }
     ]
 }

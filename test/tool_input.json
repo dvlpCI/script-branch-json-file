@@ -172,7 +172,7 @@
     }
   ],
   "branchJsonFile": {
-    "BRANCH_JSON_FILE_DIR_RELATIVE_PATH": "./src/example/featureBrances/",
+    "BRANCH_JSON_FILE_DIR_RELATIVE_PATH": "./example/featureBrances/",
     "answerAllowId": [
       "developer1",
       "producter1",
