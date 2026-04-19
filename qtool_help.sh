@@ -14,10 +14,10 @@ cat << EOF
 用法: $0 [选项]
 
 选项:
-  -qbase-local-path, --qbase-local-path PATH    qbase路径（默认: qbase）
+  -qbase-local-path, --qbase-local-path PATH    依赖的子库 qbase 使用指定的路径，用来顺便测试子库（默认: qbase） 
   --no-use-brew-path                            qtool 里的其他脚本路径是否使用本地来拼接，而不是 brew 里的路径
 
-  --qian, -qian, -lichaoqian, -chaoqian         调试模式
+  --qian, -qian, -lichaoqian, -chaoqian         开启打印调试log模式
   --verbose, -v                                 详细信息
   --help, -h                                    帮助信息
 

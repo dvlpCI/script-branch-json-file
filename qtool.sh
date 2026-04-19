@@ -102,6 +102,7 @@ handle_named_arg_error() {
 
 # ==================== 默认值设置 ====================
 QBASE_CMD="qbase"  # 默认值（当用户不传这个参数时使用）
+CONTAINS_VERSION=false  # 是否是打印版本号后就结束任务
 DEFINE_QIAN=false
 CONTAINS_VERBOSE=false
 CONTAINS_HELP=false
@@ -120,6 +121,10 @@ while [ $# -gt 0 ]; do
         # 标志参数（不需要值的开关）
         --no-use-brew-path)
             isTestingScript=true    # qtool 里的其他脚本路径是否使用本地来拼接，而不是 brew 里的路径
+            shift 1
+            ;;
+        --version|-version)
+            CONTAINS_VERSION=true
             shift 1
             ;;
         --qian|-qian|-lichaoqian|-chaoqian)
@@ -320,8 +325,8 @@ qian_log "qtool的所有参数: allArgsOrigin = ${allArgsOrigin}"
 qian_log "qtool的所有参数: firstArg = ${firstArg} , allArgsExceptFirstArg = ${allArgsExceptFirstArg}"
 
 # 如果是获取版本号
-versionCmdStrings=("--version" "-version" "-v" "version")
-if echo "${versionCmdStrings[@]}" | grep -wq "${firstArg}" &>/dev/null; then
+if [ "${CONTAINS_VERSION}" == true ]; then
+    qian_log "打印版本号，然后结束所有任务"
     echo "${qtool_latest_version}"
     exit 0
 elif [ "${firstArg}" == "-path" ]; then
@@ -350,14 +355,15 @@ else
     echo "${qtool_latest_version}"
 fi
 
+
+qtoolScriptDir_Absolute="${qtool_homedir_abspath}"
+qian_log "您等下拼接的 qtoolScriptDir_Absolute=${qtoolScriptDir_Absolute}"
+
+
 if [ "${CONTAINS_HELP}" == true ]; then
     sh ${qtoolScriptDir_Absolute}/qtool_help.sh
     exit 0
 fi
-
-
-qtoolScriptDir_Absolute="${qtool_homedir_abspath}"
-# echo "qtoolScriptDir_Absolute=${qtoolScriptDir_Absolute}"
 
 # 检查运行环境
 sh ${qtoolScriptDir_Absolute}/qtool_runenv.sh "${qtoolScriptDir_Absolute}"
@@ -388,13 +394,21 @@ printf "${GREEN}温馨提示:您当前选择的操作参数使用  ${YELLOW}${pr
 
 # elif [ "$1" == "change" ]; then
 #     sh ${qtoolScriptDir_Absolute}/qtool_change.sh "${qtoolScriptDir_Absolute}"
-if echo "${qtoolQuickCmdStrings[@]}" | grep -wq "$firstArg" &>/dev/null; then
+# 检查 firstArg 是否在快速命令列表中
+is_quick_cmd=false
+for cmd in "${qtoolQuickCmdStrings[@]}"; do
+    if [[ "$firstArg" == "$cmd" ]]; then
+        is_quick_cmd=true
+        break
+    fi
+done
+if [ "$is_quick_cmd" = true ]; then
     if [ "$firstArg" == "help" ]; then
         sh ${qtoolScriptDir_Absolute}/qtool_help.sh
     elif [ "$firstArg" == "cz" ]; then
         sh ${qtoolScriptDir_Absolute}/commit/commit_message.sh
     else
-        printf "${YELLOW}温馨提示:无法执行未知命令《 qtool \"$1\" 》，请检查"
+        printf "${YELLOW}温馨提示:无法执行未知命令《 qtool \"$1\" 》，请检查${NC}\n"
     fi
 else
     qian_log "qtool正在执行命令(输出菜单):《 sh ${qtoolScriptDir_Absolute}/qtool_menu.sh \"${qtoolScriptDir_Absolute}\" \"${NEXT_SCRIPT_ARGS[*]}\" 》"
