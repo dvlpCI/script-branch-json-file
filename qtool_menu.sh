@@ -41,7 +41,20 @@ contains_verbose_in_allArgs=false
 DEFINE_QIAN=false
 # 遍历数组
 for arg in "${allArgsArray[@]}"; do
+    # echo "正在处理参数: $arg"  # 打印每个参数
+    
     case "$arg" in
+        -qbase-local-path|--qbase-local-path)
+            # 用户明确传递了此参数，必须提供有效值
+            QBASE_CMD=$(get_named_arg_value "$1" "$2" "qbase路径") || handle_named_arg_error "$1"
+            COMMON_FLAG_ARGS+=("$1" "$2")
+            shift 2;;
+        # 标志参数（不需要值的开关）
+        --no-use-brew-path)
+            isTestingScript=true    # qtool 里的其他脚本路径是否使用本地来拼接，而不是 brew 里的路径
+            COMMON_FLAG_ARGS+=("$1")
+            shift 1
+            ;;
         --help|-help|-h|help)
             contains_help_in_allArgs=true
             COMMON_FLAG_ARGS+=("$arg")
@@ -54,12 +67,10 @@ for arg in "${allArgsArray[@]}"; do
             DEFINE_QIAN=true
             COMMON_FLAG_ARGS+=("$arg")
             ;;
+        *)
+            # echo "  -> 未匹配的普通参数: $arg"
+            ;;
     esac
-
-    # 可选：如果所有标志都已找到，可以提前退出
-    if $contains_help_in_allArgs && $contains_verbose_in_allArgs && $DEFINE_QIAN; then
-        break
-    fi
 done
 # 输出解析结果（调试用）
 qian_log "========== 参数解析结果（$0） =========="

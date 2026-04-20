@@ -307,18 +307,24 @@ function _get_qbase_in_qtoolJson() {
 
 # 如果是测试脚本中
 qpackageJsonF="$qtool_homedir_abspath/qtool.json"
+QBASE_CMD_ORING=$QBASE_CMD
 if [ "${isTestingScript}" == true ]; then
     QBASE_CMD=$(_get_qbase_in_qtoolJson)
     if [ $? != 0 ]; then
         exit 1
     fi
-    qian_log "${GREEN}【本地测试】qbase脚本文件的路径变更为: ${BLUE} ${QBASE_CMD} ${GREEN}。${NC}"
     # 本地测试时候，需要将qbase的路径传递给其他脚本，避免其他脚本还得根据参数重新算一遍
     shouldAddQbaseLoalPath_Before_allArgsExceptFirstArg=true
 else
     QBASE_CMD="qbase"
-    qian_log "${GREEN}【正式运行】qbase脚本文件的路径变更为: ${BLUE} ${QBASE_CMD} ${GREEN}。${NC}"
     shouldAddQbaseLoalPath_Before_allArgsExceptFirstArg=false
+fi
+if [[ -n "${QBASE_CMD_ORING}" ]] && [[ "${QBASE_CMD}" != "${QBASE_CMD_ORING}" ]]; then
+    qian_log "${RED}qbase脚本文件的路径被变更为: ${BLUE} ${QBASE_CMD_ORING} ---> ${QBASE_CMD} ${RED}。${NC}"
+    QBASE_CMD=${QBASE_CMD_ORING}
+    qian_log "${RED}qbase脚本文件的路径强制改回修改前的值: ${BLUE} ${QBASE_CMD} ${RED}。${NC}"
+else
+    qian_log "${GREEN}qbase脚本文件的路径初始为: ${BLUE} ${QBASE_CMD} ${GREEN}。${NC}"
 fi
 function insert_args_after_first() {
     local args_str="$1"
