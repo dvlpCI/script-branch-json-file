@@ -246,7 +246,7 @@ pushGitCommitMessage() {
 dealScriptByCustomChoose() {
     # 注意，不要将 allArgsExceptFirstArg 的所有参数传递给 dealScriptByCustomChoose.py 因为该脚本里只接收几个参数而已
 
-    qian_log "${YELLOW}正在执行命令(打印自定义脚本目录，供你来选择后执行):《${BLUE} python3 \"${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py\" ${YELLOW}》${NC}"
+    qian_log "${GREEN} $FUNCNAME 方法成功调起，正在执行命令(打印自定义脚本目录，供你来选择后执行):《${BLUE} python3 \"${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py\" ${GREEN}》${NC}"
     python3 "${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py"
     checkResultCode $?
 }
@@ -380,7 +380,7 @@ evalActionByInput() {
             # tCatalogOutlineActionType=$(echo "$tCatalogOutlineMap" | jq -r ".action_type")
             
             tCatalogOutlineAction=$(echo "$tCatalogOutlineMap" | jq -r ".action")
-            qian_log "正在执行的选中的菜单命令：${BLUE} eval \"$tCatalogOutlineAction\" ${NC}"
+            qian_log "${GREEN}根据选中的菜单，调起指定的方法：【${BLUE} eval \"$tCatalogOutlineAction\" ${GREEN}】${NC}"
             eval "$tCatalogOutlineAction"
         else
             echo "无此选项，请重新输入。"

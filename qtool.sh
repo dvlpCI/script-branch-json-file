@@ -28,9 +28,11 @@ function local_test() {
 
 # --------------------- 的 ---------------------
 # qian_log 函数
-qian_log() {
+function qian_log() {
+    # 只有定义 --qian 的时候才打印这个log
     if [ "$DEFINE_QIAN" = true ]; then
-        echo "$1" >&2
+        echo "$1" >&2   # 使用 echo 信息里的颜色才能正常显示出来
+        # printf "%s\n" "$1" >&2
     fi
 }
 
@@ -196,7 +198,7 @@ qian_log "CONTAINS_VERBOSE: $CONTAINS_VERBOSE"
 qian_log "CONTAINS_HELP: $CONTAINS_HELP"
 qian_log "isTestingScript: $isTestingScript"
 qian_log "位置参数（${#POSITIONAL_ARGS[@]}个）: ${POSITIONAL_ARGS[*]}"
-qian_log "传递给下个脚本的参数（${#COMMON_FLAG_ARGS[@]}个）: ${COMMON_FLAG_ARGS[*]}"
+qian_log "公共参数（${#COMMON_FLAG_ARGS[@]}个）: ${COMMON_FLAG_ARGS[*]}"
 qian_log "传递给 -quick 命令的参数（${#QUICK_OR_PATH_ARGS[@]}个）: ${QUICK_OR_PATH_ARGS[*]}"
 qian_log "=================================="
 
@@ -310,10 +312,12 @@ if [ "${isTestingScript}" == true ]; then
     if [ $? != 0 ]; then
         exit 1
     fi
+    qian_log "${GREEN}【本地测试】qbase脚本文件的路径变更为: ${BLUE} ${QBASE_CMD} ${GREEN}。${NC}"
     # 本地测试时候，需要将qbase的路径传递给其他脚本，避免其他脚本还得根据参数重新算一遍
     shouldAddQbaseLoalPath_Before_allArgsExceptFirstArg=true
 else
     QBASE_CMD="qbase"
+    qian_log "${GREEN}【正式运行】qbase脚本文件的路径变更为: ${BLUE} ${QBASE_CMD} ${GREEN}。${NC}"
     shouldAddQbaseLoalPath_Before_allArgsExceptFirstArg=false
 fi
 function insert_args_after_first() {
@@ -342,7 +346,9 @@ function insert_args_after_first() {
 }
 
 # qbase_homedir_abspath="~/Project/CQCI/script-qbase"
+qian_log "${GREEN}执行（获取qbase的home目录）的命令: ${BLUE} ${QBASE_CMD} -path home ${GREEN}。${NC}"
 qbase_homedir_abspath=$(${QBASE_CMD} -path home)
+qian_log "${GREEN}执行（获取qbase的home目录）的结果: ${BLUE} ${qbase_homedir_abspath} ${GREEN}。${NC}"
 qbase_quickcmd_scriptPath=$qbase_homedir_abspath/qbase_quickcmd.sh
 # qbase_quickcmd_scriptPath=qbase_quickcmd.sh
 
@@ -356,7 +362,7 @@ if [ "${CONTAINS_VERSION}" == true ]; then
     echo "${qtool_latest_version}"
     exit 0
 elif [ "${firstArg}" == "-path" ]; then
-    qian_log "qtool正在通过qbase调用快捷命令...《 sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg getPath $allArgsExceptFirstArg 》"
+    qian_log "${GREEN}qtool正在通过qbase调用快捷命令...《${BLUE} sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg getPath $allArgsExceptFirstArg ${GREEN}》${NC}"
     sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg getPath $allArgsExceptFirstArg
     exit 0
 elif [ "${firstArg}" == "-quick" ]; then
@@ -373,7 +379,7 @@ elif [ "${firstArg}" == "-quick" ]; then
     if [ "${shouldAddQbaseLoalPath_Before_allArgsExceptFirstArg}" == true ]; then
         allArgsExceptFirstArg=$(insert_args_after_first "$allArgsExceptFirstArg" "-qbase-local-path" "$QBASE_CMD")
     fi
-    qian_log "qtool正在通过qbase调用快捷命令...《 sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg 》"
+    qian_log "${GREEN}qtool正在通过qbase调用快捷命令...《${BLUE} sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg ${GREEN}》${NC}"
     sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg execCmd $allArgsExceptFirstArg
     exit 0
 else

@@ -257,7 +257,7 @@ qian_log "CONTAINS_VERBOSE: $CONTAINS_VERBOSE"
 qian_log "CONTAINS_HELP: $CONTAINS_HELP"
 qian_log "isTestingScript: $isTestingScript"
 qian_log "位置参数（${#POSITIONAL_ARGS[@]}个）: ${POSITIONAL_ARGS[*]}"
-qian_log "传递给下个脚本的参数（${#COMMON_FLAG_ARGS[@]}个）: ${COMMON_FLAG_ARGS[*]}"
+qian_log "公共参数（${#COMMON_FLAG_ARGS[@]}个）: ${COMMON_FLAG_ARGS[*]}"
 qian_log "=================================="
 
 debug_log "========1.1=======✅-rebaseBranch:${REBASE_BRANCH}"
@@ -303,7 +303,7 @@ debug_log "========x.x=======✅剩余参数为: ${remain_args[*]}"
 
 echo "\n---------- getBranchNamesAccordingToRebaseBranch ----------"
 # qbase_getBranchNames_accordingToRebaseBranch_scriptPath=$(qbase -path getBranchNames_accordingToRebaseBranch)
-qian_log "${YELLOW}正在执行命令(根据rebase,获取分支名):《${BLUE} ${QBASE_CMD} -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch \"${REBASE_BRANCH}\" -addValue \"${add_value}\" -onlyName \"${ONLY_NAME}\" ${YELLOW}》${NC}"
+qian_log "${GREEN}正在执行命令(根据rebase,获取分支名):《${BLUE} ${QBASE_CMD} -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch \"${REBASE_BRANCH}\" -addValue \"${add_value}\" -onlyName \"${ONLY_NAME}\" ${GREEN}》${NC}"
 resultBranchResponseJsonString=$(${QBASE_CMD} -quick getBranchNamesAccordingToRebaseBranch -rebaseBranch "${REBASE_BRANCH}" -addValue "${add_value}" -onlyName "${ONLY_NAME}")
 if [ $? != 0 ]; then
     echo "${resultBranchResponseJsonString}"
