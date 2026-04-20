@@ -212,6 +212,16 @@ fi
 
 qian_log "${YELLOW}⚠️⚠️⚠️:您现在执行的qtool.sh是 ${CurrentDIR_Script_Absolute} ⚠️⚠️⚠️\n${NC}"
 
+# isTestingScript 只代表 qtool 是不是已测试，不代表 qbase 测不测试
+isTestingQbase=false
+if [[ -n "${QBASE_CMD}" ]] && [[ "${QBASE_CMD}" != "qbase" ]]; then
+    isTestingQbase=true
+    qian_log "${RED}外部有设置 QBASE_CMD ，所以此处强制变更为测试 ${RED}。${NC}"
+fi
+if [ "${isTestingScript}" == true ]; then
+    isTestingQbase=true
+fi
+
 # TODO: 此判断有问题，暂时不用，待修复,若还要启动测试模式，还是得在脚本模式加 test
 # if [[ "${CurrentDIR_Script_Absolute}" == /Users/* ]]; then
 #     isTestingScript=true
@@ -307,8 +317,7 @@ function _get_qbase_in_qtoolJson() {
 
 # 如果是测试脚本中
 qpackageJsonF="$qtool_homedir_abspath/qtool.json"
-QBASE_CMD_ORING=$QBASE_CMD
-if [ "${isTestingScript}" == true ]; then
+if [ "${isTestingQbase}" == true ]; then
     QBASE_CMD=$(_get_qbase_in_qtoolJson)
     if [ $? != 0 ]; then
         exit 1
@@ -318,13 +327,6 @@ if [ "${isTestingScript}" == true ]; then
 else
     QBASE_CMD="qbase"
     shouldAddQbaseLoalPath_Before_allArgsExceptFirstArg=false
-fi
-if [[ -n "${QBASE_CMD_ORING}" ]] && [[ "${QBASE_CMD}" != "${QBASE_CMD_ORING}" ]]; then
-    qian_log "${RED}qbase脚本文件的路径被变更为: ${BLUE} ${QBASE_CMD_ORING} ---> ${QBASE_CMD} ${RED}。${NC}"
-    QBASE_CMD=${QBASE_CMD_ORING}
-    qian_log "${RED}qbase脚本文件的路径强制改回修改前的值: ${BLUE} ${QBASE_CMD} ${RED}。${NC}"
-else
-    qian_log "${GREEN}qbase脚本文件的路径初始为: ${BLUE} ${QBASE_CMD} ${GREEN}。${NC}"
 fi
 function insert_args_after_first() {
     local args_str="$1"

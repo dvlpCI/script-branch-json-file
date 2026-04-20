@@ -21,6 +21,35 @@ fi
 shift 1  # 去除前一个参数
 allArgsExceptFirstArg="$@"  # 将去除前一个参数，剩余的参数赋值给新变量
 
+# 获取具名参数的值
+get_named_arg_value() {
+    local opt="$1"
+    local val="$2"
+    local arg_name="${3:-参数值}"
+    
+    if [ $# -lt 2 ]; then
+        printf "%s 缺少 %s" "$opt" "$arg_name"
+        return 1
+    fi
+    if [ -z "$val" ]; then
+        printf "%s 的 %s 为空字符串" "$opt" "$arg_name"
+        return 2
+    fi
+    if [[ "$val" =~ ^- ]]; then
+        printf "%s 的 %s 不能以 '-' 开头: %s" "$opt" "$arg_name" "$val"
+        return 3
+    fi
+    printf "%s" "$val"
+    return 0
+}
+
+# 定义错误处理函数
+handle_named_arg_error() {
+    local option="$1"
+    echo "${RED}Error: 您为参数${YELLOW} ${option} ${RED}指定了值，但该值不符合要求或为空，请检查是否在 ${option} 后提供了正确的值${NC}"
+    exit 1
+}
+
 allArgsOrigin="$@"
 # 使用数组保存参数，避免空格问题
 allArgsArray=("$@")
