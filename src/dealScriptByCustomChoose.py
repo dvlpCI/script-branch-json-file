@@ -2,7 +2,7 @@
 Author: dvlproad dvlproad@163.com
 Date: 2023-04-12 22:15:22
 LastEditors: dvlproad dvlproad@163.com
-LastEditTime: 2026-04-19 21:28:06
+LastEditTime: 2026-04-20 08:48:26
 FilePath: dealScriptByCustomChoose.py
 Description: 打包-输入
 '''
@@ -84,6 +84,27 @@ def parse_arguments():
         sys.exit(1)
     return args
 
+# 要传递给下个脚本的参数，只允许传递不影响脚本逻辑的公共参数，不然传了后发现有些脚本只接收指定的参数会造成反而无法正常运行
+COMMON_FLAG_ARGS = []
+QBASE_FLAG_ARGS = []
+QTOOL_FLAG_ARGS = []
+def get_common_flag_args():
+    """获取公共参数"""
+    args = parse_arguments()
+    
+    # 只添加需要的参数
+    if args.qbase_local_path:
+        QBASE_FLAG_ARGS.extend(['--qbase-local-path', args.qbase_local_path])
+    
+    if args.no_use_brew_path:
+        QTOOL_FLAG_ARGS.append('--no-use-brew-path')
+    
+    if args.qian:
+        COMMON_FLAG_ARGS.append('--qian')
+    
+    if args.verbose:
+        COMMON_FLAG_ARGS.append('--verbose')
+
 def filter_argv(exclude_flags=None, exclude_options=None):
     """
     过滤命令行参数
@@ -141,7 +162,11 @@ QBASE_CMD = "qbase"
 if args.qbase_local_path:
     QBASE_CMD = args.qbase_local_path
     print(f"{GREEN}使用本地 qbase 路径: {QBASE_CMD} {NC}")
- 
+
+get_common_flag_args()
+qian_log(f"QBASE_FLAG_ARGS: {QBASE_FLAG_ARGS}")
+qian_log(f"QTOOL_FLAG_ARGS: {QTOOL_FLAG_ARGS}")
+qian_log(f"COMMON_FLAG_ARGS: {COMMON_FLAG_ARGS}")
 '''
 # 传递给下个脚本的参数
 next_args = filter_argv(
@@ -160,6 +185,7 @@ if contains_verbose_in_allArgs:
 custom_script_files_abspath=getEnvValue_pack_input_params_file_path(shouldCheckExist=True)
 if custom_script_files_abspath == None:
     exit(1)
+qian_log(f"{GREEN}进入选择：等待从{BLUE} {custom_script_files_abspath} {GREEN}选择要执行的脚本。脚本排序如下：{NC}")
 chooseScriptMap=chooseCustomScriptFromFilePaths(custom_script_files_abspath, shouldCheckExist=True)
 if chooseScriptMap == None:
     exit(1)
@@ -167,7 +193,7 @@ chooseScriptFilePath=chooseScriptMap["script_info_abspath"]
 pack_input_params_file_path=chooseScriptFilePath
 if pack_input_params_file_path == None:
     exit(1)
-qian_log(f"{GREEN}要执行的脚本是{BLUE} {pack_input_params_file_path} {GREEN}。{NC}")
+qian_log(f"{GREEN}选择结果：要执行的脚本是{BLUE} {pack_input_params_file_path} {GREEN}。{NC}")
 
 
 # '''
@@ -196,11 +222,11 @@ if qbase_execScript_by_configJsonFile_scriptPath is None:
     exit(1)
     
 command=["python3", qbase_execScript_by_configJsonFile_scriptPath, "-script-config-file", pack_input_params_file_path]
-qian_log(f"{GREEN}要执行的py脚本命令是【{BLUE} python3 {qbase_execScript_by_configJsonFile_scriptPath} -script-config-file {pack_input_params_file_path} {GREEN}】。{NC}")
-# command = command + COMMON_FLAG_ARGS # 不是 +next_args 
-# import shlex
-# cmd_str = ' '.join(shlex.quote(arg) for arg in command)
-# qian_log(f"{GREEN}执行【要执行的脚本】的py命令是【{BLUE} {cmd_str} {GREEN}】。{NC}")
+# qian_log(f"{GREEN}执行【要执行的脚本】的py命令是【{BLUE} python3 {qbase_execScript_by_configJsonFile_scriptPath} -script-config-file {pack_input_params_file_path} {GREEN}】。{NC}")
+command = command + QBASE_FLAG_ARGS + COMMON_FLAG_ARGS # 要传递给下个脚本的参数，只允许传递不影响脚本逻辑的公共参数，不然传了后发现有些脚本只接收指定的参数会造成反而无法正常运行
+import shlex
+cmd_str = ' '.join(shlex.quote(arg) for arg in command)
+qian_log(f"{GREEN}执行【要执行的脚本】的py命令是【{BLUE} {cmd_str} {GREEN}】。{NC}")
 # print(f"{GREEN}脚本执行完成。{NC}")
 # exit(1)
 callScriptCommond(command, qbase_execScript_by_configJsonFile_scriptPath)

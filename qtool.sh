@@ -443,6 +443,6 @@ if [ "$is_quick_cmd" = true ]; then
         printf "${YELLOW}温馨提示:无法执行未知命令《 qtool \"$1\" 》，请检查${NC}\n"
     fi
 else
-    qian_log "qtool正在执行命令(输出菜单):《 sh ${qtoolScriptDir_Absolute}/qtool_menu.sh \"${qtoolScriptDir_Absolute}\" \"${COMMON_FLAG_ARGS[*]}\" 》"
+    qian_log "${GREEN}qtool正在执行命令(输出菜单):《${BLUE} sh ${qtoolScriptDir_Absolute}/qtool_menu.sh \"${qtoolScriptDir_Absolute}\" \"${COMMON_FLAG_ARGS[*]}\" ${GREEN}》${NC}"
     sh ${qtoolScriptDir_Absolute}/qtool_menu.sh "${qtoolScriptDir_Absolute}" "${COMMON_FLAG_ARGS[*]}"
 fi

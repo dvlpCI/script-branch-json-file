@@ -22,38 +22,8 @@ shift 1  # 去除前一个参数
 allArgsExceptFirstArg="$@"  # 将去除前一个参数，剩余的参数赋值给新变量
 
 allArgsOrigin="$@"
-# 是不是包含 help 参数
-contains_help_in_allArgs=false
-for arg in $allArgsOrigin; do
-    case $arg in
-        --help|-help|-h|help)
-            contains_help_in_allArgs=true
-            break
-            ;;
-    esac
-done
-
-# 是不是包含 verbose 参数
-contains_verbose_in_allArgs=false
-for arg in $allArgsOrigin; do
-    case $arg in
-        --verbose|-verbose|-v)
-            contains_verbose_in_allArgs=true
-            break
-            ;;
-    esac
-done
-
-# 是不是包含 --qian 参数，打开关键调试命令的打印
-DEFINE_QIAN=false
-for arg in $allArgsOrigin; do
-    case $arg in
-        --qian|-qian|-lichaoqian|-chaoqian)
-            DEFINE_QIAN=true
-            break
-            ;;
-    esac
-done
+# 使用数组保存参数，避免空格问题
+allArgsArray=("$@")
 
 function qian_log() {
     # 只有定义 --qian 的时候才打印这个log
@@ -62,6 +32,35 @@ function qian_log() {
         # printf "%s\n" "$1" >&2
     fi
 }
+
+COMMON_FLAG_ARGS=() # 存储要传递给下个脚本的参数，只允许传递不影响脚本逻辑的公共参数，不然传了后发现有些脚本只接收指定的参数会造成反而无法正常运行
+
+# 初始化标志
+contains_help_in_allArgs=false
+contains_verbose_in_allArgs=false
+DEFINE_QIAN=false
+# 遍历数组
+for arg in "${allArgsArray[@]}"; do
+    case "$arg" in
+        --help|-help|-h|help)
+            contains_help_in_allArgs=true
+            COMMON_FLAG_ARGS+=("$1")
+            ;;
+        --verbose|-verbose|-v)
+            contains_verbose_in_allArgs=true
+            COMMON_FLAG_ARGS+=("$1")
+            ;;
+        --qian|-qian|-lichaoqian|-chaoqian)
+            DEFINE_QIAN=true
+            COMMON_FLAG_ARGS+=("$1")
+            ;;
+    esac
+
+    # 可选：如果所有标志都已找到，可以提前退出
+    if $contains_help_in_allArgs && $contains_verbose_in_allArgs && $DEFINE_QIAN; then
+        break
+    fi
+done
 
 
 
@@ -246,7 +245,7 @@ pushGitCommitMessage() {
 dealScriptByCustomChoose() {
     # 注意，不要将 allArgsExceptFirstArg 的所有参数传递给 dealScriptByCustomChoose.py 因为该脚本里只接收几个参数而已
 
-    qian_log "${GREEN} $FUNCNAME 方法成功调起，正在执行命令(打印自定义脚本目录，供你来选择后执行):《${BLUE} python3 \"${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py\" ${GREEN}》${NC}"
+    qian_log "${GREEN}成功调起 $FUNCNAME 方法，正在执行其要求的命令(打印自定义脚本目录，供你来选择后执行):《${BLUE} python3 \"${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py\" ${GREEN}》${NC}"
     python3 "${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py"
     checkResultCode $?
 }
@@ -325,6 +324,8 @@ checkResultCode() {
 
 
 evalActionByInput() {
+    qian_log "${GREEN}正在等待你选择...${NC}"
+
     qtool_menu_json_file_path=$1
     # 读取用户输入的选项，并根据选项执行相应操作
     valid_option=false
@@ -380,7 +381,7 @@ evalActionByInput() {
             # tCatalogOutlineActionType=$(echo "$tCatalogOutlineMap" | jq -r ".action_type")
             
             tCatalogOutlineAction=$(echo "$tCatalogOutlineMap" | jq -r ".action")
-            qian_log "${GREEN}根据选中的菜单，调起指定的方法：【${BLUE} eval \"$tCatalogOutlineAction\" ${GREEN}】${NC}"
+            qian_log "${GREEN}根据你选中的菜单${BLUE} ${option} ${GREEN}，调起指定的方法：【${BLUE} eval \"$tCatalogOutlineAction\" ${GREEN}】${NC}"
             eval "$tCatalogOutlineAction"
         else
             echo "无此选项，请重新输入。"
@@ -421,7 +422,9 @@ decompileApkAction() {
 # 显示工具选项
 showMenu() {
     qtool_menu_using_json_file_path=$1
+    qian_log "${GREEN}qtool菜单构建中...${NC}"
     tool_menu "${qtool_menu_using_json_file_path}"
+    qian_log "${GREEN}qtool菜单显示完毕${NC}"
     evalActionByInput "${qtool_menu_using_json_file_path}"
 }
 
