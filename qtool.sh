@@ -104,6 +104,8 @@ handle_named_arg_error() {
 
 # ==================== 默认值设置 ====================
 QBASE_CMD="qbase"  # 默认值（当用户不传这个参数时使用）
+isTestingScript=false
+isTestingQbase=false
 CONTAINS_VERSION=false  # 是否是打印版本号后就结束任务
 DEFINE_QIAN=false
 CONTAINS_VERBOSE=false
@@ -213,7 +215,6 @@ fi
 qian_log "${YELLOW}⚠️⚠️⚠️:您现在执行的qtool.sh是 ${CurrentDIR_Script_Absolute} ⚠️⚠️⚠️\n${NC}"
 
 # isTestingScript 只代表 qtool 是不是已测试，不代表 qbase 测不测试
-isTestingQbase=false
 if [[ -n "${QBASE_CMD}" ]] && [[ "${QBASE_CMD}" != "qbase" ]]; then
     isTestingQbase=true
     qian_log "${RED}外部有设置 QBASE_CMD ，所以此处强制变更为测试 ${RED}。${NC}"
