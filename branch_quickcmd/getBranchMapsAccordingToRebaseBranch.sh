@@ -250,7 +250,7 @@ POSITIONAL_ARGS=("$@")
 
 
 # 输出解析结果（调试用）
-qian_log "========== 参数解析结果 =========="
+qian_log "========== 参数解析结果（$0） =========="
 qian_log "QBASE_CMD: $QBASE_CMD"
 qian_log "DEFINE_QIAN: $DEFINE_QIAN"
 qian_log "CONTAINS_VERBOSE: $CONTAINS_VERBOSE"

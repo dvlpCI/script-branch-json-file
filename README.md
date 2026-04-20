@@ -248,6 +248,16 @@ fi
 
 ## 版本记录
 
+### 0.9.14 (2026-04-20)
+
+- 对 qtool_menu.sh 和 dealScriptByCustomChoose.py 都增加 ${COMMON_FLAG_ARGS[*]} 参数
+
+  ```shell
+  sh ${qtoolScriptDir_Absolute}/qtool_menu.sh "${qtoolScriptDir_Absolute}" ${COMMON_FLAG_ARGS[*]} # 注意：${COMMON_FLAG_ARGS[*]} 不能加双引号，否则会被当成一个参数值，而不是多个参数
+  
+  python3 "${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py" ${COMMON_FLAG_ARGS[*]} # 注意：${COMMON_FLAG_ARGS[*]} 不能加双引号，否则会被当成一个参数值，而不是多个参数
+  ```
+
 ### 0.9.3 (2026-04-19)
 
 - 【Feature】qtool入参与参数解析修改，详情 `qtool --help`

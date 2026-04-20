@@ -185,7 +185,7 @@ if contains_verbose_in_allArgs:
 custom_script_files_abspath=getEnvValue_pack_input_params_file_path(shouldCheckExist=True)
 if custom_script_files_abspath == None:
     exit(1)
-qian_log(f"{GREEN}进入选择：等待从{BLUE} {custom_script_files_abspath} {GREEN}选择要执行的脚本。脚本排序如下：{NC}")
+qian_log(f"{GREEN}进入custom菜单选择：等待从{BLUE} {custom_script_files_abspath} {GREEN}选择要执行的脚本。脚本排序如下：{NC}")
 chooseScriptMap=chooseCustomScriptFromFilePaths(custom_script_files_abspath, shouldCheckExist=True)
 if chooseScriptMap == None:
     exit(1)
@@ -193,7 +193,7 @@ chooseScriptFilePath=chooseScriptMap["script_info_abspath"]
 pack_input_params_file_path=chooseScriptFilePath
 if pack_input_params_file_path == None:
     exit(1)
-qian_log(f"{GREEN}选择结果：要执行的脚本是{BLUE} {pack_input_params_file_path} {GREEN}。{NC}")
+qian_log(f"{GREEN}选择custom菜单结果：【要执行的脚本】是{BLUE} {pack_input_params_file_path} {GREEN}。{NC}")
 
 
 # '''
@@ -226,7 +226,7 @@ command=["python3", qbase_execScript_by_configJsonFile_scriptPath, "-script-conf
 command = command + QBASE_FLAG_ARGS + COMMON_FLAG_ARGS # 要传递给下个脚本的参数，只允许传递不影响脚本逻辑的公共参数，不然传了后发现有些脚本只接收指定的参数会造成反而无法正常运行
 import shlex
 cmd_str = ' '.join(shlex.quote(arg) for arg in command)
-qian_log(f"{GREEN}执行【要执行的脚本】的py命令是【{BLUE} {cmd_str} {GREEN}】。{NC}")
+qian_log(f"{GREEN}对选择的【要执行的脚本】进行执行的py命令是【{BLUE} {cmd_str} {GREEN}】。{NC}")
 # print(f"{GREEN}脚本执行完成。{NC}")
 # exit(1)
 callScriptCommond(command, qbase_execScript_by_configJsonFile_scriptPath)

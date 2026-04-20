@@ -44,15 +44,15 @@ for arg in "${allArgsArray[@]}"; do
     case "$arg" in
         --help|-help|-h|help)
             contains_help_in_allArgs=true
-            COMMON_FLAG_ARGS+=("$1")
+            COMMON_FLAG_ARGS+=("$arg")
             ;;
         --verbose|-verbose|-v)
             contains_verbose_in_allArgs=true
-            COMMON_FLAG_ARGS+=("$1")
+            COMMON_FLAG_ARGS+=("$arg")
             ;;
         --qian|-qian|-lichaoqian|-chaoqian)
             DEFINE_QIAN=true
-            COMMON_FLAG_ARGS+=("$1")
+            COMMON_FLAG_ARGS+=("$arg")
             ;;
     esac
 
@@ -61,7 +61,14 @@ for arg in "${allArgsArray[@]}"; do
         break
     fi
 done
-
+# 输出解析结果（调试用）
+qian_log "========== 参数解析结果（$0） =========="
+qian_log "QBASE_CMD: $QBASE_CMD"
+qian_log "DEFINE_QIAN: $DEFINE_QIAN"
+qian_log "CONTAINS_VERBOSE: $CONTAINS_VERBOSE"
+qian_log "CONTAINS_HELP: $CONTAINS_HELP"
+qian_log "公共参数（${#COMMON_FLAG_ARGS[@]}个）: ${COMMON_FLAG_ARGS[*]}"
+qian_log "=================================="
 
 
 source ${qtoolScriptDir_Absolute}/base/get_system_env.sh
@@ -245,8 +252,8 @@ pushGitCommitMessage() {
 dealScriptByCustomChoose() {
     # 注意，不要将 allArgsExceptFirstArg 的所有参数传递给 dealScriptByCustomChoose.py 因为该脚本里只接收几个参数而已
 
-    qian_log "${GREEN}成功调起 $FUNCNAME 方法，正在执行其要求的命令(打印自定义脚本目录，供你来选择后执行):《${BLUE} python3 \"${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py\" ${GREEN}》${NC}"
-    python3 "${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py"
+    qian_log "${GREEN}成功调起 $FUNCNAME 方法，正在执行其要求的命令(打印自定义脚本目录，供你来选择后执行):《${BLUE} python3 \"${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py\" ${COMMON_FLAG_ARGS[*]} ${GREEN}》${NC}"
+    python3 "${qtoolScriptDir_Absolute}/src/dealScriptByCustomChoose.py" ${COMMON_FLAG_ARGS[*]} # 注意：${COMMON_FLAG_ARGS[*]} 不能加双引号，否则会被当成一个参数值，而不是多个参数
     checkResultCode $?
 }
 

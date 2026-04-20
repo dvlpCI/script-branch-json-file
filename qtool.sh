@@ -191,7 +191,7 @@ POSITIONAL_ARGS=("$@")
 
 
 # 输出解析结果（调试用）
-qian_log "========== 参数解析结果 =========="
+qian_log "========== 参数解析结果（$0） =========="
 qian_log "QBASE_CMD: $QBASE_CMD"
 qian_log "DEFINE_QIAN: $DEFINE_QIAN"
 qian_log "CONTAINS_VERBOSE: $CONTAINS_VERBOSE"
@@ -443,6 +443,6 @@ if [ "$is_quick_cmd" = true ]; then
         printf "${YELLOW}温馨提示:无法执行未知命令《 qtool \"$1\" 》，请检查${NC}\n"
     fi
 else
-    qian_log "${GREEN}qtool正在执行命令(输出菜单):《${BLUE} sh ${qtoolScriptDir_Absolute}/qtool_menu.sh \"${qtoolScriptDir_Absolute}\" \"${COMMON_FLAG_ARGS[*]}\" ${GREEN}》${NC}"
-    sh ${qtoolScriptDir_Absolute}/qtool_menu.sh "${qtoolScriptDir_Absolute}" "${COMMON_FLAG_ARGS[*]}"
+    qian_log "${GREEN}qtool正在执行命令(输出菜单):《${BLUE} sh ${qtoolScriptDir_Absolute}/qtool_menu.sh \"${qtoolScriptDir_Absolute}\" ${COMMON_FLAG_ARGS[*]} ${GREEN}》${NC}"
+    sh ${qtoolScriptDir_Absolute}/qtool_menu.sh "${qtoolScriptDir_Absolute}" ${COMMON_FLAG_ARGS[*]} # 注意：${COMMON_FLAG_ARGS[*]} 不能加双引号，否则会被当成一个参数值，而不是多个参数
 fi
