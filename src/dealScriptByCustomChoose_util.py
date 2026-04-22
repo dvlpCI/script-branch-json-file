@@ -33,7 +33,6 @@ else:
     raise ImportError("Cannot find qbase pythonModuleSrc directory")
 
 from base_util import openFile
-from path_util import getAbsPathByFileRelativePath
 from env_util import check_command, get_json_file_data, getEnvValue_params_file_path, getEnvValue_project_dir_path
 
 
