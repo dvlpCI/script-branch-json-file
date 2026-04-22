@@ -27,7 +27,5 @@ if qbase_python_path and os.path.isdir(qbase_python_path):
         joinFullPath_checkExsit,
         joinFullUrl,
     )
-    # 别名，保持与旧版本兼容
-    getAbsPathByFileRelativePath = getAbsPathByRelativePath
 else:
     raise ImportError("Cannot find qbase pythonModuleSrc directory")
