@@ -32,8 +32,9 @@ def logTitle(title):
     print(f"{PURPLE}-------{title}-------{NC}")
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-example_dir = current_dir + "/example"
 
+# example_dir = current_dir + "/../example" # 错误方式
+example_dir = os.path.abspath(os.path.join(current_dir, "..", "example"))
 
 # logTitle("get_date_range")
 # date = datetime.datetime.now()
