@@ -10,7 +10,7 @@ Description: 分支JSON文件的创建-python
 {
     "personnel_file_path_rel_this_file": "./tool_input_personel.json",
     "branchJsonFile": {
-        "BRANCH_JSON_FILE_DIR_RELATIVE_PATH": "./src/example/featureBrances/",
+        "BRANCH_JSON_FILE_DIR_RELATIVE_PATH": "./example/featureBrances/",
         "answerAllowId": [
             "developer1"
         ],

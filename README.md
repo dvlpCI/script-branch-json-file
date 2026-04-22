@@ -103,7 +103,7 @@ def get_fileOrDirPath_fromToolParamFile(tool_params_file_path, keypath, shouldCh
   },
   "personnel_file_path_rel_this_file": "./tool_input_personel.json",
   "branchJsonFile": {
-    "BRANCH_JSON_FILE_DIR_RELATIVE_PATH": "./src/example/featureBrances/"
+    "BRANCH_JSON_FILE_DIR_RELATIVE_PATH": "./example/featureBrances/"
   }
 }
 ```
@@ -116,7 +116,7 @@ def get_fileOrDirPath_fromToolParamFile(tool_params_file_path, keypath, shouldCh
 
 - 无 `_rel_this_file` 结尾的示例 `BRANCH_JSON_FILE_DIR_RELATIVE_PATH`
 
-   `/path/to/project` + "./src/example/featureBrances/" → `/path/to/project/src/example/featureBrances/` ✅
+   `/path/to/project` + "./example/featureBrances/" → `/path/to/project/example/featureBrances/` ✅
 
 
 
