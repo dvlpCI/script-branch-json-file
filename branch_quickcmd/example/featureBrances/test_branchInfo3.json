@@ -1,0 +1,17 @@
+{
+  "name": "test/branchInfo3",
+  "type": "feature",
+  "create_time": "2026.04.22",
+  "tester": {
+    "name": "test"
+  },
+  "answer": {
+    "name": "test"
+  },
+  "outlines": [
+    {
+      "title": "第三个分支测试",
+      "weekSpend": [12, 20]
+    }
+  ]
+}
