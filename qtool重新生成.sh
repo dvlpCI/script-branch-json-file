@@ -33,7 +33,7 @@ if ! command -v shc &> /dev/null; then
     exit 1
 fi
 
-shc -r -f ${qtool_HomeDir_Absolute}/qtool.sh #注意:要有-r选项, -f 后跟要加密的脚本名.
+CFLAGS="-arch x86_64 -arch arm64" shc -r -f ${qtool_HomeDir_Absolute}/qtool.sh #注意:要有-r选项, -f 后跟要加密的脚本名.
 if [ $? != 0 ]; then
     echo "${RED}Error：把shell脚本转换为一个可执行的二进制文件失败，请检查 。${NC}"
     exit 1
