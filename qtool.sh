@@ -5,6 +5,11 @@
  # @LastEditors: dvlproad dvlproad@163.com
  # @LastEditTime: 2026-04-20 05:48:52
  # @Description: 
+# @Example: 
+#       --no-use-brew-path      qtool 里的其他脚本路径是否使用本地来拼接，而不是 brew 里的路径
+#                               即：本地测试 qtool 的所有脚本，即不要出现测试过程中突然有些脚本使用的 qtool 是 brew 中的路径
+#       --qian                  打印执行过程中不对外暴露的命令
+#       sh /Users/qian/Project/Github/script-branch-json-file/qtool.sh --no-use-brew-path --qian
 ### 
 
 # 定义颜色常量
@@ -220,6 +225,7 @@ if [[ -n "${QBASE_CMD}" ]] && [[ "${QBASE_CMD}" != "qbase" ]]; then
     qian_log "${RED}外部有设置 QBASE_CMD ，所以此处强制变更为测试 ${RED}。${NC}"
 fi
 if [ "${isTestingScript}" == true ]; then
+    qian_log "${YELLOW}注意：等下依赖的子库 qbase 也会顺便使用本地的 qbase ,而非 brew 中的。如果要使用brew中的qbase，请注释掉这里的代码 "
     isTestingQbase=true
 fi
 
@@ -420,7 +426,8 @@ source ${qtoolScriptDir_Absolute}/base/get_system_env.sh # 为了使用 project_
 
 project_tool_params_file_path=$(get_sysenv_project_params_file)
 if [ $? != 0 ]; then
-    # printf "${RED}project_tool_params_file_path=${project_tool_params_file_path}${NC}\n"
+    qian_log "${YELLOW} qtool_change 前的 project_tool_params_file_path_old=${project_tool_params_file_path} ${YELLOW}。${NC}\n"
+    qian_log "${GREEN}qtool正在执行命令(qtool_change):《${BLUE} sh \"${qtoolScriptDir_Absolute}/qtool_change.sh\" \"${qtoolScriptDir_Absolute}\" ${GREEN}》${NC}"
     sh "${qtoolScriptDir_Absolute}/qtool_change.sh" "${qtoolScriptDir_Absolute}"
     if [ $? != 0 ]; then
         exit 1

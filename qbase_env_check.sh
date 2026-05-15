@@ -5,7 +5,7 @@
  # @LastEditors: dvlproad
  # @LastEditTime: 2023-06-14 10:45:11
  # @Description: 
-# @FilePath: qtool_change.sh
+# @FilePath: qbase_env_check.sh
 ### 
 
 qtoolScriptDir_Absolute=$1

@@ -19,6 +19,9 @@ fi
 
 source ${qtoolScriptDir_Absolute}/base/get_system_env.sh # 为了引入 open_sysenv_file getAbsPathByFileRelativePath 方法
 
+qbase_env_var_add_or_update_by_manual_scriptPath=$(qbase -path env_var_add_or_update_by_manual)
+qbase_env_file_check_and_set_scriptPath=$(qbase -path env_file_check_and_set)
+
 # 解析具名参数
 CHOICES_ENV_VAR=""
 TARGET_ENV_VAR=""
