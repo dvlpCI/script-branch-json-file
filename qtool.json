@@ -2,7 +2,7 @@
     "dependences": [
         {
             "key": "qbase",
-            "local_path": "~/Project/CQCI/script-qbase/qbase"
+            "local_path": "~/Project/Github/script-qbase/qbase"
         }
     ],
     "quickCmd": [

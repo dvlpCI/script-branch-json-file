@@ -41,6 +41,9 @@ function qian_log() {
     fi
 }
 
+# 日志信息输出到终端（规范 2.2：日志输出用 >&2，保持返回值干净）
+log_color_info() { printf "%b\n" "$1" >&2; }
+
 # --------------------- 具名参数值的解析和获取函数 ---------------------
 # 获取具名参数的值（不允许以 - 开头）
 # 用法：get_named_arg_value "$1" "$2" "参数名"
@@ -225,7 +228,15 @@ if [[ -n "${QBASE_CMD}" ]] && [[ "${QBASE_CMD}" != "qbase" ]]; then
     qian_log "${RED}外部有设置 QBASE_CMD ，所以此处强制变更为测试 ${RED}。${NC}"
 fi
 if [ "${isTestingScript}" == true ]; then
-    qian_log "${YELLOW}注意：等下依赖的子库 qbase 也会顺便使用本地的 qbase ,而非 brew 中的。如果要使用brew中的qbase，请注释掉这里的代码 "
+    # 获取调用者的信息
+    # local caller_func=${FUNCNAME[1]}  # 调用者的函数名
+    # local caller_script=${BASH_SOURCE[1]}   # 调用者的脚本路径
+    # local caller_name="${caller_script##*/}"  # 调用者的脚本名（不含路径）：删除最后一个 / 之前的所有内容
+    # local caller_line=${BASH_LINENO[0]}  # 调用行号
+    # echo "调用信息: 函数[$caller_func] 脚本[$caller_script] 行[$caller_line]" >&2
+    caller_line=${LINENO}  # 在函数外使用 LINENO 而不是 BASH_LINENO
+    end_line=$((caller_line + 11))
+    qian_log "${YELLOW}注意：等下依赖的子库 qbase 也会顺便使用本地的 qbase ,而非 brew 中的。如果要使用brew中的qbase，请注释掉这里的代码 (${caller_line}-${end_line}) "
     isTestingQbase=true
 fi
 
@@ -424,9 +435,13 @@ fi
 # 引入公共方法
 source ${qtoolScriptDir_Absolute}/base/get_system_env.sh # 为了使用 project_tool_params_file_path 方法
 
+# qbase_env_check_scriptPath=$(qbase -path env_check)
+# sh $qbase_env_check_scriptPath --env-name QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH --env-var-placeholder your_qbase_custom_menu_json_file --env-var-type json-file --environment-file-auto-open true
+# echo "哈哈哈哈哈----------------"
+# exit 1
 project_tool_params_file_path=$(get_sysenv_project_params_file)
 if [ $? != 0 ]; then
-    qian_log "${YELLOW} qtool_change 前的 project_tool_params_file_path_old=${project_tool_params_file_path} ${YELLOW}。${NC}\n"
+    log_color_info "${YELLOW} qtool_change 前的旧值 project_tool_params_file_path_old=${project_tool_params_file_path} ${YELLOW}。${NC}\n"
     qian_log "${GREEN}qtool正在执行命令(qtool_change):《${BLUE} sh \"${qtoolScriptDir_Absolute}/qtool_change.sh\" \"${qtoolScriptDir_Absolute}\" ${GREEN}》${NC}"
     sh "${qtoolScriptDir_Absolute}/qtool_change.sh" "${qtoolScriptDir_Absolute}"
     if [ $? != 0 ]; then

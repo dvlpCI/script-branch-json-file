@@ -1,17 +1,23 @@
 {
   "using_choice_id": "此字段暂时无用",
-  "choice": [
+  "envs_choices": [
     {
       "id": "default",
-      "name": "默认的工程",
-      "project_tool_file_path": "/Users/lichaoqian/Project/CQCI/script-branch-json-file/test/tool_input.json",
-      "project_dir_path": "/Users/lichaoqian/Project/CQCI/script-branch-json-file/"
+      "env_key": "QTOOL_DEAL_PROJECT_CHOICES_PATH"
     },
     {
-      "id": "commit—info",
-      "name": "获取分支信息的工程",
-      "project_tool_file_path": "/Users/lichaoqian/Project/CQCI/AutoPackage-CommitInfo/test/tool_input.json",
-      "project_dir_path": "/Users/lichaoqian/Project/CQCI/AutoPackage-CommitInfo"
+      "env_key": "QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH",
+      "env_des": "操作项目时候使用的项目配置信息用哪个/你想操作哪个项目",
+      "env_choices": [
+        {
+          "env_des": "qtool的工程",
+          "env_value": "/Users/qian/Project/Github/script-branch-json-file/test/tool_input.json"
+        },
+        {
+          "env_name": "获取分支信息的工程",
+          "env_value": "/Users/qian/Project/CQCI/AutoPackage-CommitInfo/test/tool_input.json"
+        }
+      ]
     }
   ]
 }
