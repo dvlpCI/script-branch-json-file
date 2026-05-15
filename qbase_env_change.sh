@@ -69,7 +69,7 @@ function open_sysenv_file() {
 }
 
 example_json_file_choices=${qtoolScriptDir_Absolute}/test/tool_choice.json
-log_color_info "${YELLOW}正在执行命令《${BLUE} sh ${qbase_env_file_check_and_set_scriptPath} --env-name \"${CHOICES_ENV_VAR}\" --env-descript qtool可操作的项目列表 --env-var-placeholder \"your_project_choices_json_file\" --env-reference-json-file-example ${example_json_file_choices} --output-filename-if-copy tool_choice.json ${YELLOW}》。${NC} "
+# qian_log "${YELLOW}正在执行命令《${BLUE} sh ${qbase_env_file_check_and_set_scriptPath} --env-name \"${CHOICES_ENV_VAR}\" --env-descript qtool可操作的项目列表 --env-var-placeholder \"your_project_choices_json_file\" --env-reference-json-file-example ${example_json_file_choices} --output-filename-if-copy tool_choice.json ${YELLOW}》。${NC} "
 checkResult=$(sh ${qbase_env_file_check_and_set_scriptPath} \
     --env-name "${CHOICES_ENV_VAR}" \
     --env-descript qtool可操作的项目列表 \
