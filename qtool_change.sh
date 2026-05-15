@@ -20,11 +20,7 @@ fi
 sh "${qtoolScriptDir_Absolute}/qbase_env_change.sh" \
       "${qtoolScriptDir_Absolute}" \
       --choices-env QTOOL_DEAL_PROJECT_CHOICES_PATH \
-      --target-env QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH \
-      --placeholder "your_project_choices_json_file" \
-      --action change \
-      --desc-not-set "您还未添加项目选择列表可操作的项目的环境变量" \
-      --desc-file-not-found "您用来配置所有可操作项目的环境变量"
+      --target-env QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH
 
 # if [ -z "${QTOOL_DEAL_PROJECT_CHOICES_PATH}" ]; then
 #     addEnvPlaceHolder
