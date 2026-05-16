@@ -114,6 +114,58 @@ function open_sysenv_file() {
 }
 
 
+# 检查 ${ANY_ENV_NAME} 这个环境变量key和value有没有在 ${ENVKEYS_ENV_NAME} 这个环境变量表指向的json文件中
+# 1、key 在不在 keys 中
+#   - 不在：则进行添加（添加的时候需要用户输入该新值的含义）后，再进行下一步
+#   - 有在：继续判断现在的环境变量值 value 在不在环境变量表该key的允许数组中
+#           - 不在：则进行添加（添加的时候需要用户输入该新值的含义）后，再进行下一步
+#           - 有在：直接继续下一步
+function ensureEnvVarInChoicesFile() {
+    local env_key="$1"
+    local env_value="$2"
+    local choices_file="$3"
+
+    # 1、检查 key 是否已在 choices 的 keys 中（jq 返回的匹配条目数，合法的json格式算出的匹配个数最多值只能为1)
+    local key_count
+    key_count=$(jq --arg k "${env_key}" \
+        '[.envs_choices[] | select(.env_key == $k)] | length' "${choices_file}")
+
+    if [ "${key_count}" -eq 0 ]; then
+        # key 不在 keys 中：创建新条目（包含 env_key + env_des + 首次的 env_choices）
+        read -r -p "请输入 ${env_key} 的描述(env_des): " env_des
+        jq --arg k "${env_key}" \
+           --arg d "${env_des}" \
+           --arg v "${env_value}" \
+           '.envs_choices += [{"env_key": $k, "env_des": $d, "env_choices": [{"env_des": $d, "env_value": $v}]}]' \
+           "${choices_file}" > "${choices_file}.tmp" \
+        && mv "${choices_file}.tmp" "${choices_file}" \
+        || { log_color_info "${RED}写入 choices 文件失败${NC}"; return 1; }
+    else
+        # 2、key 已在 keys 中：检查当前 value 是否在该 key 的 env_choices 数组中
+        local value_count
+        value_count=$(jq --arg k "${env_key}" --arg v "${env_value}" \
+            '[.envs_choices[] | select(.env_key == $k) | .env_choices[] | select(.env_value == $v)] | length' \
+            "${choices_file}")
+
+        if [ "${value_count}" -eq 0 ]; then
+            # value 不在数组中：追加到该 key 的 env_choices（需用户输入该值的描述）
+            read -r -p "请为值 ${env_value} 输入描述(env_des): " value_des
+            jq --arg k "${env_key}" \
+               --arg d "${value_des}" \
+               --arg v "${env_value}" \
+               '(.envs_choices[] | select(.env_key == $k) | .env_choices) += [{"env_des": $d, "env_value": $v}]' \
+               "${choices_file}" > "${choices_file}.tmp" \
+            && mv "${choices_file}.tmp" "${choices_file}" \
+            || { log_color_info "${RED}写入 choices 文件失败${NC}"; return 1; }
+        else
+            # value 已在数组中：无需操作
+            log_color_info "${GREEN}环境变量 ${env_key} 及其值已在环境变量表中${NC}"
+        fi
+    fi
+    return 0
+}
+
+
 
 
 log_color_info "${PURPLE}\n================== 1、检查环境变量文件中的【任意指定】环境变量情况。如果异常则进行配置更新 ==================${NC}"
@@ -160,24 +212,18 @@ log_color_info "${GREEN}您的可操作项目列表环境变量及其值 ${ENVKE
 
 
 
-# if [ "${envkeys_env_value_origin}" == "${envkeys_env_value_new}" ]; then
-#     if [ "${any_env_value_origin}" == "${any_env_value_new}" ]; then
-#         # 没有发生变化，则不用再对环境变量表做什么动作
-#         exit 0
-#     else
-#         ACTION_TYPE="change"    # 即使传递的不是change，遇到环境变量值被更改了，也得改成change
-#     fi
-# fi
-log_color_info "${PURPLE}\n================== 3、检查 ANY_ENV_NAME 这个环境变量key和value有没有在 环境变量表指向的json文件中 ==================${NC}"
-# 判断是否需要做 change 的交互
-# 1、key 在不在 keys 中
-#   - 不在：则添加，再进行下一步
-#   - 有在：继续判断现在的环境变量值 value 在不在环境变量表该key的允许数组中
-#           - 不在：则进行添加（添加的时候需要用户输入该新值的含义）后，再进行下一步
-#           - 有在：直接继续下一步
+log_color_info "${PURPLE}\n================== 3、检查 ${ANY_ENV_NAME} 这个环境变量key和value有没有在 ${ENVKEYS_ENV_NAME} 这个环境变量表指向的json文件中 ==================${NC}"
+ensureEnvVarInChoicesFile "${ANY_ENV_NAME}" "${any_env_value_new}" "${envkeys_env_value_new}"
 
 
 
+if [ "${envkeys_env_value_origin}" != "${envkeys_env_value_new}" ] || [ "${any_env_value_origin}" != "${any_env_value_new}" ]; then
+    # 检查到有发生变化，说明前面已经设置好了，没必要再多余进行接下来的change交互。（因为如果没变化，说明前面只是检查到他们两个是合法的，没做其他动作，才有必要接下来做想要做的其他交互[比如想要change]）
+    open_sysenv_file
+    sh $qbase_env_var_effective_or_open_scriptPath effective
+    exit 0
+fi
+# 检查到没变化，说明前面只是检查到他们两个是合法的，没做其他动作，才有必要接下来做想要做的其他交互[比如想要change]
 log_color_info "${PURPLE}\n================== 4、如果不是 change 动作，则流程结束退出。如果是change则进行下一步 ==================${NC}"
 if [ "${ACTION_TYPE}" != "change" ]; then
     open_sysenv_file
@@ -223,13 +269,3 @@ log_color_info "已更新环境变量 ${selected_env_key} = ${YELLOW}${selected_
 open_sysenv_file
 sh $qbase_env_var_effective_or_open_scriptPath effective
 
-# if [ -z "${QTOOL_DEAL_PROJECT_CHOICES_PATH}" ]; then
-#     addEnvPlaceHolder
-#     if [ $? != 0 ]; then
-#         exit 1
-#     fi
-#     printf "${RED}请先按以上提示，完成添加修改，再继续!${NC}"
-#     exit 1
-# else
-#     checkFile
-# fi
