@@ -117,6 +117,7 @@ function open_sysenv_file() {
 
 
 log_color_info "${PURPLE}\n================== 1、检查环境变量文件中的【任意指定】环境变量情况。如果异常则进行配置更新 ==================${NC}"
+any_env_value_origin=${ANY_ENV_NAME}    # 记录下原始值，待等下与检查后的新值做对比，来判断是否发生了改变。
 example_json_file_project_params=${qtoolScriptDir_Absolute}/test/example_project_params.json
 qian_log "${YELLOW}正在执行命令《${BLUE} sh ${qbase_env_file_check_and_set_scriptPath} --env-name \"${ANY_ENV_NAME}\" --env-descript 项目配置信息 --env-var-placeholder \"your_project_params_json_file\" --env-reference-json-file-example ${example_json_file_project_params} --output-filename-if-copy tool_choice.json ${YELLOW}》。${NC} "
 projectParamsCheckResult=$(sh ${qbase_env_file_check_and_set_scriptPath} \
@@ -130,8 +131,8 @@ if [ $? -ne 0 ]; then
     echo "${projectParamsCheckResult}"
     exit 2
 fi
-TARGET_ENV_VAR_VALUE=${projectParamsCheckResult} # 注意：此处一定要获取更新后的值，不然一定是执行 env_file_check_and_set.sh 前的旧值
-log_color_info "${GREEN}您的项目配置信息环境变量及其值 ${ANY_ENV_NAME} : \"${TARGET_ENV_VAR_VALUE}\" ${NC}"
+any_env_value_new=${projectParamsCheckResult} # 注意：此处一定要获取更新后的值，不然一定是执行 env_file_check_and_set.sh 前的旧值
+log_color_info "${GREEN}您的项目配置信息环境变量及其值 ${ANY_ENV_NAME} : \"${any_env_value_new}\" ${NC}"
 # exit 1
 
 
@@ -139,6 +140,7 @@ log_color_info "${GREEN}您的项目配置信息环境变量及其值 ${ANY_ENV_
 
 
 log_color_info "${PURPLE}\n================== 2、检查环境变量文件中的【环境变量表】这个环境变量的情况（为等下将之前的任意指定环境变量维护到环境变量表指向的文件中做准备）。如果异常则进行配置更新 ==================${NC}"
+envkeys_env_value_origin=${ENVKEYS_ENV_NAME}    # 记录下原始值，待等下与检查后的新值做对比，来判断是否发生了改变。
 example_json_file_choices=${qtoolScriptDir_Absolute}/test/tool_choice.json
 qian_log "${YELLOW}正在执行命令《${BLUE} sh ${qbase_env_file_check_and_set_scriptPath} --env-name \"${ENVKEYS_ENV_NAME}\" --env-descript qtool可操作的项目列表 --env-var-placeholder \"your_project_choices_json_file\" --env-reference-json-file-example ${example_json_file_choices} --output-filename-if-copy tool_choice.json ${YELLOW}》。${NC} "
 envsKeyCheckResult=$(sh ${qbase_env_file_check_and_set_scriptPath} \
@@ -152,12 +154,27 @@ if [ $? -ne 0 ]; then
     echo "${envsKeyCheckResult}"
     exit 2
 fi
-CHOICES_ENV_VAR_VALUE=${envsKeyCheckResult} # 注意：此处一定要获取更新后的值，不然一定是执行 env_file_check_and_set.sh 前的旧值
-log_color_info "${GREEN}您的可操作项目列表环境变量及其值 ${ENVKEYS_ENV_NAME} : \"${CHOICES_ENV_VAR_VALUE}\" ${NC}"
+envkeys_env_value_new=${envsKeyCheckResult} # 注意：此处一定要获取更新后的值，不然一定是执行 env_file_check_and_set.sh 前的旧值
+log_color_info "${GREEN}您的可操作项目列表环境变量及其值 ${ENVKEYS_ENV_NAME} : \"${envkeys_env_value_new}\" ${NC}"
 # exit 1
 
 
-log_color_info "${PURPLE}\n================== 3、检查 ANY_ENV_NAME 这个环境变量有没有在 环境变量表指向的json文件中，如果没有，则在环境变量表中添加。如果有，则先判断当前值是不是在该环境变量表的数组中，如果在，则进行下一步，如果不在则也进行添加，添加的时候需要用户输入该新值的含义。 ==================${NC}"
+
+# if [ "${envkeys_env_value_origin}" == "${envkeys_env_value_new}" ]; then
+#     if [ "${any_env_value_origin}" == "${any_env_value_new}" ]; then
+#         # 没有发生变化，则不用再对环境变量表做什么动作
+#         exit 0
+#     else
+#         ACTION_TYPE="change"    # 即使传递的不是change，遇到环境变量值被更改了，也得改成change
+#     fi
+# fi
+log_color_info "${PURPLE}\n================== 3、检查 ANY_ENV_NAME 这个环境变量key和value有没有在 环境变量表指向的json文件中 ==================${NC}"
+# 判断是否需要做 change 的交互
+# 1、key 在不在 keys 中
+#   - 不在：则添加，再进行下一步
+#   - 有在：继续判断现在的环境变量值 value 在不在环境变量表该key的允许数组中
+#           - 不在：则进行添加（添加的时候需要用户输入该新值的含义）后，再进行下一步
+#           - 有在：直接继续下一步
 
 
 
@@ -170,7 +187,7 @@ fi
 
 
 log_color_info "${PURPLE}\n============== 通过人工交互方式获取指定环境变量的值(方式 ①从文件中选择[如果有传文件的话]或者 ②从终端输入） ==================${NC}"
-checkResult=$(sh $qbase_env_var_1get_by_manual_scriptPath --env-name "${ANY_ENV_NAME}" --env-keys-file "${CHOICES_ENV_VAR_VALUE}")
+checkResult=$(sh $qbase_env_var_1get_by_manual_scriptPath --env-name "${ANY_ENV_NAME}" --env-keys-file "${envkeys_env_value_new}")
 if [ $? -ne 0 ]; then
     echo "${checkResult}"
     exit 1
