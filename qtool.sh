@@ -8,8 +8,19 @@
 # @Example: 
 #       --no-use-brew-path      qtool 里的其他脚本路径是否使用本地来拼接，而不是 brew 里的路径
 #                               即：本地测试 qtool 的所有脚本，即不要出现测试过程中突然有些脚本使用的 qtool 是 brew 中的路径
+#       --qbase-local-path      需显式传绝对路径的具名参数(不是开关)。因为下游脚本需确切知道 qbase 在哪里
+#                               >> 为什么必须是具名参数
+#                               >> 因为下游脚本需要知道 qbase 在哪，不是一个 true/false 就能解决的。
+#                               >> 如果只是 flag（isTestingQbase=true），下游收到后：
+#                               >> ①、不知道路径，得自己再去读 qtool.json
+#                               >> ②、几个下游脚本各读 1 次 就得多几次文件 IO（因为①引起的连锁反应）
+#                               >> ③、万一有人想临时换路径，flag 做不到
+#                               可由你自己指定路径，也可以让 qtool 自动从 qtool.json 中读取
+#                               有值：使用指定的路径（如 --qbase-local-path /path/to/qbase）
+#                               无值：自动从 qtool.json 的 dependences.qbase.local_path 中读取
+#                               不传：默认走 brew 的 qbase
 #       --qian                  打印执行过程中不对外暴露的命令
-#       sh /Users/qian/Project/Github/script-branch-json-file/qtool.sh --no-use-brew-path --qian
+#       sh /Users/qian/Project/Github/script-branch-json-file/qtool.sh --no-use-brew-path --qbase-local-path --qian
 ### 
 
 # 定义颜色常量
