@@ -399,18 +399,16 @@ if [ "${CONTAINS_VERSION}" == true ]; then
     echo "${qtool_latest_version}"
     exit 0
 elif [ "${firstArg}" == "init" ]; then
-    # Strip "init" from the beginning of allArgsExceptFirstArg
-    local init_args="${allArgsExceptFirstArg#init}"
-    init_args="${init_args# }"  # strip leading space
-    local qtool_init_version="${qtool_latest_version:-local_qtool}"
+    qtool_init_version="${qtool_latest_version:-local_qtool}"
+    # 暂不传递 ${COMMON_FLAG_ARGS[*]}，因为 qbase_init.sh 不认识
+    # --no-use-brew-path 等框架参数。后续若 qbase_init.sh 需要消费
+    # 额外参数，可在此处同步添加。
     sh "${qbase_homedir_abspath}/init/qbase_init.sh" \
         --project-name "qtool" \
         --version "${qtool_init_version}" \
-        --manifest "${qtool_homedir_abspath}/init/init_manifest.json" \
-        ${init_args}
+        --manifest "${qtool_homedir_abspath}/init/init_manifest.json"
 
     # qbase_init.sh 只负责文件系统，环境变量由 env_var_2add_or_update.sh 注册
-    local qbase_env_var_2add_or_update_scriptPath
     qbase_env_var_2add_or_update_scriptPath=$(${QBASE_CMD} -path env_var_add_or_update)
     if [ -f "${qbase_env_var_2add_or_update_scriptPath}" ]; then
         sh "${qbase_env_var_2add_or_update_scriptPath}" \
