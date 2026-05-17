@@ -1,0 +1,13 @@
+{
+    "project_name": "qtool",
+    "description": "qtool 的初始化配置",
+    "dirs": ["config", "data", "cache", "tmp"],
+    "examples": [
+        {
+            "source": "qtool_env_keys_menu.json",
+            "target_subdir": "config",
+            "description": "qtool 环境变量集合/菜单的示例文件"
+        }
+    ],
+    "note": "创建 ~/.qtool/ 目录结构，用户配置/数据/缓存/临时文件均存放于此，避免被 brew upgrade 覆盖"
+}

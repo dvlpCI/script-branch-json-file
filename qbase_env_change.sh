@@ -193,7 +193,7 @@ log_color_info "${GREEN}您的项目配置信息环境变量及其值 ${ANY_ENV_
 
 log_color_info "${PURPLE}\n================== 2、检查环境变量文件中的【环境变量表】这个环境变量的情况（为等下将之前的任意指定环境变量维护到环境变量表指向的文件中做准备）。如果异常则进行配置更新 ==================${NC}"
 envkeys_env_value_origin=${ENVKEYS_ENV_NAME}    # 记录下原始值，待等下与检查后的新值做对比，来判断是否发生了改变。
-example_json_file_choices=${qtoolScriptDir_Absolute}/test/tool_choice.json
+example_json_file_choices=${qtoolScriptDir_Absolute}/init/qtool_env_keys_menu.json
 qian_log "${YELLOW}正在执行命令《${BLUE} sh ${qbase_env_file_check_and_set_scriptPath} --env-name \"${ENVKEYS_ENV_NAME}\" --env-descript qtool可操作的项目列表 --env-var-placeholder \"your_project_choices_json_file\" --env-reference-json-file-example ${example_json_file_choices} --output-filename-if-copy tool_choice.json ${YELLOW}》。${NC} "
 envsKeyCheckResult=$(sh ${qbase_env_file_check_and_set_scriptPath} \
     --env-name "${ENVKEYS_ENV_NAME}" \

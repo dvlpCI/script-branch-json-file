@@ -398,6 +398,18 @@ if [ "${CONTAINS_VERSION}" == true ]; then
     qian_log "打印版本号，然后结束所有任务"
     echo "${qtool_latest_version}"
     exit 0
+elif [ "${firstArg}" == "init" ]; then
+    # Strip "init" from the beginning of allArgsExceptFirstArg
+    local init_args="${allArgsExceptFirstArg#init}"
+    init_args="${init_args# }"  # strip leading space
+    local qtool_init_version="${qtool_latest_version:-local_qtool}"
+    sh "${qbase_homedir_abspath}/init/qbase_init.sh" \
+        --project-name "qtool" \
+        --version "${qtool_init_version}" \
+        --manifest "${qtool_homedir_abspath}/init/init_manifest.json" \
+        ${init_args}
+    exit 0
+
 elif [ "${firstArg}" == "-path" ]; then
     qian_log "${GREEN}qtool正在通过qbase调用快捷命令...《${BLUE} sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg getPath $allArgsExceptFirstArg ${GREEN}》${NC}"
     sh $qbase_quickcmd_scriptPath ${qtool_homedir_abspath} $packageArg getPath $allArgsExceptFirstArg

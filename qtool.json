@@ -63,6 +63,18 @@
     ],
     "support_script_path": [
         {
+            "type": "config",
+            "des": "配置文件路径",
+            "values": [
+                {
+                    "key": "config_env_keys_menu",
+                    "des": "qtool 环境变量集合/菜单的配置文件路径（只读 ~/.qtool/config/ 本地副本，不存在则提示先执行 qtool init）",
+                    "rel_path": "./init/qtool_env_keys_menu.json",
+                    "example": "qtool -path config_env_keys_menu"
+                }
+            ]
+        },
+        {
             "type": "upload",
             "des": "上传",
             "values": [
