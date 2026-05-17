@@ -154,7 +154,7 @@ function ensureEnvVarInChoicesFile() {
 
 
 log_color_info "${PURPLE}\n================== 1、检查环境变量文件中的【任意指定】环境变量情况。如果异常则进行配置更新 ==================${NC}"
-any_env_value_origin=${ANY_ENV_NAME}    # 记录下原始值，待等下与检查后的新值做对比，来判断是否发生了改变。
+any_env_value_origin=${!ANY_ENV_NAME}    # 记录下该环境变量的原始值，待等下与检查后的新值做对比，来判断是否发生了改变。
 example_json_file_project_params=${qtoolScriptDir_Absolute}/test/example_project_params.json
 qian_log "${YELLOW}正在执行命令《${BLUE} sh ${qbase_env_file_check_and_set_scriptPath} --env-name \"${ANY_ENV_NAME}\" --env-descript 项目配置信息 --env-var-placeholder \"your_project_params_json_file\" --env-reference-json-file-example ${example_json_file_project_params} --output-filename-if-copy tool_choice.json ${YELLOW}》。${NC} "
 projectParamsCheckResult=$(sh ${qbase_env_file_check_and_set_scriptPath} \
@@ -194,6 +194,8 @@ ensureEnvVarInChoicesFile "${ANY_ENV_NAME}" "${any_env_value_new}" "${CHOICES_FI
 
 if [ "${any_env_value_origin}" != "${any_env_value_new}" ]; then
     # 检查到有发生变化，说明前面已经设置好了，没必要再多余进行接下来的change交互。（因为如果没变化，说明前面只是检查到他们两个是合法的，没做其他动作，才有必要接下来做想要做的其他交互[比如想要change]）
+    log_color_info "any_env_value_origin(旧):   ${any_env_value_origin}"
+    log_color_info "any_env_value_new(新):      ${any_env_value_new}"
     open_sysenv_file
     sh $qbase_env_var_effective_or_open_scriptPath effective
     exit 0
