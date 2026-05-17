@@ -408,6 +408,16 @@ elif [ "${firstArg}" == "init" ]; then
         --version "${qtool_init_version}" \
         --manifest "${qtool_homedir_abspath}/init/init_manifest.json" \
         ${init_args}
+
+    # qbase_init.sh 只负责文件系统，环境变量由 env_var_2add_or_update.sh 注册
+    local qbase_env_var_2add_or_update_scriptPath
+    qbase_env_var_2add_or_update_scriptPath=$(${QBASE_CMD} -path env_var_add_or_update)
+    if [ -f "${qbase_env_var_2add_or_update_scriptPath}" ]; then
+        sh "${qbase_env_var_2add_or_update_scriptPath}" \
+            -envVariableKey "QTOOL_DEAL_PROJECT_CHOICES_PATH" \
+            -envVariableValue "${HOME}/.qtool/config/qtool_env_keys_menu.json"
+        log_color_info "${GREEN}✅ 已在 shell profile 中注册 QTOOL_DEAL_PROJECT_CHOICES_PATH，请执行 ${YELLOW}source ~/.zshrc${GREEN}（或重启终端）使其生效。${NC}"
+    fi
     exit 0
 
 elif [ "${firstArg}" == "-path" ]; then

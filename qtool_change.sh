@@ -20,5 +20,4 @@ fi
 sh "${qtoolScriptDir_Absolute}/qbase_env_change.sh" \
       "${qtoolScriptDir_Absolute}" \
       --any-env-anme QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH \
-      --envkeys-env-name QTOOL_DEAL_PROJECT_CHOICES_PATH \
       --action-type change

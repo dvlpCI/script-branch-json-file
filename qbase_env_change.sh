@@ -43,7 +43,6 @@ qbase_env_file_check_and_set_scriptPath=$(qbase -path env_file_check_and_set)
 DEFINE_QIAN=false
 
 # 解析具名参数
-ENVKEYS_ENV_NAME="" # 环境变量表 的环境变量
 ANY_ENV_NAME=""     # 任意 的环境变量
 ACTION_TYPE=""      # 操作类型 change:改变
 shift 1
@@ -56,15 +55,6 @@ while [ $# -gt 0 ]; do
                 exit 1
             fi
             ANY_ENV_NAME="$2"
-            shift 2
-            ;;
-        --envkeys-env-name)
-            # 不能为空
-            if [ -z "$2" ] || [[ "$2" =~ ^- ]]; then
-                log_color_info "错误: --envkeys-env-name 必须指定"
-                exit 1
-            fi
-            ENVKEYS_ENV_NAME="$2"
             shift 2
             ;;
         --action-type)
@@ -94,11 +84,6 @@ if [ -z "${ANY_ENV_NAME}" ]; then
     exit 1
 fi
 
-if [ -z "${ENVKEYS_ENV_NAME}" ]; then
-    log_color_info "错误: 缺少必要参数（--envkeys-env-name）"
-    exit 1
-fi
-
 
 # 定义颜色常量
 NC='\033[0m' # No Color
@@ -114,7 +99,7 @@ function open_sysenv_file() {
 }
 
 
-# 检查 ${ANY_ENV_NAME} 这个环境变量key和value有没有在 ${ENVKEYS_ENV_NAME} 这个环境变量表指向的json文件中
+# 检查 ${ANY_ENV_NAME} 这个环境变量key和value有没有在 ${QTOOL_DEAL_PROJECT_CHOICES_PATH} 这个环境变量表指向的json文件中
 # 1、key 在不在 keys 中
 #   - 不在：则进行添加（添加的时候需要用户输入该新值的含义）后，再进行下一步
 #   - 有在：继续判断现在的环境变量值 value 在不在环境变量表该key的允许数组中
@@ -191,33 +176,23 @@ log_color_info "${GREEN}您的项目配置信息环境变量及其值 ${ANY_ENV_
 
 
 
-log_color_info "${PURPLE}\n================== 2、检查环境变量文件中的【环境变量表】这个环境变量的情况（为等下将之前的任意指定环境变量维护到环境变量表指向的文件中做准备）。如果异常则进行配置更新 ==================${NC}"
-envkeys_env_value_origin=${ENVKEYS_ENV_NAME}    # 记录下原始值，待等下与检查后的新值做对比，来判断是否发生了改变。
-example_json_file_choices=${qtoolScriptDir_Absolute}/init/qtool_env_keys_menu.json
-qian_log "${YELLOW}正在执行命令《${BLUE} sh ${qbase_env_file_check_and_set_scriptPath} --env-name \"${ENVKEYS_ENV_NAME}\" --env-descript qtool可操作的项目列表 --env-var-placeholder \"your_project_choices_json_file\" --env-reference-json-file-example ${example_json_file_choices} --output-filename-if-copy tool_choice.json ${YELLOW}》。${NC} "
-envsKeyCheckResult=$(sh ${qbase_env_file_check_and_set_scriptPath} \
-    --env-name "${ENVKEYS_ENV_NAME}" \
-    --env-descript 环境变量表 \
-    --env-var-placeholder "your_project_choices_json_file" \
-    --env-reference-json-file-example ${example_json_file_choices} \
-    --output-filename-if-copy tool_choice.json
-)
-if [ $? -ne 0 ]; then
-    echo "${envsKeyCheckResult}"
-    exit 2
+log_color_info "${PURPLE}\n================== 2、检查环境变量文件中的【环境变量表 QTOOL_DEAL_PROJECT_CHOICES_PATH】这个环境变量的情况（为等下将之前的任意指定环境变量维护到环境变量表指向的文件中做准备）。如果异常则进行配置更新 ==================${NC}"
+if [ -z "${QTOOL_DEAL_PROJECT_CHOICES_PATH}" ]; then
+    log_color_info "${RED}错误: 环境变量 QTOOL_DEAL_PROJECT_CHOICES_PATH 未设置，请先执行 ${BLUE}qtool init${NC}"
+    exit 1
 fi
-envkeys_env_value_new=${envsKeyCheckResult} # 注意：此处一定要获取更新后的值，不然一定是执行 env_file_check_and_set.sh 前的旧值
-log_color_info "${GREEN}您的可操作项目列表环境变量及其值 ${ENVKEYS_ENV_NAME} : \"${envkeys_env_value_new}\" ${NC}"
-# exit 1
+CHOICES_FILE="${QTOOL_DEAL_PROJECT_CHOICES_PATH}"
+if [ ! -f "${CHOICES_FILE}" ]; then
+    log_color_info "${RED}错误: 文件不存在 ${CHOICES_FILE}，请先执行 ${BLUE}qtool init${NC}"
+    exit 1
+fi
+
+log_color_info "${PURPLE}\n================== 3、检查 ${ANY_ENV_NAME} 这个环境变量key和value有没有在 ${QTOOL_DEAL_PROJECT_CHOICES_PATH} 这个环境变量表指向的json文件中 ==================${NC}"
+ensureEnvVarInChoicesFile "${ANY_ENV_NAME}" "${any_env_value_new}" "${CHOICES_FILE}"
 
 
 
-log_color_info "${PURPLE}\n================== 3、检查 ${ANY_ENV_NAME} 这个环境变量key和value有没有在 ${ENVKEYS_ENV_NAME} 这个环境变量表指向的json文件中 ==================${NC}"
-ensureEnvVarInChoicesFile "${ANY_ENV_NAME}" "${any_env_value_new}" "${envkeys_env_value_new}"
-
-
-
-if [ "${envkeys_env_value_origin}" != "${envkeys_env_value_new}" ] || [ "${any_env_value_origin}" != "${any_env_value_new}" ]; then
+if [ "${any_env_value_origin}" != "${any_env_value_new}" ]; then
     # 检查到有发生变化，说明前面已经设置好了，没必要再多余进行接下来的change交互。（因为如果没变化，说明前面只是检查到他们两个是合法的，没做其他动作，才有必要接下来做想要做的其他交互[比如想要change]）
     open_sysenv_file
     sh $qbase_env_var_effective_or_open_scriptPath effective
@@ -233,7 +208,7 @@ fi
 
 
 log_color_info "${PURPLE}\n============== 通过人工交互方式获取指定环境变量的值(方式 ①从文件中选择[如果有传文件的话]或者 ②从终端输入） ==================${NC}"
-checkResult=$(sh $qbase_env_var_1get_by_manual_scriptPath --env-name "${ANY_ENV_NAME}" --env-keys-file "${envkeys_env_value_new}")
+checkResult=$(sh $qbase_env_var_1get_by_manual_scriptPath --env-name "${ANY_ENV_NAME}" --env-keys-file "${CHOICES_FILE}")
 if [ $? -ne 0 ]; then
     echo "${checkResult}"
     exit 1

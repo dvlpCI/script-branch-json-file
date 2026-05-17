@@ -2,10 +2,6 @@
   "using_choice_id": "此字段暂时无用",
   "envs_choices": [
     {
-      "id": "default",
-      "env_key": "QTOOL_DEAL_PROJECT_CHOICES_PATH"
-    },
-    {
       "env_key": "QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH",
       "env_des": "操作项目时候使用的项目配置信息用哪个/你想操作哪个项目",
       "env_choices": [
