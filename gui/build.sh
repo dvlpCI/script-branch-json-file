@@ -41,6 +41,26 @@ cat > "$SCRIPT_DIR/Qtool.app/Contents/Info.plist" << 'PLIST'
 </plist>
 PLIST
 
+# 3. 询问输出位置（可选）
+echo ""
+read -p "📋 输出到桌面？(yes=桌面 / 输入路径 / 回车跳过): " dest
+if [ "$dest" = "yes" ] || [ "$dest" = "y" ]; then
+    dest_path="$HOME/Desktop"
+elif [ -n "$dest" ]; then
+    dest_path="${dest/#\~/$HOME}"
+else
+    dest_path=""
+fi
+
+if [ -n "$dest_path" ]; then
+    mkdir -p "$dest_path"
+    rm -rf "$dest_path/Qtool.app"
+    cp -R "$SCRIPT_DIR/Qtool.app" "$dest_path/"
+    echo ""
+    echo "✅ 已输出到:"
+    echo "   $dest_path/Qtool.app"
+fi
+
 echo ""
 echo "✅ 构建完成:"
 echo "   $SCRIPT_DIR/Qtool        (二进制)"
