@@ -23,11 +23,9 @@ struct MenuJSON: Decodable { let catalog: [CategoryData] }
 @main
 struct QtoolApp: App {
     var body: some Scene {
-        WindowGroup { ContentView().frame(minWidth: 900, minHeight: 500) }
+        WindowGroup { ContentView().frame(minWidth: 500, minHeight: 400) }
     }
 }
-
-let categoryColors: [Color] = [.blue, .purple, .green, .cyan, .orange]
 
 // MARK: - Content View
 struct ContentView: View {
@@ -35,67 +33,93 @@ struct ContentView: View {
     @State private var basePath: String = ""
     @State private var binDir: String = ""
     @State private var errorMessage: String? = nil
-    @State private var selectedKey: String? = nil
+    @State private var searchText: String = ""
+    @State private var selectedCategory: String? = nil
+    @State private var executedAction: String? = nil
 
-    var selectionBinding: Binding<String?> {
-        Binding(
-            get: { selectedKey },
-            set: {
-                selectedKey = $0
-                if $0 != nil { openInTerminal() }
+    var filteredCategories: [CategoryData] {
+        if !searchText.isEmpty {
+            return categories.compactMap { cat in
+                let filtered = cat.categoryValues.filter {
+                    $0.name.localizedCaseInsensitiveContains(searchText) ||
+                    $0.des.localizedCaseInsensitiveContains(searchText)
+                }
+                return filtered.isEmpty ? nil : CategoryData(categoryId: cat.categoryId, categoryValues: filtered)
             }
-        )
+        }
+        return categories
+    }
+
+    var totalCount: Int {
+        categories.reduce(0) { $0 + $1.categoryValues.count }
     }
 
     var body: some View {
-        NavigationSplitView {
-            List(selection: selectionBinding) {
-                ForEach(Array(categories.enumerated()), id: \.element.id) { cIdx, cat in
-                    Section {
-                        ForEach(Array(cat.categoryValues.enumerated()), id: \.element.id) { iIdx, item in
-                            HStack(spacing: 6) {
-                                Text("\(cIdx + 1).\(iIdx + 1)")
-                                    .font(.body.monospaced())
-                                    .foregroundStyle(categoryColors[cIdx % categoryColors.count])
-                                Text(item.name).font(.body.monospaced())
-                            }
-                        }
-                    } header: {
-                        Label(cat.categoryId, systemImage: "folder").font(.headline)
-                    }
-                }
+        VStack(spacing: 0) {
+            HStack {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.secondary)
+                TextField("搜索操作...", text: $searchText)
+                    .textFieldStyle(.plain)
             }
-            .listStyle(.sidebar)
-            .navigationSplitViewColumnWidth(min: 300, ideal: 350)
-        } detail: {
+            .padding(10)
+            .background(Color(nsColor: .controlBackgroundColor))
+
             if let err = errorMessage {
                 ScrollView { Text(err).foregroundStyle(.red).padding() }
-            } else if let key = selectedKey, let (item, cIdx, iIdx) = findItem(key) {
-                VStack(spacing: 12) {
-                    ContentUnavailableView(
-                        "已在终端打开",
-                        systemImage: "terminal",
-                        description: Text("请切换到终端窗口操作\n\n\(cIdx + 1).\(iIdx + 1) \(item.des)")
+            } else {
+                ZStack(alignment: .trailing) {
+                    ScrollViewReader { proxy in
+                        List {
+                            ForEach(filteredCategories) { cat in
+                                Section {
+                                    ForEach(cat.categoryValues) { item in
+                                        ActionRowView(
+                                            item: item,
+                                            isExecuted: executedAction == item.id,
+                                            action: { execute(item) }
+                                        )
+                                    }
+                                } header: {
+                                    HStack(spacing: 4) {
+                                        Text(cat.categoryId)
+                                            .font(.caption)
+                                            .foregroundStyle(selectedCategory == cat.categoryId ? Color.accentColor : .secondary)
+                                            .fontWeight(selectedCategory == cat.categoryId ? .semibold : .regular)
+                                        Text("(\(cat.categoryValues.count))")
+                                            .font(.caption2)
+                                            .foregroundStyle(.tertiary)
+                                    }
+                                }
+                                .id(cat.id)
+                            }
+                        }
+                        .listStyle(.sidebar)
+                        .onChange(of: selectedCategory) { _, newValue in
+                            if let id = newValue {
+                                withAnimation { proxy.scrollTo(id, anchor: .top) }
+                            }
+                        }
+                    }
+
+                    CategoryIndexView(
+                        categories: categories,
+                        selectedCategory: $selectedCategory
                     )
                 }
-            } else {
-                ContentUnavailableView(
-                    "选择菜单项",
-                    systemImage: "arrow.left",
-                    description: Text("点击左侧菜单项，自动在终端中执行")
-                )
             }
         }
         .onAppear(perform: loadConfig)
     }
 
-    func findItem(_ key: String) -> (MenuItemData, Int, Int)? {
-        for (cIdx, cat) in categories.enumerated() {
-            for (iIdx, item) in cat.categoryValues.enumerated() {
-                if item.id == key { return (item, cIdx, iIdx) }
-            }
+    func execute(_ item: MenuItemData) {
+        withAnimation(.easeInOut(duration: 0.15)) {
+            executedAction = item.id
         }
-        return nil
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+            executedAction = nil
+        }
+        openInTerminal(action: item.action)
     }
 
     func loadConfig() {
@@ -109,7 +133,6 @@ struct ContentView: View {
         }
 
         var searchDirs: [String] = [binDir, (binDir as NSString).deletingLastPathComponent]
-        // Also check Homebrew qtool lib path
         if let brewPath = brewQtoolLibPath() { searchDirs.append(brewPath) }
 
         for dir in searchDirs {
@@ -155,22 +178,132 @@ struct ContentView: View {
         return nil
     }
 
-    func openInTerminal() {
-        guard let key = selectedKey, let (item, _, _) = findItem(key) else { return }
+    func openInTerminal(action: String) {
         guard let wrapper = findResource("qtool_run_action.sh", near: basePath)
                 ?? findResource("qtool_run_action.sh", near: binDir) else {
             errorMessage = "❌ 找不到 qtool_run_action.sh"
             return
         }
 
-        let scriptContent = "clear\nsh \(wrapper) \"\(basePath)\" \"\(item.action)\"\n"
+        let scriptContent = "clear\nsh \(wrapper) \"\(basePath)\" \"\(action)\"\n"
         let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("qtool_run.command")
         try? scriptContent.write(to: tempURL, atomically: true, encoding: .utf8)
         try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: tempURL.path)
         NSWorkspace.shared.open(tempURL)
-
-        DispatchQueue.main.async { selectedKey = nil }
     }
 
 }
 
+// MARK: - Action Row
+struct ActionRowView: View {
+    let item: MenuItemData
+    let isExecuted: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Text(iconForAction(item.name))
+                    .font(.body)
+                Text(item.name)
+                    .font(.body.monospaced().bold())
+                    .lineLimit(1)
+                Text("— \(item.des)")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                Spacer()
+                if isExecuted {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                        .transition(.scale.combined(with: .opacity))
+                }
+            }
+            .padding(.vertical, 4)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Category Index
+struct CategoryIndexView: View {
+    let categories: [CategoryData]
+    @Binding var selectedCategory: String?
+
+    var body: some View {
+        VStack(spacing: 0) {
+            rowView(
+                label: "全部",
+                count: categories.reduce(0) { $0 + $1.categoryValues.count },
+                isSelected: selectedCategory == nil
+            )
+            .onTapGesture { selectedCategory = nil }
+
+            ForEach(categories) { cat in
+                rowView(
+                    label: cat.categoryId,
+                    count: cat.categoryValues.count,
+                    isSelected: selectedCategory == cat.categoryId
+                )
+                .onTapGesture { selectedCategory = cat.categoryId }
+            }
+        }
+        .frame(width: 110)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 4)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .padding(.trailing, 6)
+    }
+
+    func rowView(label: String, count: Int, isSelected: Bool) -> some View {
+        HStack(spacing: 0) {
+            Text(label)
+                .font(.caption)
+            Spacer()
+            Text("\(count)")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+        }
+        .foregroundStyle(isSelected ? .white : .secondary)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 5)
+        .frame(maxWidth: .infinity)
+        .background(isSelected ? Color.accentColor : Color.clear)
+        .clipShape(RoundedRectangle(cornerRadius: 4))
+        .contentShape(Rectangle())
+    }
+}
+
+// MARK: - Icon Mapping
+func iconForAction(_ name: String) -> String {
+    switch name {
+    case "docHome", "docVersionPlan", "docWorkPlan", "docTodoBug":
+        return "📄"
+    case "custom_website", "recommend_website":
+        return "🌐"
+    case "gitBranch", "goGitRefsRemotes":
+        return "🌿"
+    case "createJsonFile", "updateJsonFile", "noPackBranch":
+        return "📋"
+    case "gitCommitMessage":
+        return "✏️"
+    case "rebaseCheck", "rebaseHook":
+        return "🔄"
+    case "updatePageKey":
+        return "📊"
+    case "jenkins":
+        return "📦"
+    case "signApk":
+        return "🔏"
+    case "goPP":
+        return "📱"
+    case "uploadDSYM":
+        return "📈"
+    case "deal_custom_script":
+        return "⚙️"
+    default:
+        return "⚡"
+    }
+}
