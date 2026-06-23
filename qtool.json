@@ -75,6 +75,18 @@
             ]
         },
         {
+            "type": "website",
+            "des": "网站",
+            "values": [
+                {
+                    "des": "罗列之类类型的网站列表，并在进行选中后打开所选中的网站",
+                    "key": "openWebsiteByCustomChoose",
+                    "rel_path": "./src/openWebsiteByCustomChoose.py",
+                    "example": "qtool -path openWebsiteByCustomChoose"
+                }
+            ]
+        },
+        {
             "type": "upload",
             "des": "上传",
             "values": [

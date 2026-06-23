@@ -263,16 +263,6 @@ dealScriptByCustomChoose() {
     checkResultCode $?
 }
 
-openWebsiteByCustomChoose_fromProjectCustom() {
-    python3 "${qtoolScriptDir_Absolute}/src/openWebsiteByCustomChoose.py" "custom"
-    checkResultCode $?
-}
-
-openWebsiteByCustomChoose_fromSystemRecommend() {
-    python3 "${qtoolScriptDir_Absolute}/src/openWebsiteByCustomChoose.py" "recommend"
-    checkResultCode $?
-}
-
 
 # 二、执行Jenkins上的Job
 buildJenkinsJob() {

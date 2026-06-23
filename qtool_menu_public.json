@@ -26,12 +26,14 @@
                 {
                     "key": "custom_website",
                     "des": "打开《有关项目的其他网站(代码:gitlab、需求:tapd、UI:mockplus等)》",
-                    "command": "openWebsiteByCustomChoose_fromProjectCustom"
+                    "commandScriptPathGetter": "qtool -path openWebsiteByCustomChoose",
+                    "commandScriptArgs": "custom"
                 },
                 {
                     "key": "recommend_website",
                     "des": "打开《推荐网站(APM、风控等)》",
-                    "command": "openWebsiteByCustomChoose_fromSystemRecommend"
+                    "commandScriptPathGetter": "qtool -path openWebsiteByCustomChoose",
+                    "commandScriptArgs": "recommend"
                 }
             ]
         },
