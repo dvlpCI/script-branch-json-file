@@ -1,37 +1,37 @@
 {
     "catalog": [
         {
-            "category_id": "file-info",
-            "category_values": [
+            "type": "file-info",
+            "values": [
                 {
-                    "name": "log_file",
+                    "key": "log_file",
                     "des": "显示文件信息（模块区分与负责人）",
-                    "action": "logFileMessageAction"
+                    "command": "logFileMessageAction"
                 }
             ]
         },
         {
-            "category_id": "package-size",
-            "category_values": [
+            "type": "package-size",
+            "values": [
                 {
-                    "name": "unuse_images",
+                    "key": "unuse_images",
                     "des": "无用资源检查",
-                    "action": "checkUnuseImages"
+                    "command": "checkUnuseImages"
                 }
             ]
         },
         {
-            "category_id": "safe",
-            "category_values": [
+            "type": "safe",
+            "values": [
                 {
-                    "name": "decompileDex",
+                    "key": "decompileDex",
                     "des": "Android-反编译dex",
-                    "action": "decompileDexAction"
+                    "command": "decompileDexAction"
                 },
                 {
-                    "name": "decompileApk",
+                    "key": "decompileApk",
                     "des": "Android-反编译apk",
-                    "action": "decompileApkAction"
+                    "command": "decompileApkAction"
                 }
             ]
         }

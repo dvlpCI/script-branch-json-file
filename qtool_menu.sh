@@ -180,7 +180,7 @@ tool_menu() {
     # echo "catalogCount=${catalogCount}"
     for ((i = 0; i < ${catalogCount}; i++)); do
         iCatalogMap=$(cat "$qtool_menu_json_file_path" | jq ".catalog" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
-        iCatalogOutlineMaps=$(echo "$iCatalogMap" | jq -r ".category_values")
+        iCatalogOutlineMaps=$(echo "$iCatalogMap" | jq -r ".values")
         iCatalogOutlineCount=$(echo "$iCatalogOutlineMaps" | jq '.|length')
         if [ $i = 0 ]; then
             iCatalogColor=${BLUE}
@@ -197,7 +197,7 @@ tool_menu() {
         fi
         for ((j = 0; j < ${iCatalogOutlineCount}; j++)); do
             iCatalogOutlineMap=$(echo "$iCatalogOutlineMaps" | jq -r ".[${j}]") # 添加 jq -r 的-r以去掉双引号
-            iCatalogOutlineName=$(echo "$iCatalogOutlineMap" | jq -r ".name")
+            iCatalogOutlineName=$(echo "$iCatalogOutlineMap" | jq -r ".key")
             iCatalogOutlineDes=$(echo "$iCatalogOutlineMap" | jq -r ".des")
             
             iBranchOption="$((i + 1)).$((j + 1))|${iCatalogOutlineName}"
@@ -208,40 +208,6 @@ tool_menu() {
 
 
 
-
-# 打开移动端文档主页
-openDocHome() {
-    openWebsitePage '.website.doc_home'
-}
-
-openDocVersionPlan() {
-    openWebsitePage '.website.doc_version_plan'
-}
-
-openDocWorkPlan() {
-    openWebsitePage '.website.doc_work_plan'
-}
-
-openDocTodoBug() {
-    openWebsitePage '.website.doc_todo_bug'
-}
-
-# 打开指定的网页地址
-openWebsitePage() {
-    websiteKey=$1
-    # 读取文件内容
-    content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
-    doc_home_website=$(echo "$content" | jq -r "${websiteKey}")
-    if [ -z "${doc_home_website}" ] || [ "${doc_home_website}" == "null" ]; then
-        rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 ${websiteKey} "
-        printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
-        exit 1
-    fi
-
-    printf "${BLUE}正在为你打开网址:${YELLOW}${doc_home_website} ${BLUE}，(如打开失败，请确认是否该地址失效)${NC}\n"
-    open "${doc_home_website}"
-    checkResultCode $?
-}
 
 _gitBranch() {
     sh ${branchJsonFileScriptDir_Absolute}/branchGit_create.sh
@@ -354,7 +320,7 @@ goGitRefsRemotesDir() {
 }
 
 checkResultCode() {
-    tCatalogOutlineName=$(echo "$tCatalogOutlineMap" | jq -r ".name")
+    tCatalogOutlineName=$(echo "$tCatalogOutlineMap" | jq -r ".key")
     tCatalogOutlineDes=$(echo "$tCatalogOutlineMap" | jq -r ".des")
 
     resultCode=$1
@@ -400,12 +366,12 @@ evalActionByInput() {
         tCatalogOutlineMap=""
         for ((i = 0; i < ${catalogCount}; i++)); do
             iCatalogMap=$(cat "$qtool_menu_json_file_path" | jq ".catalog" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
-            iCatalogOutlineMaps=$(echo "$iCatalogMap" | jq -r ".category_values")
+            iCatalogOutlineMaps=$(echo "$iCatalogMap" | jq -r ".values")
             iCatalogOutlineCount=$(echo "$iCatalogOutlineMaps" | jq '.|length')
             hasFound=false
             for ((j = 0; j < ${iCatalogOutlineCount}; j++)); do
                 iCatalogOutlineMap=$(echo "$iCatalogOutlineMaps" | jq -r ".[${j}]") # 添加 jq -r 的-r以去掉双引号
-                iCatalogOutlineName=$(echo "$iCatalogOutlineMap" | jq -r ".name")
+                iCatalogOutlineName=$(echo "$iCatalogOutlineMap" | jq -r ".key")
                 
                 iBranchOptionId="$((i + 1)).$((j + 1))"
                 iBranchOptionName="${iCatalogOutlineName}"
@@ -427,9 +393,9 @@ evalActionByInput() {
             # printf "====选中的操作项为======${RED}${tCatalogOutlineMap}${NC}\n"
             # tCatalogOutlineActionType=$(echo "$tCatalogOutlineMap" | jq -r ".action_type")
             
-            tCatalogOutlineAction=$(echo "$tCatalogOutlineMap" | jq -r ".action")
-            qian_log "${GREEN}根据你选中的菜单${BLUE} ${option} ${GREEN}，调起指定的方法：【${BLUE} eval \"$tCatalogOutlineAction\" ${GREEN}】${NC}"
-            eval "$tCatalogOutlineAction"
+            tCatalogOutlineCommand=$(echo "$tCatalogOutlineMap" | jq -r ".command")
+            qian_log "${GREEN}根据你选中的菜单${BLUE} ${option} ${GREEN}，调起指定的方法：【${BLUE} eval \"$tCatalogOutlineCommand\" ${GREEN}】${NC}"
+            eval "$tCatalogOutlineCommand"
         else
             echo "无此选项，请重新输入。"
         fi
