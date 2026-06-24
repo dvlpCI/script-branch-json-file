@@ -9,6 +9,9 @@
 # @Description: qtool 菜单的函数库（由 qtool_menu.sh source 使用）
 ###
 if [ -z "${qtoolScriptDir_Absolute}" ]; then
+    # ⚠️ 必须用 BASH_SOURCE[0] 而非 $0！因为此脚本会被 qbrew_menu.sh 通过
+    # execSourcePathGetter → source 加载，此时 $0 是 qbrew_menu.sh 的路径。
+    # 只有使用 BASH_SOURCE[0] 才能保证即使在 source 时，也能始终指向本文件自身路径，不受调用者影响。
     qtoolScriptDir_Absolute="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 fi
 
@@ -248,13 +251,17 @@ decompileApkAction() {
 
 
 qtool_change_project() {
+    echo "正在执行命令:《 sh \"${qtoolScriptDir_Absolute}/qtool_env_change.sh\" --any-env-anme QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH --action-type change --env-descript \"项目配置信息\" --env-var-placeholder \"your_project_params_json_file\" --env-reference-json-file-example \"${qtoolScriptDir_Absolute}/test/example_project_params.json\" --output-filename-if-copy "tool_input.json" 》"
+    # 2>/dev/tty：qbrew_menu.sh 的 eval ... 2>/dev/null 会吞掉子进程的 stderr，
+    # 而 qtool_env_change.sh 的交互输出全走 log_color_info（>&2），
+    # 必须显式重定向回终端，否则用户看不到任何交互提示。
     sh "${qtoolScriptDir_Absolute}/qtool_env_change.sh" \
       --any-env-anme QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH \
       --action-type change \
       --env-descript "项目配置信息" \
       --env-var-placeholder "your_project_params_json_file" \
       --env-reference-json-file-example "${qtoolScriptDir_Absolute}/test/example_project_params.json" \
-      --output-filename-if-copy "tool_input.json"
-      
+      --output-filename-if-copy "tool_input.json" 2>/dev/tty
+
     checkResultCode $?
 }
