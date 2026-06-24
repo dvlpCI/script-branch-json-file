@@ -378,7 +378,9 @@ struct ContentView: View {
             return
         }
 
-        let scriptContent = "clear\nsh \(wrapper) \"\(basePath)\" \"\(action)\"\n"
+        // 脚本目录优先用 brew lib（已有的安装），让 qtool_run_action.sh 能找到对应脚本，且是库可正常执行
+        let scriptDir = brewQtoolLibPath() ?? basePath
+        let scriptContent = "clear\nsh \(wrapper) \"\(scriptDir)\" \"\(action)\"\n"
         let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("qtool_run.command")
         try? scriptContent.write(to: tempURL, atomically: true, encoding: .utf8)
         try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: tempURL.path)
