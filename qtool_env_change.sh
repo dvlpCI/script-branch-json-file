@@ -298,7 +298,7 @@ log_color_info "${GREEN}选中的环境变量及其值为${BLUE} ${selected_env_
 
 
 log_color_info "${PURPLE}\n============== 对为环境变量 key 选中的值，进行更新 ==================${NC}"
-# log_color_info "正在执行命令《 sh $qbase_env_var_2add_or_update_scriptPath -envVariableKey \"${selected_env_key}\" -envVariableValue \"${selected_env_value}\" --environment-file-auto-open false 》"
+qian_log "正在执行命令《 sh $qbase_env_var_2add_or_update_scriptPath -envVariableKey \"${selected_env_key}\" -envVariableValue \"${selected_env_value}\" --environment-file-auto-open false 》"
 sh $qbase_env_var_2add_or_update_scriptPath -envVariableKey "${selected_env_key}" -envVariableValue "${selected_env_value}" --environment-file-auto-open false
 if [ $? != 0 ]; then
     open_sysenv_file

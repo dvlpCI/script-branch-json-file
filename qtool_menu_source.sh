@@ -251,7 +251,7 @@ decompileApkAction() {
 
 
 qtool_change_project() {
-    echo "正在执行命令:《 sh \"${qtoolScriptDir_Absolute}/qtool_env_change.sh\" --any-env-anme QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH --action-type change --env-descript \"项目配置信息\" --env-var-placeholder \"your_project_params_json_file\" --env-reference-json-file-example \"${qtoolScriptDir_Absolute}/test/example_project_params.json\" --output-filename-if-copy "tool_input.json" 》"
+    qian_log "正在执行命令:《 sh \"${qtoolScriptDir_Absolute}/qtool_env_change.sh\" --any-env-anme QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH --action-type change --env-descript \"项目配置信息\" --env-var-placeholder \"your_project_params_json_file\" --env-reference-json-file-example \"${qtoolScriptDir_Absolute}/test/example_project_params.json\" --output-filename-if-copy "tool_input.json" 》"
     # 2>/dev/tty：qbrew_menu.sh 的 eval ... 2>/dev/null 会吞掉子进程的 stderr，
     # 而 qtool_env_change.sh 的交互输出全走 log_color_info（>&2），
     # 必须显式重定向回终端，否则用户看不到任何交互提示。

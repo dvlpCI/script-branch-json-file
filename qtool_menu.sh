@@ -259,7 +259,7 @@ showMenu() {
 
 source "${qtoolScriptDir_Absolute}/qtool_menu_source.sh"
 
-# 直接执行时才显示菜单，source 时不执行
+# 直接执行时才显示菜单，source 时不执行 ( source 时候， "${BASH_SOURCE[0]}" 不等于 "${0}" ，"${BASH_SOURCE[0]}" 才是脚本路径)
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     qbrew_menu_file_path=$(qbase -path qbrew_menu 2>/dev/null)
     if [ -z "${qbrew_menu_file_path}" ] || [ ! -f "${qbrew_menu_file_path}" ]; then

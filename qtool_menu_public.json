@@ -5,7 +5,7 @@
             "values": [
                 {
                     "key": "change_project",
-                    "des": "切换环境/修改项目",
+                    "des": "切换当前选择的操作参数来源",
                     "execSourcePathGetter": "qtool -path qtool_menu_source",
                     "execSourceFunAndArgs": "qtool_change_project"
                 }
