@@ -115,7 +115,7 @@ source ${qtoolScriptDir_Absolute}/base/get_system_env.sh
 # 环境变量检查--TOOL_PATH（才能保证可以正确创建分支）
 checkEnvValue_TOOL_PARAMS_FILE_PATH() {
     if [ "${#QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" -eq 0 ]; then
-        sh "${qtoolScriptDir_Absolute}/qtool_change.sh" "${qtoolScriptDir_Absolute}"
+        sh "${qtoolScriptDir_Absolute}/qtool_change.sh"
         if [ $? != 0 ]; then
             return 1
         fi
@@ -193,7 +193,7 @@ evalActionByInput() {
         fi
 
         if [ "${option}" == "change" ]; then
-            sh "${qtoolScriptDir_Absolute}/qtool_change.sh" "${qtoolScriptDir_Absolute}"
+            sh "${qtoolScriptDir_Absolute}/qtool_change.sh"
             break
         fi
 

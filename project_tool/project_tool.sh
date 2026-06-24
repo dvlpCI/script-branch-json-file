@@ -182,7 +182,7 @@ evalActionByInput() {
         fi
 
         if [ "${option}" == "change" ]; then
-            sh "${qtoolScriptDir_Absolute}/qtool_change.sh" "${qtoolScriptDir_Absolute}"
+            sh "${qtoolScriptDir_Absolute}/qtool_change.sh"
             break
         fi
 

@@ -473,8 +473,8 @@ source ${qtoolScriptDir_Absolute}/base/get_system_env.sh # 为了使用 project_
 project_tool_params_file_path=$(get_sysenv_project_params_file)
 if [ $? != 0 ]; then
     log_color_info "${YELLOW} qtool_change 前的旧值 project_tool_params_file_path_old=${project_tool_params_file_path} ${YELLOW}。${NC}\n"
-    qian_log "${GREEN}qtool正在执行命令(qtool_change):《${BLUE} sh \"${qtoolScriptDir_Absolute}/qtool_change.sh\" \"${qtoolScriptDir_Absolute}\" ${COMMON_FLAG_ARGS[*]} ${GREEN}》${NC}"
-    sh "${qtoolScriptDir_Absolute}/qtool_change.sh" "${qtoolScriptDir_Absolute}" ${COMMON_FLAG_ARGS[*]} # 注意：${COMMON_FLAG_ARGS[*]} 不能加双引号，否则会被当成一个参数值，而不是多个参数
+    qian_log "${GREEN}qtool正在执行命令(qtool_change):《${BLUE} sh \"${qtoolScriptDir_Absolute}/qtool_change.sh\" ${COMMON_FLAG_ARGS[*]} ${GREEN}》${NC}"
+    sh "${qtoolScriptDir_Absolute}/qtool_change.sh" ${COMMON_FLAG_ARGS[*]} # 注意：${COMMON_FLAG_ARGS[*]} 不能加双引号，否则会被当成一个参数值，而不是多个参数
     if [ $? != 0 ]; then
         exit 1
     else
@@ -487,7 +487,7 @@ printf "${GREEN}温馨提示:您当前选择的操作参数使用  ${YELLOW}${pr
 
 
 # elif [ "$1" == "change" ]; then
-#     sh ${qtoolScriptDir_Absolute}/qtool_change.sh "${qtoolScriptDir_Absolute}"
+#     sh ${qtoolScriptDir_Absolute}/qtool_change.sh
 # 检查 firstArg 是否在快速命令列表中
 is_quick_cmd=false
 for cmd in "${qtoolQuickCmdStrings[@]}"; do

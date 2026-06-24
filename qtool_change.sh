@@ -8,19 +8,14 @@
 # @FilePath: qtool_change.sh
 ### 
 
-qtoolScriptDir_Absolute=$1
-if [ -z "${qtoolScriptDir_Absolute}" ]; then
-    echo "请传参 qtoolScriptDir_Absolute"
-    exit 1
-elif [ ! -d "${qtoolScriptDir_Absolute}" ]; then
-    echo "qtoolScriptDir_Absolute=${qtoolScriptDir_Absolute}路径不存在，请检查"
-    exit 1
-fi
+CurrentDIR_Script_Absolute="$( cd "$( dirname "$0" )" && pwd )"
+# qtool_HomeDir_Absolute=${CurrentDIR_Script_Absolute%/*} # 使用此方法可以避免路径上有..
+qtool_HomeDir_Absolute=${CurrentDIR_Script_Absolute}
 
-sh "${qtoolScriptDir_Absolute}/qtool_env_change.sh" \
+sh "${qtool_HomeDir_Absolute}/qtool_env_change.sh" \
       --any-env-anme QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH \
       --action-type change \
       --env-descript "项目配置信息" \
       --env-var-placeholder "your_project_params_json_file" \
-      --env-reference-json-file-example "${qtoolScriptDir_Absolute}/test/example_project_params.json" \
+      --env-reference-json-file-example "${qtool_HomeDir_Absolute}/test/example_project_params.json" \
       --output-filename-if-copy "tool_input.json"

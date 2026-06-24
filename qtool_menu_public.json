@@ -1,6 +1,17 @@
 {
     "catalog": [
         {
+            "type": "change",
+            "values": [
+                {
+                    "key": "change_project",
+                    "des": "切换环境/修改项目",
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "qtool_change_project"
+                }
+            ]
+        },
+        {
             "type": "doc",
             "values": [
                 {

@@ -245,3 +245,16 @@ decompileApkAction() {
     python3 "${qtoolScriptDir_Absolute}/src/decompile_apk.py"
     checkResultCode $?
 }
+
+
+qtool_change_project() {
+    sh "${qtoolScriptDir_Absolute}/qtool_env_change.sh" \
+      --any-env-anme QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH \
+      --action-type change \
+      --env-descript "项目配置信息" \
+      --env-var-placeholder "your_project_params_json_file" \
+      --env-reference-json-file-example "${qtoolScriptDir_Absolute}/test/example_project_params.json" \
+      --output-filename-if-copy "tool_input.json"
+      
+    checkResultCode $?
+}
