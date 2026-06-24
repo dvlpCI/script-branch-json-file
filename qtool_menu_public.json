@@ -132,12 +132,6 @@
                     "execSourceFunAndArgs": "signApkAction"
                 },
                 {
-                    "key": "goPP",
-                    "des": "打包相关(安装设备):进入更新Apple设备的目录",
-                    "execSourcePathGetter": "qtool -path qtool_menu_source",
-                    "execSourceFunAndArgs": "goPPDir"
-                },
-                {
                     "key": "uploadDSYM",
                     "des": "打包相关(符号表):上传符号表(需要jdk8支持)",
                     "execSourcePathGetter": "qtool -path qtool_menu_source",

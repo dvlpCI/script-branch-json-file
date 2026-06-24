@@ -209,16 +209,6 @@ lastBranchJsonFile_update() {
     checkResultCode $?
 }
 
-goPPDir() {
-    pp_dir_path="~/Library/MobileDevice/Provisioning Profiles"
-    if [[ $pp_dir_path =~ ^~.* ]]; then
-        # 如果 $pp_dir_path 以 "~/" 开头，则将波浪线替换为当前用户的 home 目录
-        pp_dir_path="${HOME}${pp_dir_path:1}"
-    fi
-    open "$pp_dir_path"
-    checkResultCode $?
-}
-
 goGitRefsRemotesDir() {
     _ensure_project_dir || return 1
     python3 ${branchJsonFileScriptDir_Absolute}/git_project_choose.py
