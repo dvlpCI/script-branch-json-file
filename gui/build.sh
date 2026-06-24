@@ -64,6 +64,9 @@ mkdir -p "$BUILD_DIR/Qtool.app/Contents/MacOS"
 mkdir -p "$BUILD_DIR/Qtool.app/Contents/Resources"
 cp "$BUILD_DIR/Qtool" "$BUILD_DIR/Qtool.app/Contents/MacOS/"
 cp "$SCRIPT_DIR/qtool_run_action.sh" "$BUILD_DIR/Qtool.app/Contents/Resources/"
+if [ -f "$SCRIPT_DIR/qtool.icns" ]; then
+    cp "$SCRIPT_DIR/qtool.icns" "$BUILD_DIR/Qtool.app/Contents/Resources/"
+fi
 
 # 生成 QBMenuSources 数组（含原始路径，app 运行时直接读源文件）
 SOURCES_XML=""
@@ -97,6 +100,8 @@ cat > "$BUILD_DIR/Qtool.app/Contents/Info.plist" << PLIST
     <string>Qtool</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
+    <key>CFBundleIconFile</key>
+    <string>qtool</string>
     <key>QBMenuSources</key>
     <array>$SOURCES_XML
     </array>
