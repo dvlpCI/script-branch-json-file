@@ -9,17 +9,7 @@ if [ -z "$qtoolScriptDir_Absolute" ] || [ -z "$actionName" ]; then
     exit 1
 fi
 
-# 去掉最后 showMenu + exit 两行，避免进入交互菜单
-# 保留所有 function 定义
-stripped=$(mktemp)
-awk 'NR<=477 || NR>=483' "$qtoolScriptDir_Absolute/qtool_menu.sh" > "$stripped" || {
-    echo "❌ 无法处理 qtool_menu.sh"
-    rm -f "$stripped"
-    exit 1
-}
-
-source "$stripped"
-rm -f "$stripped"
+source "${qtoolScriptDir_Absolute}/qtool_menu_source.sh"
 
 if ! declare -f "$actionName" > /dev/null 2>&1; then
     echo "❌ action '$actionName' 不存在"
