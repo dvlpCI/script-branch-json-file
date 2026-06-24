@@ -225,6 +225,13 @@ struct ContentView: View {
                     Text("[\(src.categoryType)]")
                         .font(.caption2)
                         .foregroundStyle(.tertiary)
+                    Button("↻ 重载") {
+                        restartApp()
+                    }
+                    .buttonStyle(.plain)
+                    .font(.caption2)
+                    .foregroundStyle(.blue)
+                    .help("重新读取 JSON")
                     Spacer()
                 }
                 .foregroundStyle(.secondary)
@@ -390,8 +397,18 @@ struct ContentView: View {
     func runCommand(_ command: String) {
         let task = Process()
         task.launchPath = "/bin/zsh"
-        task.arguments = ["-c", command]
-        task.launch()
+        task.arguments = ["-l", "-c", command]
+        task.standardError = FileHandle.nullDevice
+        task.standardOutput = FileHandle.nullDevice
+        do {
+            try task.run()
+        } catch {
+            errorMessage = "❌ 执行失败: \(error.localizedDescription)"
+        }
+    }
+
+    func restartApp() {
+        loadConfig()
     }
 
 }
