@@ -65,19 +65,17 @@ mkdir -p "$BUILD_DIR/Qtool.app/Contents/Resources"
 cp "$BUILD_DIR/Qtool" "$BUILD_DIR/Qtool.app/Contents/MacOS/"
 cp "$SCRIPT_DIR/qtool_run_action.sh" "$BUILD_DIR/Qtool.app/Contents/Resources/"
 
-# 生成 QBMenuSources 数组
+# 生成 QBMenuSources 数组（含原始路径，app 运行时直接读源文件）
 SOURCES_XML=""
 for i in "${!JSON_FILES[@]}"; do
     f="${JSON_FILES[$i]}"
     t="${CATEGORY_TYPES[$i]}"
     n="${NAMES[$i]}"
-    filename="$(basename "$f")"
-    cp "$f" "$BUILD_DIR/Qtool.app/Contents/Resources/$filename"
-    echo "   📄 [$t] $filename → \"$n\""
+    echo "   📄 [$t] $(basename "$f") → \"$n\""
     SOURCES_XML="$SOURCES_XML
         <dict>
             <key>file</key>
-            <string>$filename</string>
+            <string>$f</string>
             <key>type</key>
             <string>$t</string>
             <key>name</key>
