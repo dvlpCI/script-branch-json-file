@@ -502,12 +502,7 @@ if [ "$is_quick_cmd" = true ]; then
     elif [ "$firstArg" == "cz" ]; then
         sh ${qtoolScriptDir_Absolute}/commit/commit_message.sh
     elif [ "$firstArg" == "gui" ]; then
-        gui_build_script="${qtoolScriptDir_Absolute}/gui/build.sh"
-        if [ ! -f "$gui_build_script" ]; then
-            echo "${RED}Error: 找不到 gui/build.sh。qtool gui 命令需要从源码仓库运行。${NC}" >&2
-            exit 1
-        fi
-        sh "${gui_build_script}"
+        sh ${qtoolScriptDir_Absolute}/qtool_gui.sh
     else
         printf "${YELLOW}温馨提示:无法执行未知命令《 qtool \"$1\" 》，请检查${NC}\n"
     fi

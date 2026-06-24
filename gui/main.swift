@@ -5,11 +5,29 @@ struct MenuItemData: Decodable, Identifiable {
     let name: String
     let des: String
     let action: String
+    let actionType: ActionType
     var id: String { name }
+
+    enum ActionType { case command, execSourceFunAndArgs }
+
     enum CodingKeys: String, CodingKey {
         case name = "key"
         case des
-        case action = "execSourceFunAndArgs"
+        case command
+        case execSourceFunAndArgs
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        name = try c.decode(String.self, forKey: .name)
+        des = try c.decode(String.self, forKey: .des)
+        if let val = try? c.decode(String.self, forKey: .execSourceFunAndArgs) {
+            action = val
+            actionType = .execSourceFunAndArgs
+        } else {
+            action = try c.decode(String.self, forKey: .command)
+            actionType = .command
+        }
     }
 }
 
@@ -22,7 +40,50 @@ struct CategoryData: Decodable, Identifiable {
     }
 }
 
-struct MenuJSON: Decodable { let catalog: [CategoryData] }
+struct MenuSource: Identifiable {
+    let id: String
+    let displayName: String
+    let jsonPath: String
+    let categoryType: String
+    var categories: [CategoryData]
+}
+
+struct MenuJSON: Decodable {
+    struct DynamicCodingKeys: CodingKey {
+        var stringValue: String
+        var intValue: Int? { nil }
+        init?(stringValue: String) { self.stringValue = stringValue }
+        init?(intValue: Int) { return nil }
+    }
+
+    let categories: [CategoryData]
+
+    static func decode(from data: Data, type: String?) throws -> MenuJSON {
+        let decoder = JSONDecoder()
+        let container = try decoder.decode(MenuJSONDecoderContainer.self, from: data)
+        let keysToTry: [String]
+        if let type = type { keysToTry = [type] }
+        else { keysToTry = ["catalog", "custom"] }
+
+        for key in keysToTry {
+            if let k = DynamicCodingKeys(stringValue: key),
+               let cats = container.dict[k.stringValue] {
+                return MenuJSON(categories: cats)
+            }
+        }
+        throw DecodingError.dataCorrupted(.init(
+            codingPath: [], debugDescription: "未找到有效的分类 key（尝试: \(keysToTry.joined(separator: ", "))）"
+        ))
+    }
+}
+
+struct MenuJSONDecoderContainer: Decodable {
+    let dict: [String: [CategoryData]]
+    init(from decoder: Decoder) throws {
+        let c = try decoder.singleValueContainer()
+        dict = try c.decode([String: [CategoryData]].self)
+    }
+}
 
 // MARK: - App
 @main
@@ -33,8 +94,11 @@ struct QtoolApp: App {
 }
 
 // MARK: - Content View
+
+
 struct ContentView: View {
-    @State private var categories: [CategoryData] = []
+    @State private var menuSources: [MenuSource] = []
+    @State private var selectedSourceId: String = ""
     @State private var basePath: String = ""
     @State private var binDir: String = ""
     @State private var errorMessage: String? = nil
@@ -42,9 +106,17 @@ struct ContentView: View {
     @State private var selectedCategory: String? = nil
     @State private var executedAction: String? = nil
 
+    var currentSource: MenuSource? {
+        menuSources.first { $0.id == selectedSourceId }
+    }
+
+    var currentCategories: [CategoryData] {
+        currentSource?.categories ?? []
+    }
+
     var filteredCategories: [CategoryData] {
         if !searchText.isEmpty {
-            return categories.compactMap { cat in
+            return currentCategories.compactMap { cat in
                 let filtered = cat.categoryValues.filter {
                     $0.name.localizedCaseInsensitiveContains(searchText) ||
                     $0.des.localizedCaseInsensitiveContains(searchText)
@@ -52,20 +124,47 @@ struct ContentView: View {
                 return filtered.isEmpty ? nil : CategoryData(categoryId: cat.categoryId, categoryValues: filtered)
             }
         }
-        return categories
+        return currentCategories
     }
 
     var totalCount: Int {
-        categories.reduce(0) { $0 + $1.categoryValues.count }
+        currentCategories.reduce(0) { $0 + $1.categoryValues.count }
     }
 
     var body: some View {
         VStack(spacing: 0) {
+            if menuSources.count > 1 {
+                HStack {
+                    Picker("菜单源", selection: $selectedSourceId) {
+                        ForEach(menuSources) { s in
+                            Text(s.displayName).tag(s.id)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(Color(nsColor: .controlBackgroundColor))
+            }
             HStack {
                 Image(systemName: "magnifyingglass")
                     .foregroundStyle(.secondary)
                 TextField("搜索操作...", text: $searchText)
                     .textFieldStyle(.plain)
+                if !basePath.isEmpty, let src = currentSource {
+                    Button {
+                        NSWorkspace.shared.open(URL(fileURLWithPath: src.jsonPath))
+                    } label: {
+                        Text(src.jsonPath)
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                    }
+                    .buttonStyle(.link)
+                    .help("打开 JSON 文件")
+                }
             }
             .padding(10)
             .background(Color(nsColor: .controlBackgroundColor))
@@ -108,10 +207,30 @@ struct ContentView: View {
                     }
 
                     CategoryIndexView(
-                        categories: categories,
+                        categories: currentCategories,
                         selectedCategory: $selectedCategory
                     )
                 }
+            }
+
+            if let src = currentSource {
+                Divider()
+                HStack(spacing: 4) {
+                    Text("📄")
+                        .font(.caption2)
+                    Text(src.jsonPath)
+                        .font(.caption2)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                    Text("[\(src.categoryType)]")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                    Spacer()
+                }
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 3)
+                .background(Color(nsColor: .controlBackgroundColor))
             }
         }
         .onAppear(perform: loadConfig)
@@ -124,11 +243,19 @@ struct ContentView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
             executedAction = nil
         }
-        openInTerminal(action: item.action)
+        if item.actionType == .command {
+            runCommand(item.action)
+        } else {
+            runQtoolAction(item.action)
+        }
     }
 
     func loadConfig() {
-        let arg0 = CommandLine.arguments[0]
+        let args = CommandLine.arguments
+        let resourcesDir: String
+
+        // Determine resourcesDir from binary location
+        let arg0 = args[0]
         if arg0.hasPrefix("/") {
             binDir = (arg0 as NSString).deletingLastPathComponent
         } else {
@@ -136,25 +263,86 @@ struct ContentView: View {
             let absPath = (cwd as NSString).appendingPathComponent(arg0)
             binDir = ((absPath as NSString).standardizingPath as NSString).deletingLastPathComponent
         }
+        resourcesDir = (binDir as NSString).deletingLastPathComponent + "/Resources"
 
-        var searchDirs: [String] = [binDir, (binDir as NSString).deletingLastPathComponent]
-        if let brewPath = brewQtoolLibPath() { searchDirs.append(brewPath) }
+        // Collect source configs: CLI args or Info.plist
+        struct SourceDef {
+            let file: String; let type: String; let name: String
+        }
+        var sourceConfigs: [SourceDef] = []
 
-        for dir in searchDirs {
-            let jsonPath = (dir as NSString).appendingPathComponent("qtool_menu_public.json")
-            if FileManager.default.fileExists(atPath: jsonPath) {
-                do {
-                    let data = try Data(contentsOf: URL(fileURLWithPath: jsonPath))
-                    categories = try JSONDecoder().decode(MenuJSON.self, from: data).catalog
-                    basePath = dir
-                    return
-                } catch {
-                    errorMessage = "❌ 加载失败: \(jsonPath)\n\n\(error)"
-                    return
+        if args.count >= 3 && (args.count % 2 == 1) {
+            // CLI: ./Qtool <path1> <type1> [<path2> <type2> ...]
+            for i in stride(from: 1, to: args.count, by: 2) {
+                let f = args[i]; let t = args[i+1]
+                sourceConfigs.append(SourceDef(file: f, type: t, name: (f as NSString).lastPathComponent))
+            }
+        } else if let dict = Bundle.main.infoDictionary,
+                  let sources = dict["QBMenuSources"] as? [[String: String]] {
+            for s in sources {
+                if let file = s["file"], let type = s["type"] {
+                    let name = s["name"] ?? (file as NSString).lastPathComponent
+                    sourceConfigs.append(SourceDef(file: file, type: type, name: name))
                 }
             }
         }
-        errorMessage = "❌ 找不到 qtool_menu_public.json"
+
+        if sourceConfigs.isEmpty {
+            // Fallback: search standard locations for qtool_menu_public.json
+            var searchDirs: [String] = [binDir, (binDir as NSString).deletingLastPathComponent, resourcesDir]
+            if let brewPath = brewQtoolLibPath() { searchDirs.append(brewPath) }
+            for dir in searchDirs {
+                let p = (dir as NSString).appendingPathComponent("qtool_menu_public.json")
+                if FileManager.default.fileExists(atPath: p) {
+                    sourceConfigs.append(SourceDef(file: "qtool_menu_public.json", type: "catalog", name: "qtool_menu_public.json"))
+                    break
+                }
+            }
+            if sourceConfigs.isEmpty {
+                sourceConfigs.append(SourceDef(file: "qtool_menu_public.json", type: "catalog", name: "qtool_menu_public.json"))
+            }
+        }
+
+        var loaded: [MenuSource] = []
+        for def in sourceConfigs {
+            let filePath: String
+            if def.file.hasPrefix("/") {
+                filePath = def.file
+            } else {
+                let searchDirs = [resourcesDir, binDir, (binDir as NSString).deletingLastPathComponent]
+                var found = ""
+                for d in searchDirs {
+                    let p = (d as NSString).appendingPathComponent(def.file)
+                    if FileManager.default.fileExists(atPath: p) { found = p; break }
+                }
+                if found.isEmpty, let brew = brewQtoolLibPath() {
+                    let p = (brew as NSString).appendingPathComponent(def.file)
+                    if FileManager.default.fileExists(atPath: p) { found = p }
+                }
+                filePath = found
+            }
+            guard !filePath.isEmpty, let data = try? Data(contentsOf: URL(fileURLWithPath: filePath)) else {
+                continue
+            }
+            if let json = try? MenuJSON.decode(from: data, type: def.type) {
+                loaded.append(MenuSource(
+                    id: "\(def.file):\(def.type)",
+                    displayName: def.name,
+                    jsonPath: filePath,
+                    categoryType: def.type,
+                    categories: json.categories
+                ))
+            }
+        }
+
+        if loaded.isEmpty {
+            errorMessage = "❌ 未加载到任何菜单源"
+            return
+        }
+
+        menuSources = loaded
+        selectedSourceId = loaded[0].id
+        basePath = resourcesDir
     }
 
     func brewQtoolLibPath() -> String? {
@@ -183,7 +371,7 @@ struct ContentView: View {
         return nil
     }
 
-    func openInTerminal(action: String) {
+    func runQtoolAction(_ action: String) {
         guard let wrapper = findResource("qtool_run_action.sh", near: basePath)
                 ?? findResource("qtool_run_action.sh", near: binDir) else {
             errorMessage = "❌ 找不到 qtool_run_action.sh"
@@ -191,6 +379,14 @@ struct ContentView: View {
         }
 
         let scriptContent = "clear\nsh \(wrapper) \"\(basePath)\" \"\(action)\"\n"
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("qtool_run.command")
+        try? scriptContent.write(to: tempURL, atomically: true, encoding: .utf8)
+        try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: tempURL.path)
+        NSWorkspace.shared.open(tempURL)
+    }
+
+    func runCommand(_ command: String) {
+        let scriptContent = "clear\n\(command)\n"
         let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("qtool_run.command")
         try? scriptContent.write(to: tempURL, atomically: true, encoding: .utf8)
         try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: tempURL.path)
