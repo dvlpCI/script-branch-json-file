@@ -6,6 +6,11 @@ struct MenuItemData: Decodable, Identifiable {
     let des: String
     let action: String
     var id: String { name }
+    enum CodingKeys: String, CodingKey {
+        case name = "key"
+        case des
+        case action = "execSourceFunAndArgs"
+    }
 }
 
 struct CategoryData: Decodable, Identifiable {
@@ -13,7 +18,7 @@ struct CategoryData: Decodable, Identifiable {
     let categoryValues: [MenuItemData]
     var id: String { categoryId }
     enum CodingKeys: String, CodingKey {
-        case categoryId = "category_id", categoryValues = "category_values"
+        case categoryId = "type", categoryValues = "values"
     }
 }
 
