@@ -5,7 +5,11 @@
  # @LastEditors: dvlproad
  # @LastEditTime: 2023-06-14 10:45:11
  # @Description: 
-# @FilePath: qtool_change.sh
+# @FilePath: qtool_env_change.sh
+# @Usage: sh qtool_env_change.sh --any-env-anme <环境变量名> [options]
+# @Example: sh qtool_env_change.sh --any-env-anme QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH --action-type change --env-descript "项目配置信息" --env-var-placeholder "xxx" --env-reference-json-file-example /path/to/example.json --output-filename-if-copy tool_input.json
+# @Description: 交互式检查并更新 qbase 环境变量。先检查环境变量是否合法，不存在则引导设置；
+#   指定 --action-type change 还会进入交互选择流程，从环境变量表中选择新值并更新。
 ### 
 
 # --------------------- 的 ---------------------
@@ -21,16 +25,25 @@ function qian_log() {
 # 日志信息输出到终端（规范 2.2：日志输出用 >&2，保持返回值干净）
 log_color_info() { printf "%b\n" "$1" >&2; }
 
-qtoolScriptDir_Absolute=$1
-if [ -z "${qtoolScriptDir_Absolute}" ]; then
-    echo "请传参 qtoolScriptDir_Absolute"
-    exit 1
-elif [ ! -d "${qtoolScriptDir_Absolute}" ]; then
-    echo "qtoolScriptDir_Absolute=${qtoolScriptDir_Absolute}路径不存在，请检查"
-    exit 1
-fi
+show_usage() {
+    printf "交互式检查并更新 qbase 环境变量。\n"
+    printf "先检查环境变量是否合法，不存在则引导设置；指定 --action-type change 还会进入交互选择流程。\n"
+    printf "Usage: sh %s --any-env-anme <环境变量名> [options]\n" "$0"
+    printf "Example: sh %s --any-env-anme QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH --action-type change\n" "$0"
+    printf "Params:\n"
+    printf "  --any-env-anme             必填：要检查/更新的环境变量名\n"
+    printf "  --action-type              可选：change 进入交互选择流程；不传则仅检查\n"
+    printf "  --env-descript             必填：环境变量描述\n"
+    printf "  --env-var-placeholder      必填：占位符\n"
+    printf "  --env-reference-json-file-example  必填：参考 JSON 文件路径\n"
+    printf "  --output-filename-if-copy  必填：复制时输出文件名\n"
+    printf "  --qian                     可选：打印调试日志\n"
+}
 
-source ${qtoolScriptDir_Absolute}/base/get_system_env.sh # 为了引入 open_sysenv_file getAbsPathByFileRelativePath 方法
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+    show_usage
+    exit 0
+fi
 
 qbase_env_var_1get_by_manual_scriptPath=$(qbase -path env_var_get_by_manual)
 qbase_env_var_2add_or_update_scriptPath=$(qbase -path env_var_add_or_update)
@@ -43,9 +56,12 @@ qbase_env_file_check_and_set_scriptPath=$(qbase -path env_file_check_and_set)
 DEFINE_QIAN=false
 
 # 解析具名参数
-ANY_ENV_NAME=""     # 任意 的环境变量
-ACTION_TYPE=""      # 操作类型 change:改变
-shift 1
+ANY_ENV_NAME=""                          # 任意 的环境变量
+ACTION_TYPE=""                           # 操作类型 change:改变
+ENV_DESCRIPT=""                          # 环境变量描述，传给 --env-descript
+ENV_VAR_PLACEHOLDER=""                   # 传给 --env-var-placeholder
+ENV_REF_JSON_EXAMPLE=""                  # 传给 --env-reference-json-file-example
+OUTPUT_FILENAME_IF_COPY=""               # 传给 --output-filename-if-copy
 while [ $# -gt 0 ]; do
     case "$1" in
         --any-env-anme)
@@ -68,6 +84,38 @@ while [ $# -gt 0 ]; do
                 shift 2
             fi
             ;;
+        --env-descript)
+            if [ -z "$2" ] || [[ "$2" =~ ^- ]]; then
+                log_color_info "错误: --env-descript 必须指定"
+                exit 1
+            fi
+            ENV_DESCRIPT="$2"
+            shift 2
+            ;;
+        --env-var-placeholder)
+            if [ -z "$2" ] || [[ "$2" =~ ^- ]]; then
+                log_color_info "错误: --env-var-placeholder 必须指定"
+                exit 1
+            fi
+            ENV_VAR_PLACEHOLDER="$2"
+            shift 2
+            ;;
+        --env-reference-json-file-example)
+            if [ -z "$2" ] || [[ "$2" =~ ^- ]]; then
+                log_color_info "错误: --env-reference-json-file-example 必须指定"
+                exit 1
+            fi
+            ENV_REF_JSON_EXAMPLE="$2"
+            shift 2
+            ;;
+        --output-filename-if-copy)
+            if [ -z "$2" ] || [[ "$2" =~ ^- ]]; then
+                log_color_info "错误: --output-filename-if-copy 必须指定"
+                exit 1
+            fi
+            OUTPUT_FILENAME_IF_COPY="$2"
+            shift 2
+            ;;
         --qian)
             DEFINE_QIAN=true
             shift 1
@@ -81,6 +129,22 @@ done
 
 if [ -z "${ANY_ENV_NAME}" ]; then
     log_color_info "错误: 缺少必要参数（--any-env-anme）"
+    exit 1
+fi
+if [ -z "${ENV_DESCRIPT}" ]; then
+    log_color_info "错误: 缺少必要参数（--env-descript）"
+    exit 1
+fi
+if [ -z "${ENV_VAR_PLACEHOLDER}" ]; then
+    log_color_info "错误: 缺少必要参数（--env-var-placeholder）"
+    exit 1
+fi
+if [ -z "${ENV_REF_JSON_EXAMPLE}" ]; then
+    log_color_info "错误: 缺少必要参数（--env-reference-json-file-example）"
+    exit 1
+fi
+if [ -z "${OUTPUT_FILENAME_IF_COPY}" ]; then
+    log_color_info "错误: 缺少必要参数（--output-filename-if-copy）"
     exit 1
 fi
 
@@ -155,14 +219,13 @@ function ensureEnvVarInChoicesFile() {
 
 log_color_info "${PURPLE}\n================== 1、检查环境变量文件中的【任意指定】环境变量情况。如果异常则进行配置更新 ==================${NC}"
 any_env_value_origin=${!ANY_ENV_NAME}    # 记录下该环境变量的原始值，待等下与检查后的新值做对比，来判断是否发生了改变。
-example_json_file_project_params=${qtoolScriptDir_Absolute}/test/example_project_params.json
-qian_log "${YELLOW}正在执行命令《${BLUE} sh ${qbase_env_file_check_and_set_scriptPath} --env-name \"${ANY_ENV_NAME}\" --env-descript 项目配置信息 --env-var-placeholder \"your_project_params_json_file\" --env-reference-json-file-example ${example_json_file_project_params} --output-filename-if-copy tool_choice.json ${YELLOW}》。${NC} "
+qian_log "${YELLOW}正在执行命令《${BLUE} sh ${qbase_env_file_check_and_set_scriptPath} --env-name \"${ANY_ENV_NAME}\" --env-descript \"${ENV_DESCRIPT}\" --env-var-placeholder \"${ENV_VAR_PLACEHOLDER}\" --env-reference-json-file-example ${ENV_REF_JSON_EXAMPLE} --output-filename-if-copy ${OUTPUT_FILENAME_IF_COPY} ${YELLOW}》。${NC} "
 projectParamsCheckResult=$(sh ${qbase_env_file_check_and_set_scriptPath} \
     --env-name "${ANY_ENV_NAME}" \
-    --env-descript 项目配置信息 \
-    --env-var-placeholder "your_project_params_json_file" \
-    --env-reference-json-file-example ${example_json_file_project_params} \
-    --output-filename-if-copy tool_input.json
+    --env-descript "${ENV_DESCRIPT}" \
+    --env-var-placeholder "${ENV_VAR_PLACEHOLDER}" \
+    --env-reference-json-file-example "${ENV_REF_JSON_EXAMPLE}" \
+    --output-filename-if-copy "${OUTPUT_FILENAME_IF_COPY}"
 )
 if [ $? -ne 0 ]; then
     echo "${projectParamsCheckResult}"

@@ -17,7 +17,10 @@ elif [ ! -d "${qtoolScriptDir_Absolute}" ]; then
     exit 1
 fi
 
-sh "${qtoolScriptDir_Absolute}/qbase_env_change.sh" \
-      "${qtoolScriptDir_Absolute}" \
+sh "${qtoolScriptDir_Absolute}/qtool_env_change.sh" \
       --any-env-anme QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH \
-      --action-type change
+      --action-type change \
+      --env-descript "项目配置信息" \
+      --env-var-placeholder "your_project_params_json_file" \
+      --env-reference-json-file-example "${qtoolScriptDir_Absolute}/test/example_project_params.json" \
+      --output-filename-if-copy "tool_input.json"
