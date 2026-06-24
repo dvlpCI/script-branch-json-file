@@ -47,13 +47,13 @@
             "des": "分支信息json文件的处理(创建、更新）",
             "values": [
                 {
-                    "des": "branchJsonFile 的创建",
+                    "des": "branchJsonFile 分支信息文件的创建",
                     "key": "branchJsonFile_create",
                     "rel_path": "./src/branchJsonFile_create.py",
                     "example": "qtool -quick branchJsonFile_create -tool_params_file_path \"${tool_params_file_path}\""
                 },
                 {
-                    "des": "branchJsonFile 的更新",
+                    "des": "branchJsonFile 分支信息文件的更新",
                     "key": "branchJsonFile_update",
                     "rel_path": "./src/branchJsonFile_update.py",
                     "example": "qtool -quick branchJsonFile_update -tool_params_file_path \"${tool_params_file_path}\""
@@ -83,6 +83,18 @@
                     "key": "openWebsiteByCustomChoose",
                     "rel_path": "./src/openWebsiteByCustomChoose.py",
                     "example": "qtool -path openWebsiteByCustomChoose"
+                }
+            ]
+        },
+        {
+            "type": "source",
+            "des": "source",
+            "values": [
+                {
+                    "des": "qtool 菜单的函数库",
+                    "key": "qtool_menu_source",
+                    "rel_path": "./qtool_menu_source.sh",
+                    "example": "qtool -path qtool_menu_source"
                 }
             ]
         },

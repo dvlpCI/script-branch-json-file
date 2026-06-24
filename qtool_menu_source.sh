@@ -43,6 +43,53 @@ chmod u+wr "${temp_reslut_file_path}" # chmod 命令用于修改文件权限，u
 # echo "branchJsonFileScriptDir_Absolute=${branchJsonFileScriptDir_Absolute}"
 # echo "jenkinsScriptDir_Absolute=${jenkinsScriptDir_Absolute}"
 
+# 打开移动端文档主页
+openDocHome() {
+    openWebsitePage '.website.doc_home'
+}
+
+openDocVersionPlan() {
+    openWebsitePage '.website.doc_version_plan'
+}
+
+openDocWorkPlan() {
+    openWebsitePage '.website.doc_work_plan'
+}
+
+openDocTodoBug() {
+    openWebsitePage '.website.doc_todo_bug'
+}
+
+# 打开指定的网页地址
+openWebsitePage() {
+    websiteKey=$1
+    # 读取文件内容
+    content=$(cat "${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}")
+    doc_home_website=$(echo "$content" | jq -r "${websiteKey}")
+    if [ -z "${doc_home_website}" ] || [ "${doc_home_website}" == "null" ]; then
+        rebaseErrorMessage="请先在${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}文件中设置 ${websiteKey} "
+        printf "${RED}%s${NC}\n" "${rebaseErrorMessage}"
+        exit 1
+    fi
+
+    printf "${BLUE}正在为你打开网址:${YELLOW}${doc_home_website} ${BLUE}，(如打开失败，请确认是否该地址失效)${NC}\n"
+    open "${doc_home_website}"
+    checkResultCode $?
+}
+
+
+openWebsiteByCustomChoose_fromProjectCustom() {
+    python3 "${qtoolScriptDir_Absolute}/src/openWebsiteByCustomChoose.py" "custom"
+    checkResultCode $?
+}
+
+openWebsiteByCustomChoose_fromSystemRecommend() {
+    python3 "${qtoolScriptDir_Absolute}/src/openWebsiteByCustomChoose.py" "recommend"
+    checkResultCode $?
+}
+
+
+
 _resolve_tool_params_file_path() {
     tool_params_file_path=${QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}
     if [[ $tool_params_file_path =~ ^~.* ]]; then

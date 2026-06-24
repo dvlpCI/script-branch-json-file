@@ -6,34 +6,38 @@
                 {
                     "key": "docHome",
                     "des": "打开《移动端文档主页》",
-                    "command": "open http://wiki.xxx.com/zh/app/home"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "openDocHome"
                 },
                 {
                     "key": "docVersionPlan",
                     "des": "打开《版本需求/计划》",
-                    "command": "open https://www.baidu.com"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "openDocVersionPlan"
                 },
                 {
                     "key": "docWorkPlan",
                     "des": "打开《工作计划》",
-                    "command": "open https://www.sina.com"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "openDocWorkPlan"
                 },
                 {
                     "key": "docTodoBug",
                     "des": "打开《内部待修复bug记录》",
-                    "command": "open https://www.weibo.com"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "openDocTodoBug"
                 },
                 {
                     "key": "custom_website",
                     "des": "打开《有关项目的其他网站(代码:gitlab、需求:tapd、UI:mockplus等)》",
-                    "commandScriptPathGetter": "qtool -path openWebsiteByCustomChoose",
-                    "commandScriptArgs": "custom"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "openWebsiteByCustomChoose_fromProjectCustom"
                 },
                 {
                     "key": "recommend_website",
                     "des": "打开《推荐网站(APM、风控等)》",
-                    "commandScriptPathGetter": "qtool -path openWebsiteByCustomChoose",
-                    "commandScriptArgs": "recommend"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "openWebsiteByCustomChoose_fromSystemRecommend"
                 }
             ]
         },
@@ -43,27 +47,32 @@
                 {
                     "key": "gitBranch",
                     "des": "分支相关:创建分支(且创建完可选择继续2操作)",
-                    "command": "gitBranchAndJsonFile"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "gitBranchAndJsonFile"
                 },
                 {
                     "key": "createJsonFile",
                     "des": "分支相关:创建当前所处分支的信息文件",
-                    "command": "createBranchJsonFile"
+                    "execSourcePathGetter": "/Users/qian/Project/Github/script-branch-json-file/qtool_menu_source.sh",
+                    "execSourceFunAndArgs": "createBranchJsonFile"
                 },
                 {
                     "key": "updateJsonFile",
                     "des": "分支相关:更新当前所处分支的信息文件(人员、提测时间、提测时间、测试通过时间)",
-                    "command": "updateBranchJsonFile"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "updateBranchJsonFile"
                 },
                 {
                     "key": "noPackBranch",
                     "des": "分支相关:修复本机上次打包了某个分支，但这次确定先不再打包该分支(一定慎用)",
-                    "command": "lastBranchJsonFile_update"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "lastBranchJsonFile_update"
                 },
                 {
                     "key": "goGitRefsRemotes",
                     "des": "分支相关:修复远程删掉了，但本地执行git branch -r 还是显示出来",
-                    "command": "goGitRefsRemotesDir"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "goGitRefsRemotesDir"
                 }
             ]
         },
@@ -73,22 +82,26 @@
                 {
                     "key": "gitCommitMessage",
                     "des": "代码相关(提交):按规范提交当前所有代码，形如：【Feature】（scope）改动信息",
-                    "command": "pushGitCommitMessage"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "pushGitCommitMessage"
                 },
                 {
                     "key": "rebaseCheck",
                     "des": "代码相关(检查):将当前分支合并到其他分支前的rebase检查",
-                    "command": "rebaseCheckBranch"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "rebaseCheckBranch"
                 },
                 {
                     "key": "rebaseHook",
                     "des": "代码相关(检查):hook pre-push",
-                    "command": "rebaseHook"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "rebaseHook"
                 },
                 {
                     "key": "updatePageKey",
                     "des": "代码相关(埋点):更新Flutter项目埋点页面的类与key值",
-                    "command": "updateMonitorPageKey"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "updateMonitorPageKey"
                 }
             ]
         },
@@ -98,22 +111,26 @@
                 {
                     "key": "jenkins",
                     "des": "打包相关(Jenkins):执行Jenkins打包任务",
-                    "command": "buildJenkinsJob"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "buildJenkinsJob"
                 },
                 {
                     "key": "signApk",
                     "des": "打包相关(签名):为加固后的apk签名",
-                    "command": "signApkAction"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "signApkAction"
                 },
                 {
                     "key": "goPP",
                     "des": "打包相关(安装设备):进入更新Apple设备的目录",
-                    "command": "goPPDir"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "goPPDir"
                 },
                 {
                     "key": "uploadDSYM",
                     "des": "打包相关(符号表):上传符号表(需要jdk8支持)",
-                    "command": "uploadDSYMAction"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "uploadDSYMAction"
                 }
             ]
         },
@@ -123,7 +140,8 @@
                 {
                     "key": "deal_custom_script",
                     "des": "自定义脚本:（更新项目的①code环境和②json环境、签名、上传cos）",
-                    "command": "dealScriptByCustomChoose"
+                    "execSourcePathGetter": "qtool -path qtool_menu_source",
+                    "execSourceFunAndArgs": "dealScriptByCustomChoose"
                 }
             ]
         }
