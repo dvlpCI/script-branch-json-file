@@ -95,17 +95,18 @@ brew install qtool
 > wrapper 脚本（`qtool_run_action.sh`）用 `awk` 在运行时剥离 `showMenu` 和 `exit` 两行，不修改源文件。
 > 所有业务逻辑仍在 Homebrew 安装的 `qtool_menu.sh` 中。
 
-### 3.4. 路径检测逻辑
+### 3.4. 菜单源加载逻辑（多源架构）
+
+按以下优先级确定菜单源列表：
+
+1. **CLI 参数**：`./Qtool <path1> <type1> [<path2> <type2> ...]`
+2. **Info.plist**：`QBMenuSources` 数组（`file` + `type` + `name`），文件相对于 `Resources/`
+3. **Fallback**：搜索标准位置（二进制目录、父目录、Resources、brew lib 路径）找 `qtool_menu_public.json`
+
+每个菜单源解码时支持任意顶层 key（如 `catalog`、`custom`），通过源定义中的 `type` 指定。
 
 ```swift
-// 查找 qtool_menu_public.json 的优先级：
-1. 二进制所在目录（开发模式：gui/）
-2. 二进制所在目录的父目录（开发模式：repo 根）
-3. brew --prefix qtool/lib/（生产模式：Homebrew lib 目录）
-```
-
-```swift
-// 查找 qtool_run_action.sh 的优先级：
+// 脚本资源查找优先级（qtool_run_action.sh）：
 1. basePath/gui/name（开发模式）
 2. basePath/name
 3. basePath/../Resources/name（.app 包内 Resources）
@@ -127,6 +128,7 @@ script-branch-json-file/
 │   ├── .gitignore              # 排除 Qtool + Qtool.app
 │   ├── Qtool                   # 编译产物（忽略）
 │   └── Qtool.app               # 打包产物（忽略）
+├── qtool_gui.sh                # 便捷调用 build.sh 的快捷脚本（git 跟踪）
 ├── qtool_menu_public.json      # 菜单结构（GUI 读取）
 ├── qtool_menu.sh               # 所有 action 函数定义（不被修改）
 ├── src/                        # Python 子脚本
@@ -142,19 +144,57 @@ Qtool.app/Contents/
 ├── MacOS/
 │   └── Qtool                  # Swift 编译的二进制
 ├── Resources/
-│   └── qtool_run_action.sh    # wrapper 脚本（仅 30 行）
-└── Info.plist
+│   ├── qtool_run_action.sh    # wrapper 脚本（仅 30 行）
+│   ├── qtool_menu_public.json  # 主菜单 JSON
+│   └── qbase_custom_menu.json  # 可选定制菜单 JSON
+└── Info.plist                  # 含 QBMenuSources 数组声明菜单源
 ```
 
-注意：**不含任何业务脚本**，所有脚本在 Homebrew Cellar 中。
+Info.plist 中的 `QBMenuSources` 数组声明每个菜单源的文件名、类型、显示名：
+```xml
+<key>QBMenuSources</key>
+<array>
+    <dict>
+        <key>file</key><string>qbase_custom_menu.json</string>
+        <key>type</key><string>custom</string>
+        <key>name</key><string>qbase</string>
+    </dict>
+    <dict>
+        <key>file</key><string>qtool_menu_public.json</string>
+        <key>type</key><string>catalog</string>
+        <key>name</key><string>qtool</string>
+    </dict>
+</array>
+```
+
+多源时窗口顶部显示分段选择器切换菜单源。支持 `catalog`/`custom`/任意自定义顶层 key。
+也支持 CLI 参数直接指定 JSON 路径和类型：`./Qtool <path1> <type1> [<path2> <type2> ...]`
+
+注意：**JSON 文件嵌入 .app 包内**，业务脚本仍在 Homebrew Cellar 中。
 
 ### 4.3. 一键构建
 
+通过快捷脚本（推荐）：
 ```bash
-sh gui/build.sh
+sh qtool_gui.sh
+# 或 qtool gui
 ```
 
-脚本功能：编译 `main.swift` → 生成 `gui/Qtool` binary → 组装 `gui/Qtool.app`（含 Info.plist 和 wrapper）。
+或直接调用构建脚本：
+```bash
+sh gui/build.sh -jsonFile qtool_menu_public.json -categoryType catalog -name "qtool" \
+                -jsonFile ~/Book/qbase_custom_menu.json -categoryType custom -name "qbase" \
+                [-output ~/Desktop]
+```
+
+构建过程：
+1. 编译 `main.swift` → 临时目录的 `Qtool` binary
+2. 组装 `.app/Contents/MacOS/Qtool`
+3. 拷贝 JSON 文件和 wrapper 到 `Resources/`
+4. 写入 `Info.plist`（含 `QBMenuSources`）
+5. 输出到目标路径（默认桌面）
+6. 清理临时目录
+7. 保留一份 binary 到 `gui/Qtool` 供开发使用
 
 ### 4.4. 使用方式
 
@@ -292,9 +332,16 @@ brew install qbase/qbase/qtool
 |------|------|------|
 | 0.1.0 | 2026-05-18 | wrapper 方案定型，Desktop .app 测试通过 |
 | 0.1.1 | 2026-05-18 | 修复同一项重复点击、文档更新、代码提交 |
+| 0.2.0 | 2026-06-25 | 多源架构：QBMenuSources + 分段选择器 + command/execSourceFunAndArgs 双 action 类型 + temp 目录构建 |
 
 ## 9. 相关仓库
 
 - qtool：`https://github.com/dvlpCI/script-branch-json-file`
 - qbase：`https://github.com/dvlpCI/script-qbase`
 - Homebrew tap：`https://github.com/dvlpCI/homebrew-qtool`
+
+## 10. 相关文档
+
+- `gui/qtool-GUI交互设计.md` — UI 布局与操作设计
+- `qtool_gui.sh` — 便捷构建入口
+- `qtool.sh` — `qtool gui` 命令入口
