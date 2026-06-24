@@ -388,11 +388,10 @@ struct ContentView: View {
     }
 
     func runCommand(_ command: String) {
-        let scriptContent = "clear\n\(command)\n"
-        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("qtool_run.command")
-        try? scriptContent.write(to: tempURL, atomically: true, encoding: .utf8)
-        try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: tempURL.path)
-        NSWorkspace.shared.open(tempURL)
+        let task = Process()
+        task.launchPath = "/bin/zsh"
+        task.arguments = ["-c", command]
+        task.launch()
     }
 
 }
