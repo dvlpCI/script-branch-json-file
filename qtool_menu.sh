@@ -110,8 +110,6 @@ qian_log "CONTAINS_HELP: $CONTAINS_HELP"
 qian_log "公共参数（${#COMMON_FLAG_ARGS[@]}个）: ${COMMON_FLAG_ARGS[*]}"
 qian_log "=================================="
 
-source ${qtoolScriptDir_Absolute}/base/get_system_env.sh
-
 # 环境变量检查--TOOL_PATH（才能保证可以正确创建分支）
 checkEnvValue_TOOL_PARAMS_FILE_PATH() {
     if [ "${#QTOOL_DEAL_PROJECT_PARAMS_FILE_PATH}" -eq 0 ]; then
@@ -127,136 +125,6 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
-project_dir=$(get_sysenv_project_dir)
-cd "$project_dir" || exit # 切换到工作目录后，才能争取创建git分支。"exit" 命令用于确保如果更改目录时出现错误，则脚本将退出。
-
-gitHome() {
-    git_output=$(git rev-parse --show-toplevel)
-    gitHomeDir_Absolute=$(echo "$git_output" | tr -d '\n') # 删除输出中的换行符，以获取仓库根目录的绝对路径
-    # echo "Git 仓库根目录的绝对路径：$gitHomeDir_Absolute"
-    echo "gitHomeDir_Absolute=$gitHomeDir_Absolute"
-}
-# gitHome
-
-# 工具选项
-tool_menu() {
-    qtool_menu_json_file_path=$1
-
-    # 使用 jq 命令解析 JSON 数据并遍历
-    catalogCount=$(cat "$qtool_menu_json_file_path" | jq '.catalog|length')
-    # echo "catalogCount=${catalogCount}"
-    for ((i = 0; i < ${catalogCount}; i++)); do
-        iCatalogMap=$(cat "$qtool_menu_json_file_path" | jq ".catalog" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
-        iCatalogOutlineMaps=$(echo "$iCatalogMap" | jq -r ".values")
-        iCatalogOutlineCount=$(echo "$iCatalogOutlineMaps" | jq '.|length')
-        if [ $i = 0 ]; then
-            iCatalogColor=${BLUE}
-        elif [ $i = 1 ]; then
-            iCatalogColor=${PURPLE}
-        elif [ $i = 2 ]; then
-            iCatalogColor=${GREEN}
-        elif [ $i = 3 ]; then
-            iCatalogColor=${CYAN}
-        elif [ $i = 4 ]; then
-            iCatalogColor=${YELLOW}
-        else
-            iCatalogColor=${YELLOW}
-        fi
-        for ((j = 0; j < ${iCatalogOutlineCount}; j++)); do
-            iCatalogOutlineMap=$(echo "$iCatalogOutlineMaps" | jq -r ".[${j}]") # 添加 jq -r 的-r以去掉双引号
-            iCatalogOutlineName=$(echo "$iCatalogOutlineMap" | jq -r ".key")
-            iCatalogOutlineDes=$(echo "$iCatalogOutlineMap" | jq -r ".des")
-            
-            iBranchOption="$((i + 1)).$((j + 1))|${iCatalogOutlineName}"
-            printf "${iCatalogColor}%-25s%s${NC}\n" "${iBranchOption}" "$iCatalogOutlineDes" # 要拼接两个字符串，并在拼接的结果中，如果第一个字符串不够 15 位则自动补充空格到 15 位
-        done
-    done
-}
-
-
-
-
-
-
-evalActionByInput() {
-    qian_log "${GREEN}正在等待你选择...${NC}"
-
-    qtool_menu_json_file_path=$1
-    # 读取用户输入的选项，并根据选项执行相应操作
-    valid_option=false
-    moreActionStrings=("qian" "chaoqian" "lichaoqian") # 输入哪些字符串算是想要退出
-    while [ "$valid_option" = false ]; do
-        read -r -p "请选择您想要执行的操作编号或id(若要退出请输入Q|q，变更项目输入change) : " option
-
-        if [ "${option}" == q ] || [ "${option}" == "Q" ]; then
-            exit 2
-        fi
-
-        if [ "${option}" == "change" ]; then
-            sh "${qtoolScriptDir_Absolute}/qtool_change.sh"
-            break
-        fi
-
-
-        if echo "${moreActionStrings[@]}" | grep -wq "${option}" &>/dev/null; then
-            showMenu "${qtoolScriptDir_Absolute}/qtool_menu_private.json"
-            break
-        fi
-
-        # 定义菜单选项
-        catalogCount=$(cat "$qtool_menu_json_file_path" | jq '.catalog|length')
-        tCatalogOutlineMap=""
-        for ((i = 0; i < ${catalogCount}; i++)); do
-            iCatalogMap=$(cat "$qtool_menu_json_file_path" | jq ".catalog" | jq -r ".[${i}]") # 添加 jq -r 的-r以去掉双引号
-            iCatalogOutlineMaps=$(echo "$iCatalogMap" | jq -r ".values")
-            iCatalogOutlineCount=$(echo "$iCatalogOutlineMaps" | jq '.|length')
-            hasFound=false
-            for ((j = 0; j < ${iCatalogOutlineCount}; j++)); do
-                iCatalogOutlineMap=$(echo "$iCatalogOutlineMaps" | jq -r ".[${j}]") # 添加 jq -r 的-r以去掉双引号
-                iCatalogOutlineName=$(echo "$iCatalogOutlineMap" | jq -r ".key")
-                
-                iBranchOptionId="$((i + 1)).$((j + 1))"
-                iBranchOptionName="${iCatalogOutlineName}"
-
-                if [ "${option}" = ${iBranchOptionId} ] || [ "${option}" == ${iBranchOptionName} ]; then
-                    tCatalogOutlineMap=$iCatalogOutlineMap
-                    hasFound=true
-                    break
-                # else
-                #     printf "${RED}%-4s%-25s${NC}不是想要找的%s\n" "${iBranchOptionId}" "$iBranchOptionName" "${option}"
-                fi
-            done
-            if [ ${hasFound} == true ]; then
-                break
-            fi
-        done
-
-        if [ -n "${tCatalogOutlineMap}" ]; then
-            # printf "====选中的操作项为======${RED}${tCatalogOutlineMap}${NC}\n"
-            # tCatalogOutlineActionType=$(echo "$tCatalogOutlineMap" | jq -r ".action_type")
-            
-            tCatalogOutlineCommand=$(echo "$tCatalogOutlineMap" | jq -r ".command")
-            qian_log "${GREEN}根据你选中的菜单${BLUE} ${option} ${GREEN}，调起指定的方法：【${BLUE} eval \"$tCatalogOutlineCommand\" ${GREEN}】${NC}"
-            eval "$tCatalogOutlineCommand"
-        else
-            echo "无此选项，请重新输入。"
-        fi
-    done
-}
-
-# 显示工具选项
-showMenu() {
-    qtool_menu_using_json_file_path=$1
-    qian_log "${GREEN}qtool菜单构建中...${NC}"
-    tool_menu "${qtool_menu_using_json_file_path}"
-    qian_log "${GREEN}qtool菜单显示完毕${NC}"
-    evalActionByInput "${qtool_menu_using_json_file_path}"
-}
-
-# showMenu "${qtoolScriptDir_Absolute}/qtool_menu_public.json"    # 定义菜单选项
-# # 退出程序
-# exit 0
-
 source "${qtoolScriptDir_Absolute}/qtool_menu_source.sh"
 
 # 直接执行时才显示菜单，source 时不执行 ( source 时候， "${BASH_SOURCE[0]}" 不等于 "${0}" ，"${BASH_SOURCE[0]}" 才是脚本路径)
@@ -267,5 +135,6 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         exit 1
     fi
     sh "${qbrew_menu_file_path}" -file "${qtoolScriptDir_Absolute}/qtool_menu_public.json" -categoryType catalog -execChoosed true
+    # sh "${qbrew_menu_file_path}" -file "${qtoolScriptDir_Absolute}/qtool_menu_private.json" -categoryType catalog -execChoosed true
     exit 0
 fi

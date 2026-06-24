@@ -8,15 +8,30 @@
 # @FilePath: qtool_menu_source.sh
 # @Description: qtool 菜单的函数库（由 qtool_menu.sh source 使用）
 ###
-if [ -z "${qtoolScriptDir_Absolute}" ]; then
-    # ⚠️ 必须用 BASH_SOURCE[0] 而非 $0！因为此脚本会被 qbrew_menu.sh 通过
-    # execSourcePathGetter → source 加载，此时 $0 是 qbrew_menu.sh 的路径。
-    # 只有使用 BASH_SOURCE[0] 才能保证即使在 source 时，也能始终指向本文件自身路径，不受调用者影响。
-    qtoolScriptDir_Absolute="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-fi
 
-COMMON_FLAG_ARGS=${COMMON_FLAG_ARGS:-""}   # 来自 getopts 解析，dealScriptByCustomChoose() 需要
-allArgsOrigin=${allArgsOrigin:-""}         # 来自原始入参，uploadDSYMAction() 需要
+# 必须用 BASH_SOURCE[0] 而非 $0！因为本文件可能被 qbrew_menu.sh 通过
+# execSourcePathGetter → eval "source ..." 加载，此时 $0 是 shell 进程路径。
+# 只有 BASH_SOURCE[0] 能始终指向本文件自身路径，不受调用者影响。
+qtoolScriptDir_Absolute="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+
+source "${qtoolScriptDir_Absolute}/base/get_system_env.sh"
+
+# 切换到项目根目录（git 操作需要在项目目录下执行）
+_ensure_project_dir() {
+    project_dir=$(get_sysenv_project_dir)
+    if [ $? != 0 ]; then
+        return 1
+    fi
+    cd "${project_dir}" # 切换到工作目录后，才能争取创建git分支。
+}
+
+
+
+
+# 需要由 source 方预设置的变量(未预设则走空值兜底)
+COMMON_FLAG_ARGS=${COMMON_FLAG_ARGS:-""}   # 需要由 source 方预设置（caller 解析 getopts 后传入）， dealScriptByCustomChoose() 需要；未预设则走空值兜底
+allArgsOrigin=${allArgsOrigin:-""}         # 需要由 source 方预设置（caller 的 $@ 原始入参）， uploadDSYMAction() 需要；未预设则走空值兜底
 
 # 定义颜色常量
 NC='\033[0m' # No Color
@@ -104,6 +119,7 @@ _resolve_tool_params_file_path() {
 
 
 _gitBranch() {
+    _ensure_project_dir || return 1
     sh ${branchJsonFileScriptDir_Absolute}/branchGit_create.sh
 }
 
@@ -125,11 +141,13 @@ updateBranchJsonFile() {
 
 # 将当前分支合并到其他分支前的rebase检查
 rebaseCheckBranch() {
+    _ensure_project_dir || return 1
     sh ${rebaseScriptDir_Absolute}/pre-push.sh
     checkResultCode $?
 }
 
 rebaseHook() {
+    _ensure_project_dir || return 1
     sh ${rebaseScriptDir_Absolute}/pre-push-hook-copy.sh
     checkResultCode $?
 }
@@ -143,6 +161,7 @@ updateMonitorPageKey() {
 
 # 按规范提交当前所有代码
 pushGitCommitMessage() {
+    _ensure_project_dir || return 1
     sh $qtoolScriptDir_Absolute/commit/commit_message.sh
     checkResultCode $?
 }
@@ -160,6 +179,7 @@ dealScriptByCustomChoose() {
 
 # 二、执行Jenkins上的Job
 buildJenkinsJob() {
+    _ensure_project_dir || return 1
     # echo "正在执行命令：《 sh ${jenkinsScriptDir_Absolute}/jenkins.sh \"${temp_reslut_file_path}\" 》"
     sh ${jenkinsScriptDir_Absolute}/jenkins.sh "${temp_reslut_file_path}"
     checkResultCode $?
@@ -184,6 +204,7 @@ gitBranchAndJsonFile() {
 }
 
 lastBranchJsonFile_update() {
+    _ensure_project_dir || return 1
     python3 "${branchJsonFileScriptDir_Absolute}/lastBranchJsonFile_update.py"
     checkResultCode $?
 }
@@ -199,6 +220,7 @@ goPPDir() {
 }
 
 goGitRefsRemotesDir() {
+    _ensure_project_dir || return 1
     python3 ${branchJsonFileScriptDir_Absolute}/git_project_choose.py
     checkResultCode $?
 }
